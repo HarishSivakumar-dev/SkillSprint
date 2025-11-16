@@ -45,7 +45,7 @@ public class UserProfile
 	private int quizzesAttended;//
 	private int avgQuizezCleared;//
 	private float avgClearingRate;//
-	private String streakMaintanance;
+	private int streakMaintanance;
 	
 	@Enumerated(EnumType.STRING)
 	private SkillLevelEnum level;
@@ -157,10 +157,10 @@ public class UserProfile
 	public void setAvgQuizezCleared(int avgQuizezCleared) {
 		this.avgQuizezCleared = avgQuizezCleared;
 	}
-	public String getStreakMaintanance() {
+	public int getStreakMaintanance() {
 		return streakMaintanance;
 	}
-	public void setStreakMaintanance(String streakMaintanance) {
+	public void setStreakMaintanance(int streakMaintanance) {
 		this.streakMaintanance = streakMaintanance;
 	}
 	public SkillLevelEnum getLevel() {

@@ -1,6 +1,5 @@
 package com.harish.quizapp.Service;
 
-import java.time.LocalDate;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -9,10 +8,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import com.harish.quizapp.DataRepos.AttemptsRepo;
 import com.harish.quizapp.DataRepos.CourseCompletionRepo;
 import com.harish.quizapp.DataRepos.EnrollmentRepo;
-import com.harish.quizapp.DataRepos.StreakRepo;
+import com.harish.quizapp.DataRepos.StreakMainRepo;
 import com.harish.quizapp.DataRepos.UserProfileRepo;
+import com.harish.quizapp.DataRepos.UserRepo;
 import com.harish.quizapp.Dto.UserPersonalDetailsDto;
 import com.harish.quizapp.Dto.UserStudyProfileDto;
+import com.harish.quizapp.Model.StreakTable;
 import com.harish.quizapp.Model.UserProfile;
 import com.harish.quizapp.Model.UserRegistration;
 import com.harish.quizapp.enums.CompletionStatus;
@@ -22,6 +23,8 @@ public class UserProfileService
 {
 	@Autowired 
 	private UserProfileRepo upr;
+	@Autowired
+	private StreakMainRepo smr;
 	@Autowired 
 	private EnrollmentRepo er;
 	@Autowired 
@@ -29,12 +32,16 @@ public class UserProfileService
 	@Autowired
 	private AttemptsRepo ar;
 	@Autowired
-	private StreakRepo str;
+	private UserRepo rep;
+
 	
 	public ResponseEntity<UserProfile> getUserProfileDetails()
 	{
 		String user= SecurityContextHolder.getContext().getAuthentication().getName();
+		UserRegistration re= rep.findByUserName(user).orElseThrow();
+		
 		UserProfile up=upr.findByUserName(user).orElseThrow();
+		StreakTable tb= smr.findByUserId(re);
 		
 		int coursesEnrolled=er.countByUser(up.getUserName());
 		int coursesCompleted=ccr.countByUser(up.getUserName());
@@ -56,6 +63,7 @@ public class UserProfileService
 		up.setQuizzesAttended(quizzesAttended);
 		up.setAvgQuizezCleared(quizzesCleared);
 		up.setAvgClearingRate(avgClearingRate);
+		up.setStreakMaintanance(tb.getStreak());
 		up.setLevel(level);
 		
 		return ResponseEntity.status(HttpStatus.OK).body(up);

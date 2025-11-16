@@ -8,16 +8,7 @@ public class ResultDto
 	private int score;
 	private String status;
 	private int nextquizid;
-	private FinalDto finaldto;
-	
-	
-	public FinalDto getFinaldto() {
-		return finaldto;
-	}
-
-	public void setFinaldto(FinalDto finaldto) {
-		this.finaldto = finaldto;
-	}
+	private int streak;
 
 	public int getScore() {
 		return score;
@@ -42,4 +33,13 @@ public class ResultDto
 	public void setNextquizid(int nextquizid) {
 		this.nextquizid = nextquizid;
 	}
+
+	public int getStreak() {
+		return streak;
+	}
+
+	public void setStreak(int streak) {
+		this.streak = streak;
+	}
+	
 }

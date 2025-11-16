@@ -14,6 +14,7 @@ import com.harish.quizapp.DataRepos.CoursesRepo;
 import com.harish.quizapp.DataRepos.QuestionRepo;
 import com.harish.quizapp.DataRepos.QuizQuestionsRepo;
 import com.harish.quizapp.DataRepos.QuizRepo;
+import com.harish.quizapp.DataRepos.StreakMainRepo;
 import com.harish.quizapp.DataRepos.StreakRepo;
 import com.harish.quizapp.DataRepos.UserRepo;
 import com.harish.quizapp.Dto.ExistingQuestionsDto;
@@ -28,6 +29,7 @@ import com.harish.quizapp.Model.QuestionsWrapper;
 import com.harish.quizapp.Model.Quiz;
 import com.harish.quizapp.Model.Quiz_Questions;
 import com.harish.quizapp.Model.StreakLogs;
+import com.harish.quizapp.Model.StreakTable;
 import com.harish.quizapp.Model.UserRegistration;
 import com.harish.quizapp.Model.attemptsTable;
 import com.harish.quizapp.enums.CompletionStatus;
@@ -54,6 +56,8 @@ public class QuizService
 	private CourseCompletionRepo completion;
 	@Autowired
 	private StreakRepo str;
+	@Autowired
+	private StreakMainRepo smr;
 	
 	
 	public ResponseEntity<String> deleteQuiz(int quizid)
@@ -101,13 +105,9 @@ public class QuizService
 		UserRegistration user = usr.findByUserName(name).orElseThrow();
 		Quiz ques=quizrepo.findByTitle(quizname).orElseThrow();
 		
-		StreakLogs streak= new StreakLogs();
-		streak.setDate(LocalDate.now());
-		streak.setQuiz(ques);
-		streak.setUser(user);
-
-		str.save(streak);
+		QuizService ser= new QuizService();
 		
+		int streak=ser.StreakLogicForUser(user, ques);
 		
 		List<Quiz_Questions> quiz= bridge.findByQuiz_Id(ques.getId());
 		
@@ -165,6 +165,8 @@ public class QuizService
 			
 			ResultDto res= new ResultDto();
 			
+			res.setStreak(streak);
+			
 			if(eligible<all.size())
 			{
 				int quizid= all.get(eligible).getId();
@@ -200,6 +202,7 @@ public class QuizService
 			
 			ResultDto res= new ResultDto();
 			
+			res.setStreak(streak);
 			res.setStatus("FAILED");
 			res.setScore(right);
 			
@@ -301,5 +304,57 @@ public class QuizService
 			}        
 			bridge.saveAll(bridgeval);
 			return ResponseEntity.status(HttpStatus.CREATED).body("Quiz Added");
+	}
+	public int StreakLogicForUser(UserRegistration user, Quiz quiz)
+	{
+		
+		StreakTable st = smr.findByUserId(user);
+		
+		LocalDate last = str.findByLastActivityDate(user.getId());
+		
+		if(st.getStreak()==0 && last==null)
+		{
+				st.setStreak(1);
+				st.setUserId(user);
+			
+				StreakTable tab=smr.save(st);
+			
+				StreakLogs sl= new StreakLogs();
+				sl.setDate(LocalDate.now());
+				sl.setQuiz(quiz);
+				sl.setUser(user);
+			
+				this.str.save(sl);
+			
+				return tab.getStreak();
+			
+		}
+		else if(LocalDate.now().equals(last))
+		{
+			return smr.findByUserId(user).getStreak();
+		}
+		else if(last.equals(LocalDate.now().minusDays(1)))
+		{
+			st.setStreak(st.getStreak()+1);
+			StreakTable tab=smr.save(st);
+			
+			StreakLogs sl= new StreakLogs();
+			sl.setDate(LocalDate.now());
+			sl.setQuiz(quiz);
+			sl.setUser(user);
+			
+			this.str.save(sl);
+			
+			return tab.getStreak();
+			
+		}
+		else
+		{
+			st.setStreak(1);
+			StreakTable tb=smr.save(st);
+			
+			return tb.getStreak();
+		}
+		
 	}
 }

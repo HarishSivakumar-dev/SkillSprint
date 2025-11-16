@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import com.harish.quizapp.Model.UserRegistration;
+import com.harish.quizapp.Dto.RegistrationDto;
 import com.harish.quizapp.Service.UserRegistrationService;
 
 @RestController
@@ -18,7 +18,7 @@ public class UserRegistrationController
 	
 	
 	@PostMapping("/register")
-	public ResponseEntity<String> userRegisterations(@RequestBody UserRegistration ur)
+	public ResponseEntity<String> userRegisterations(@RequestBody RegistrationDto ur)
 	{
 		System.out.println("entered controller");
 		return urs.registerUserIntoDb(ur);

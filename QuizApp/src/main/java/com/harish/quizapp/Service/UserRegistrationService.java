@@ -10,9 +10,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.harish.quizapp.DataRepos.EmailTokenRepo;
 import com.harish.quizapp.DataRepos.RoleRepo;
+import com.harish.quizapp.DataRepos.StreakMainRepo;
 import com.harish.quizapp.DataRepos.UserProfileRepo;
 import com.harish.quizapp.DataRepos.UserRepo;
+import com.harish.quizapp.Dto.RegistrationDto;
 import com.harish.quizapp.Model.Roles;
+import com.harish.quizapp.Model.StreakTable;
 import com.harish.quizapp.Model.UserProfile;
 import com.harish.quizapp.Model.UserRegistration;
 
@@ -25,6 +28,8 @@ public class UserRegistrationService
 	@Autowired
 	private UserProfileRepo upr;
 	@Autowired 
+	private StreakMainRepo smr;
+	@Autowired 
 	private RoleRepo rr;
 	@Autowired
 	private EmailTokenRepo etr;
@@ -33,33 +38,47 @@ public class UserRegistrationService
 
 
 
-	public ResponseEntity<String> registerUserIntoDb(UserRegistration ur)
-	{
-		Roles r=rr.findByRolename("ROLE_USER").orElseThrow(()->new BadCredentialsException("No Roles Found !"));
-		ur.getRoles().add(r);
-		ur.setJoinedDate(LocalDateTime.now());
-		ur.setPassword(enc.encode(ur.getPassword()));
+	public ResponseEntity<String> registerUserIntoDb(RegistrationDto ru)
+	{		
+		Optional<UserRegistration> reg= this.ur.findByUserName(ru.getUserName());
 		
-		Optional<UserRegistration> reg= this.ur.findByUserName(ur.getUserName());
-		UserProfile pro=new UserProfile();
-		
-		if(etr.findByEmailAndIsVerifiedTrue(ur.getEmail()).isPresent())
+		if(!reg.isEmpty())
 		{
-			this.ur.save(ur);
+			return ResponseEntity.status(HttpStatus.CONFLICT).body("Username Already Exists !");
+		}
+		
+		if(etr.findByEmailAndIsVerifiedTrue(ru.getEmail()).isPresent())
+		{
+			UserRegistration ur=new UserRegistration();
+			UserProfile pro=new UserProfile();
+			StreakTable st= new StreakTable();
 			
-			pro.setUserName(ur);
-			pro.setEmail(ur.getEmail());
-			pro.setFullName(ur.getName());
+			Roles r=rr.findByRolename("ROLE_USER").orElseThrow(()->new BadCredentialsException("No Roles Found !"));
+			ur.getRoles().add(r);
+			ur.setJoinedDate(LocalDateTime.now());
+			ur.setEmail(ru.getEmail());
+			ur.setName(ru.getName());
+			ur.setPassword(enc.encode(ru.getPassword()));
+			ur.setIsEmailVerified(true);
+			ur.setUserName(ru.getUserName());
+			
+			
+			UserRegistration regi=this.ur.save(ur);
+			
+			pro.setUserName(regi);
+			pro.setEmail(regi.getEmail());
+			pro.setFullName(regi.getName());
 			pro.setJoinedDate(LocalDateTime.now());
 			pro.setIsEmailVerified(true);
 			
 			upr.save(pro);
 			
+			st.setStreak(0);
+			st.setUserId(ur);
+			
+			smr.save(st);
+			
 			return ResponseEntity.status(HttpStatus.ACCEPTED).body("Registered");
-		}
-		else if(!reg.isEmpty())
-		{
-			return ResponseEntity.status(HttpStatus.CONFLICT).body("Username Already Exists !");
 		}
 		else
 		{
