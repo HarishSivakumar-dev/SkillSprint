@@ -1,8 +1,10 @@
 package com.harish.quizapp.Model;
 
-import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+
+import org.hibernate.validator.constraints.URL;
+
 import com.harish.quizapp.enums.GenderEnum;
 import com.harish.quizapp.enums.SkillLevelEnum;
 import jakarta.persistence.Entity;
@@ -53,7 +55,9 @@ public class UserProfile
 	private String collegeName;
 	private String department;
 	private int yearOfStudy;
-	private URL linkedIn;
+	
+	@URL
+	private String linkedIn;
 	
 	public int getId() {
 		return id;
@@ -187,10 +191,10 @@ public class UserProfile
 	public void setYearOfStudy(int yearOfStudy) {
 		this.yearOfStudy = yearOfStudy;
 	}
-	public URL getLinkedIn() {
+	public String getLinkedIn() {
 		return linkedIn;
 	}
-	public void setLinkedIn(URL linkedIn) {
+	public void setLinkedIn(String linkedIn) {
 		this.linkedIn = linkedIn;
 	}
 }

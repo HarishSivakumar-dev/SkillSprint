@@ -14,6 +14,7 @@ import com.harish.quizapp.DataRepos.AdminPromotionRepo;
 import com.harish.quizapp.DataRepos.ComplaintAuditRepo;
 import com.harish.quizapp.DataRepos.ComplaintsRepo;
 import com.harish.quizapp.DataRepos.InstAppRepo;
+import com.harish.quizapp.DataRepos.InstructorRepo;
 import com.harish.quizapp.DataRepos.InstructorUpdateRepo;
 import com.harish.quizapp.DataRepos.RoleRepo;
 import com.harish.quizapp.DataRepos.UserRepo;
@@ -25,6 +26,7 @@ import com.harish.quizapp.Model.AdminApplication;
 import com.harish.quizapp.Model.ComplaintAuditTable;
 import com.harish.quizapp.Model.ComplaintsTable;
 import com.harish.quizapp.Model.InstructorApplication;
+import com.harish.quizapp.Model.InstructorProfile;
 import com.harish.quizapp.Model.InstructorUpdatedTable;
 import com.harish.quizapp.Model.Roles;
 import com.harish.quizapp.Model.UserRegistration;
@@ -51,6 +53,8 @@ public class AdminService
 	private ComplaintAuditRepo car;
 	@Autowired 
 	private AdminPromotionRepo apr;
+	@Autowired
+	private InstructorRepo intrep;
 	
 	public ResponseEntity<String> updateUserRoles(PromotionDto dto)
 	{
@@ -77,6 +81,13 @@ public class AdminService
 		iut.setTime(LocalDateTime.now());
 		
 		iur.save(iut);
+		
+		InstructorProfile ip= new InstructorProfile();
+		ip.setUserName(user);
+		ip.setJoinedDate(LocalDate.now());
+		ip.setMail(user.getEmail());
+		ip.setFullName(user.getName());
+		intrep.save(ip);
 		
 		return ResponseEntity.status(HttpStatus.ACCEPTED).body("User Promoted !");
 	}

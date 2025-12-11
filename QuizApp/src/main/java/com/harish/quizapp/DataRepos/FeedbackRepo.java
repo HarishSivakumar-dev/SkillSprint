@@ -11,6 +11,7 @@ import com.harish.quizapp.Model.UserRegistration;
 public interface FeedbackRepo extends JpaRepository<FeedbackTable, Integer>
 {
 	int countByInstructor(UserRegistration ur);
+	
 	List<FeedbackTable> findByInstructor(UserRegistration ur);
 	
 }

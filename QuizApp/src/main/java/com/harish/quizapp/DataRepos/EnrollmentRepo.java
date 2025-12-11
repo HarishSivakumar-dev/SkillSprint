@@ -18,10 +18,11 @@ public interface EnrollmentRepo extends JpaRepository<EnrollmentData,Integer>
 	List<EnrollmentData> findByUser(UserRegistration usr);
 	
 	int countByUser(UserRegistration usr);
+	
+	int countDistinctUserByCourse_Instructor(UserRegistration user);
 
 	int deleteByUser_IdAndCourse_Id(int id, int courseid);
 
 	List<EnrollmentData> findByCourse_Id(int id);
 	
-	List<EnrollmentData> findDistinctByCourse_Instructor_Id(int instructorid);
 }

@@ -18,5 +18,9 @@ public interface CoursesRepo extends JpaRepository<CourseDetails,Integer>
 	List<CourseDetails> findByStatus(String name);
 	
 	int countByInstructorAndStatus(UserRegistration ur, String status);
+	
+	int countByInstructor(UserRegistration ur);
+	
+	
 
 }

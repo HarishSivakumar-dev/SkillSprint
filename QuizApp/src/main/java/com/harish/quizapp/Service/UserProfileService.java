@@ -52,10 +52,9 @@ public class UserProfileService
 		float avgClearingRate= (quizzesAttended >0 ) ? (quizzesCleared/ (float)quizzesAttended)*100 : 0;
 		float avgCompletionRate= (coursesEnrolled >0) ? (coursesCompleted/ (float)coursesEnrolled)*100 : 0;
 		float avgCertiRate=(coursesCompleted>0) ? (certificates/ (float)coursesCompleted)*100 : 0;
-		UserProfileService ups = new UserProfileService();
 		
 		
-		SkillLevelEnum level= ups.allocateLevel(avgClearingRate, avgCompletionRate, avgCertiRate);
+		SkillLevelEnum level= this.allocateLevel(avgClearingRate, avgCompletionRate, avgCertiRate);
 		
 		up.setTotCoursesEnrolled(coursesEnrolled);
 		up.setCoursesCompleted(coursesCompleted);
@@ -65,6 +64,8 @@ public class UserProfileService
 		up.setAvgClearingRate(avgClearingRate);
 		up.setStreakMaintanance(tb.getStreak());
 		up.setLevel(level);
+		
+		upr.save(up);
 		
 		return ResponseEntity.status(HttpStatus.OK).body(up);
 	}

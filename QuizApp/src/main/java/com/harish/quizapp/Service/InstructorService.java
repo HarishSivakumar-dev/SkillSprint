@@ -20,7 +20,6 @@ import com.harish.quizapp.DataRepos.UserRepo;
 import com.harish.quizapp.DataRepos.ViolationTableRepo;
 import com.harish.quizapp.Dto.ApplicationDto;
 import com.harish.quizapp.Model.AdminApplication;
-import com.harish.quizapp.Model.CourseCompletionStatus;
 import com.harish.quizapp.Model.FeedbackTable;
 import com.harish.quizapp.Model.OtpLogs;
 import com.harish.quizapp.Model.Roles;
@@ -80,7 +79,7 @@ public class InstructorService
 		LocalDateTime join= user.getJoinedDate();
 		long exp=ChronoUnit.YEARS.between(now, join);
 		
-		int nostud= er.findDistinctByCourse_Instructor_Id(user.getId()).size();
+		int nostud= er.countDistinctUserByCourse_Instructor(user);
 		Optional<OtpLogs> isVerified= otp.findByUserAndIsVerifiedTrue(user);
 		Boolean verified;
 		
@@ -93,8 +92,7 @@ public class InstructorService
 			verified=true;
 		}
 		
-		List<CourseCompletionStatus> ls= ccr.findByCourse_Instructor_Id(user.getId());
-		int completedStud=ls.size();
+		int completedStud= ccr.countDistinctUserByCourse_Instructor_Id(user.getId());
 	
 		admin.setAchievements(app.getApplication());
 		admin.setAppliedDate(date);
