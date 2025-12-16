@@ -174,4 +174,9 @@ public class CourseService
 		mr.saveAll(mt);
 		return ResponseEntity.status(HttpStatus.CREATED).body("Added");
 	}
+	
+	public ResponseEntity<List<String>> fetchAllCoursesAvailabe()
+	{
+		return ResponseEntity.status(HttpStatus.OK).body(cr.findAllCourseGenreAvailable());
+	}
 }
