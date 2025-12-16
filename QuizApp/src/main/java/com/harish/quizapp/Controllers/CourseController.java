@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.harish.quizapp.Dto.ApplicationDto;
+import com.harish.quizapp.Dto.StatusUpdateDto;
 import com.harish.quizapp.Model.CourseContents;
 import com.harish.quizapp.Model.CourseDetails;
 import com.harish.quizapp.Model.EnrollmentData;
@@ -57,12 +57,11 @@ public class CourseController
 		return cs.deleteCourses(id, name);
 	}
 	
-	@PostMapping("/user/courses/update/course/status/{id}")
+	@PostMapping("/user/courses/update/course/status")
 	@PreAuthorize("hasAnyRole('ADMIN','INSTRUCTOR')")
-	public ResponseEntity<String> updateCourseStatus(@PathVariable int id)
+	public ResponseEntity<String> updateCourseStatus(@RequestBody StatusUpdateDto sud)
 	{
-		String name=SecurityContextHolder.getContext().getAuthentication().getName();
-		return cs.updateCourseStatus(id,name);
+		return cs.updateCourseStatus(sud);
 	}
 	
 	@GetMapping("/user/courses/getall")

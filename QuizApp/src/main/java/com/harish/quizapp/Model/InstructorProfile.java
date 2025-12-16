@@ -11,6 +11,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.Transient;
 
 @Entity
 public class InstructorProfile
@@ -48,12 +49,6 @@ public class InstructorProfile
 	private float completionRate;
 	private String totExp;
 	
-	//datum per course 
-	private String catagory;
-	private float rating;
-	private int totStud;
-	private String Status;
-	
 	@ManyToMany
 	@JoinTable
 	(
@@ -63,8 +58,10 @@ public class InstructorProfile
 	)
 	private List<Skills> skills;
 	
-
+	@Transient
+	private List<CourseDetails> courseDetails;
 	
+
 	public int getId() {
 		return id;
 	}
@@ -209,36 +206,12 @@ public class InstructorProfile
 		this.totExp = totExp;
 	}
 
-	public String getCatagory() {
-		return catagory;
+	public LocalDate getJoinedDate() {
+		return joinedDate;
 	}
 
-	public void setCatagory(String catagory) {
-		this.catagory = catagory;
-	}
-
-	public float getRating() {
-		return rating;
-	}
-
-	public void setRating(float rating) {
-		this.rating = rating;
-	}
-
-	public int getTotStud() {
-		return totStud;
-	}
-
-	public void setTotStud(int totStud) {
-		this.totStud = totStud;
-	}
-
-	public String getStatus() {
-		return Status;
-	}
-
-	public void setStatus(String status) {
-		Status = status;
+	public void setJoinedDate(LocalDate joinedDate) {
+		this.joinedDate = joinedDate;
 	}
 
 	public List<Skills> getSkills() {
@@ -249,13 +222,14 @@ public class InstructorProfile
 		this.skills = skills;
 	}
 
-	public LocalDate getJoinedDate() {
-		return joinedDate;
+	public List<CourseDetails> getCourseDetails() {
+		return courseDetails;
 	}
 
-	public void setJoinedDate(LocalDate joinedDate) {
-		this.joinedDate = joinedDate;
+	public void setCourseDetails(List<CourseDetails> courseDetails) {
+		this.courseDetails = courseDetails;
 	}
+	
 	
 	
 }

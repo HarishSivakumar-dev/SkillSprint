@@ -1,5 +1,7 @@
 package com.harish.quizapp.Dto;
 
+import java.util.List;
+
 public class InstructorDto
 {
 	
@@ -11,6 +13,8 @@ public class InstructorDto
 	private String webUrl;
 	private String portfolioUrl;
 	private String phone;
+	
+	private List<String> skills;
 	
 	
 	public String getHeadLine() {
@@ -60,6 +64,12 @@ public class InstructorDto
 	}
 	public void setPhone(String phone) {
 		this.phone = phone;
+	}
+	public List<String> getSkills() {
+		return skills;
+	}
+	public void setSkills(List<String> skills) {
+		this.skills = skills;
 	}
 
 }

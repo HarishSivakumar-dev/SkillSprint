@@ -14,11 +14,13 @@ import com.harish.quizapp.DataRepos.CoursesRepo;
 import com.harish.quizapp.DataRepos.EnrollmentRepo;
 import com.harish.quizapp.DataRepos.MaterialsRepo;
 import com.harish.quizapp.DataRepos.UserRepo;
+import com.harish.quizapp.Dto.StatusUpdateDto;
 import com.harish.quizapp.Model.CourseContents;
 import com.harish.quizapp.Model.CourseDetails;
 import com.harish.quizapp.Model.EnrollmentData;
 import com.harish.quizapp.Model.MaterialsDto;
 import com.harish.quizapp.Model.UserRegistration;
+import com.harish.quizapp.enums.CourseStatus;
 
 @Service
 public class CourseService 
@@ -48,7 +50,7 @@ public class CourseService
 		
 		cd.setInstructor(instructor);
 		cd.setCreated_at(LocalDateTime.now());
-		cd.setStatus("ACTIVE");
+		cd.setStatus(CourseStatus.Active);
 		
 		cr.save(cd);
 		
@@ -82,13 +84,13 @@ public class CourseService
 	
 	public ResponseEntity<List<CourseDetails>> getAllCourses()
 	{
-		return ResponseEntity.status(HttpStatus.OK).body(cr.findByStatus("ACTIVE"));
+		return ResponseEntity.status(HttpStatus.OK).body(cr.findByStatus(CourseStatus.Active));
 	}
 
-	public ResponseEntity<String> updateCourseStatus(int id, String name)
+	public ResponseEntity<String> updateCourseStatus(StatusUpdateDto sud)
 	{
-		CourseDetails cd=cr.findById(id).orElseThrow();
-		cd.setStatus("INACTIVE");
+		CourseDetails cd=cr.findById(sud.getId()).orElseThrow();
+		cd.setStatus(sud.getStatus());
 		
 		cr.save(cd);
 		

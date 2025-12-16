@@ -2,7 +2,10 @@ package com.harish.quizapp.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,10 +20,13 @@ import com.harish.quizapp.DataRepos.InstAppRepo;
 import com.harish.quizapp.DataRepos.InstructorRepo;
 import com.harish.quizapp.DataRepos.InstructorUpdateRepo;
 import com.harish.quizapp.DataRepos.RoleRepo;
+import com.harish.quizapp.DataRepos.SkillApprovalRepo;
+import com.harish.quizapp.DataRepos.SkillsRepo;
 import com.harish.quizapp.DataRepos.UserRepo;
 import com.harish.quizapp.DataRepos.ViolationTableRepo;
 import com.harish.quizapp.Dto.AdminPromotionDto;
 import com.harish.quizapp.Dto.PromotionDto;
+import com.harish.quizapp.Dto.SkillApprovalDto;
 import com.harish.quizapp.Dto.UpdateStatusDto;
 import com.harish.quizapp.Model.AdminApplication;
 import com.harish.quizapp.Model.ComplaintAuditTable;
@@ -29,10 +35,13 @@ import com.harish.quizapp.Model.InstructorApplication;
 import com.harish.quizapp.Model.InstructorProfile;
 import com.harish.quizapp.Model.InstructorUpdatedTable;
 import com.harish.quizapp.Model.Roles;
+import com.harish.quizapp.Model.SkillApproval;
+import com.harish.quizapp.Model.Skills;
 import com.harish.quizapp.Model.UserRegistration;
 import com.harish.quizapp.Model.ViolationsTable;
 import com.harish.quizapp.enums.ComplaintStatus;
 import com.harish.quizapp.enums.PromotionStatus;
+import com.harish.quizapp.enums.SkillStatus;
 
 @Service
 public class AdminService
@@ -55,6 +64,10 @@ public class AdminService
 	private AdminPromotionRepo apr;
 	@Autowired
 	private InstructorRepo intrep;
+	@Autowired
+	private SkillApprovalRepo sar;
+	@Autowired 
+	private SkillsRepo sklrep;
 	
 	public ResponseEntity<String> updateUserRoles(PromotionDto dto)
 	{
@@ -213,4 +226,65 @@ public class AdminService
 		return ResponseEntity.status(HttpStatus.OK).body("UPDATED");
 	}
 	
+	public ResponseEntity<List<SkillApproval>> getAllSkillApprovalRequests()
+	{
+		return ResponseEntity.status(HttpStatus.ACCEPTED).body(sar.findAll());
+	}
+	
+	public ResponseEntity<String> setSkillApprovalRequests(List<SkillApprovalDto> dto)
+	{
+		UserRegistration user= rep.findByUserName(SecurityContextHolder.getContext().getAuthentication().getName()).orElseThrow();
+		
+		List<Integer> sl= dto.stream()
+							 .map(r-> r.getId())
+							 .toList();
+		List<SkillApproval> sk= sar.findAllById(sl);
+		
+		List<Integer> inst= dto.stream()
+							   .map(r->r.getInstructorId())
+							   .toList();
+		List<InstructorProfile> dbinst= intrep.findAllById(inst);
+		
+		List<Integer> del= new ArrayList<>();
+		List<SkillApproval> upd= new ArrayList<>();
+		
+		Map<Integer, SkillApprovalDto> map= new HashMap<>();
+		Map<Integer, InstructorProfile> map1= new HashMap<>();
+		
+		for(SkillApprovalDto dt : dto)
+		{
+			map.put(dt.getId(), dt);
+		}
+		for(InstructorProfile ip : dbinst)
+		{
+			map1.put(ip.getId(), ip);
+		}
+		
+		for(SkillApproval sv : sk)
+		{
+			if(map.get(sv.getId()).getStatus()==SkillStatus.Approved)
+			{
+				Skills skls= new Skills();
+				skls.setSkillName(sv.getSkillApplied());
+				Skills sd= sklrep.save(skls);
+				
+				InstructorProfile ip= map1.get(sv.getInstrutor().getId());
+				ip.getSkills().add(sd);
+				intrep.save(ip);
+				
+				del.add(sv.getId());
+			}
+			else
+			{
+				sv.setStatus(map.get(sv.getId()).getStatus());
+				sv.setAdmin(user);
+				upd.add(sv);
+			}
+		}
+		sar.deleteAllById(del);
+		sar.saveAll(upd);
+		
+		return ResponseEntity.status(HttpStatus.OK).body("Update Successfull ");
+	}
+
 }

@@ -2,7 +2,11 @@ package com.harish.quizapp.Model;
 
 import java.time.LocalDateTime;
 
+import com.harish.quizapp.enums.CourseStatus;
+
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -27,13 +31,16 @@ public class CourseDetails
 	private String level;
 	private String duration;
 	private LocalDateTime created_at;
-	private String status;
 	
-	public String getStatus() {
+	@Enumerated(EnumType.STRING)
+	private CourseStatus status;
+	private float rating;
+	
+	public CourseStatus getStatus() {
 		return status;
 	}
 
-	public void setStatus(String status) {
+	public void setStatus(CourseStatus status) {
 		this.status = status;
 	}
 
@@ -100,5 +107,15 @@ public class CourseDetails
 	public void setInstructor(UserRegistration instructor) {
 		this.instructor = instructor;
 	}
+
+	public float getRating() {
+		return rating;
+	}
+
+	public void setRating(float rating) {
+		this.rating = rating;
+	}
+	
+	
 	
 }
