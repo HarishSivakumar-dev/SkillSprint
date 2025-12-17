@@ -12,11 +12,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.harish.quizapp.Dto.AdminPromotionDto;
 import com.harish.quizapp.Dto.PromotionDto;
+import com.harish.quizapp.Dto.SkillApprovalDto;
 import com.harish.quizapp.Dto.UpdateStatusDto;
 import com.harish.quizapp.Model.AdminApplication;
 import com.harish.quizapp.Model.ComplaintsTable;
 import com.harish.quizapp.Model.InstructorApplication;
+import com.harish.quizapp.Model.SkillApproval;
 import com.harish.quizapp.Service.AdminService;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/admin")
@@ -54,17 +58,31 @@ public class AdminController
 		return as.updateComplaintStatus(usd,complaintid);
 	}
 	
-	@GetMapping("superadmin/get/all/admin/applications")
-	@PreAuthorize("hasRole('SUPER_ADMIN')")
+	@GetMapping("/get/all/admin/applications")
+	@PreAuthorize("hasAnyRole('SUPER_ADMIN','ADMIN')")
 	public ResponseEntity<List<AdminApplication>> getAllPendingRequestForAdmin()
 	{
 		return as.getAllPendingApplications();
 	}
 	
-	@PostMapping("/superadmin/make/changes/role/instructor")
-	@PreAuthorize("hasRole('SUPER_ADMIN')")
+	@PostMapping("/make/changes/role/instructor")
+	@PreAuthorize("hasAnyRole('SUPER_ADMIN','ADMIN')")
 	public ResponseEntity<String> updateChangesToApplication(@RequestBody AdminPromotionDto apd)
 	{
 		return as.promoteInsttoAdmin(apd);
+	}
+	
+	@GetMapping("/admin/get/approval/skills")
+	@PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
+	public ResponseEntity<List<SkillApproval>> getAllSkillApprovalRequests()
+	{
+		return as.getAllSkillApprovalRequests();
+	}
+	
+	@PostMapping("/admin/set/approval/skills")
+	@PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
+	public ResponseEntity<String> setSkillApprovalStatus( @Valid @RequestBody List<SkillApprovalDto> dto)
+	{
+		return as.setSkillApprovalRequests(dto);
 	}
 }
