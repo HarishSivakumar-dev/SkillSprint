@@ -56,6 +56,7 @@ public class ViolationResetScheduler
 	@Autowired
 	private AttemptsRepo ar;
 	
+	@Transactional
 	@Scheduled(cron="0 0 0 * * * ")
 	public void resetViolationField()
 	{
@@ -117,7 +118,7 @@ public class ViolationResetScheduler
 			{
 				List<FeedbackTable> cou = map.get(fd.getId());
 				
-				float rating = (cou.isEmpty() || cou==null) ? 0 : (float) (cou.stream()
+				float rating = (cou==null || cou.isEmpty()) ? 0 : (float) (cou.stream()
 								  .mapToInt(r->r.getRating())
 								  .sum())/cou.size();
 				fd.setRating(rating);
@@ -134,13 +135,23 @@ public class ViolationResetScheduler
 		
 	}
 	
+	
 	@Transactional
-	@Scheduled(cron="0 20 0 * * * ")
+	@Scheduled(cron="0 0 * * * * ")
 	public void updateInstructorProfileDetails()
 	{
 		try
 		{
 			List<InstructorProfile> ip= ir.findAll();
+			
+			List<ViolationsTable> vt= vtr.findAll();
+			
+			Map<Integer, ViolationsTable> violation= new HashMap<>();
+			
+			for(ViolationsTable vio : vt)
+			{
+				violation.put(vio.getInstructor().getId(), vio);
+			}
 			
 			for(InstructorProfile pro : ip)
 			{
@@ -149,6 +160,7 @@ public class ViolationResetScheduler
 				 int totCourses=cr.countByInstructor(usr);
 				 int totStudents=er.countDistinctUserByCourse_Instructor(usr);
 				 int totReviews=fr.countByInstructor(usr);
+				 Boolean isViolated= violation.get(usr.getId()).isViolated();
 				 
 				 List<FeedbackTable> rat= fr.findByInstructor(usr);
 				 float avgRating=0;
@@ -175,6 +187,7 @@ public class ViolationResetScheduler
 				 pro.setAvgRating(avgRating);
 				 pro.setCompletionRate(completionRate);
 				 pro.setTotExp(totExp);
+				 pro.setIsViolated(isViolated);
 				
 			}
 			

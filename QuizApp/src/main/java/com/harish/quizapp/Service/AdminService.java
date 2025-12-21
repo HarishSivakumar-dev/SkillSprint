@@ -100,6 +100,7 @@ public class AdminService
 		ip.setJoinedDate(LocalDate.now());
 		ip.setMail(user.getEmail());
 		ip.setFullName(user.getName());
+		ip.setIsViolated(false);
 		intrep.save(ip);
 		
 		return ResponseEntity.status(HttpStatus.ACCEPTED).body("User Promoted !");

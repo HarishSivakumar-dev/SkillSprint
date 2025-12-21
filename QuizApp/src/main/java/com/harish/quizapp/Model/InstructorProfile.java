@@ -30,7 +30,7 @@ public class InstructorProfile
 	private String shortBio;
 	private String aboutSec;
 	private String phone;
-
+	private Boolean isViolated;
 	
 	@URL
 	private String linkedinUrl;
@@ -229,7 +229,14 @@ public class InstructorProfile
 	public void setCourseDetails(List<CourseDetails> courseDetails) {
 		this.courseDetails = courseDetails;
 	}
-	
+
+	public Boolean getIsViolated() {
+		return isViolated;
+	}
+
+	public void setIsViolated(Boolean isViolated) {
+		this.isViolated = isViolated;
+	}
 	
 	
 }
