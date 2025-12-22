@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.harish.quizapp.Dto.InstructorDto;
 import com.harish.quizapp.Dto.SkillResponseDto;
+import com.harish.quizapp.Dto.ViolationResultDto;
 import com.harish.quizapp.Model.InstructorProfile;
 import com.harish.quizapp.Service.InstructorProfileService;
 
@@ -40,6 +41,13 @@ public class InstructorProfileController
 	public ResponseEntity<List<SkillResponseDto>> searchInstructorSkillStatusAdded()
 	{
 		return ip.searchInstructorSkills();
+	}
+	
+	@GetMapping("/profile/violations/info")
+	@PreAuthorize("hasRole('INSTRUCTOR')")
+	public ResponseEntity<ViolationResultDto> violationResponse()
+	{
+		return ip.getViolationDetails();
 	}
 	
 }
