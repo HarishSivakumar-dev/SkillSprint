@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.harish.quizapp.Dto.AdminManagerDetailsDto;
 import com.harish.quizapp.Dto.AdminPromotionDto;
 import com.harish.quizapp.Dto.PromotionDto;
 import com.harish.quizapp.Dto.SkillApprovalDto;
@@ -71,16 +73,30 @@ public class AdminController
 	}
 	
 	@GetMapping("/admin/get/approval/skills")
-	@PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
+	@PreAuthorize("hasAnyRole('ADMIN')")
 	public ResponseEntity<List<SkillApproval>> getAllSkillApprovalRequests()
 	{
 		return as.getAllSkillApprovalRequests();
 	}
 	
 	@PostMapping("/admin/set/approval/skills")
-	@PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
+	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<String> setSkillApprovalStatus( @Valid @RequestBody List<SkillApprovalDto> dto)
 	{
 		return as.setSkillApprovalRequests(dto);
+	}
+	
+	@GetMapping("/admin/get/allAdmins/select/AdminManager")
+	@PreAuthorize("hasRole('SUPER_ADMIN')")
+	public ResponseEntity<List<AdminManagerDetailsDto>> getAllAdminforAdminManager()
+	{
+		return as.getAllAdminManagerDetails();
+	}
+	
+	@PostMapping("/admin/set/new/adminmanager")
+	@PreAuthorize("hasRole('SUPER_ADMIN')")
+	public ResponseEntity<String> setNewAdminManager(@RequestBody AdminManagerDetailsDto amd)
+	{
+		return as.setNewAdminManager(amd);
 	}
 }

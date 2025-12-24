@@ -344,4 +344,17 @@ public class AdminService
 		return ResponseEntity.status(HttpStatus.OK).body(amd);
 		
 	}
+	
+	public ResponseEntity<String> setNewAdminManager(AdminManagerDetailsDto amd) 
+	{
+		UserRegistration user= rep.findByUserName(amd.getUserName()).orElseThrow();
+		Roles rol= rr.findByRolename("ROLE_ADMIN_MANAGER").orElseThrow();
+		
+		user.getRoles().add(rol);
+		
+		rep.save(user);
+		
+		return ResponseEntity.status(HttpStatus.ACCEPTED).body("Promoted !");
+	}
+	
 }
