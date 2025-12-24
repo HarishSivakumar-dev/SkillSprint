@@ -1,9 +1,7 @@
 package com.harish.quizapp.Model;
 
 import java.time.LocalDate;
-
 import com.harish.quizapp.enums.ComplaintStatus;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;

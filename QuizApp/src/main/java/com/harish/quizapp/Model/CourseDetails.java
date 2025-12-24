@@ -30,7 +30,7 @@ public class CourseDetails
 	private String catagory;
 	private String level;
 	private String duration;
-	private LocalDateTime created_at;
+	private LocalDateTime createdAt;
 	
 	@Enumerated(EnumType.STRING)
 	private CourseStatus status;
@@ -91,13 +91,13 @@ public class CourseDetails
 	public void setDuration(String duration) {
 		this.duration = duration;
 	}
-
-	public LocalDateTime getCreated_at() {
-		return created_at;
+	
+	public LocalDateTime getCreatedAt() {
+		return createdAt;
 	}
 
-	public void setCreated_at(LocalDateTime created_at) {
-		this.created_at = created_at;
+	public void setCreatedAt(LocalDateTime createdAt) {
+		this.createdAt = createdAt;
 	}
 
 	public UserRegistration getInstructor() {

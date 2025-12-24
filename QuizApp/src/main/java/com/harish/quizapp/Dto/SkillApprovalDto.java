@@ -8,8 +8,8 @@ public class SkillApprovalDto
 	private int instructorId;
 	private String skillApplied;
 	private SkillStatus status;
+	private String comments; 
 
-	
 	public int getId() {
 		return id;
 	}
@@ -34,7 +34,12 @@ public class SkillApprovalDto
 	public void setStatus(SkillStatus status) {
 		this.status = status;
 	}
+	public String getComments() {
+		return comments;
+	}
+	public void setComments(String comments) {
+		this.comments = comments;
+	}
 	
 	
-
 }

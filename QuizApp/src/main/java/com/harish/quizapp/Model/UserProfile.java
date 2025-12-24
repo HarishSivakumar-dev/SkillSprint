@@ -26,8 +26,8 @@ public class UserProfile
 	private String fullName;//
 	
 	@OneToOne
-	@JoinColumn(name="user_name", referencedColumnName="userName")
-	private UserRegistration userName;//
+	@JoinColumn(name="user_name", referencedColumnName="user_name")
+	private UserRegistration userName;
 	
 	private String email;//
 	private Boolean isEmailVerified;//

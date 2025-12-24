@@ -23,7 +23,7 @@ public interface CoursesRepo extends JpaRepository<CourseDetails,Integer>
 	
 	int countByInstructor(UserRegistration ur);
 	
-	List<CourseDetails> findTop3ByInstructor_IdAndStatusOrderByCreated_atDesc(int instructorId, CourseStatus status);
+	List<CourseDetails> findTop3ByInstructor_IdAndStatusOrderByCreatedAtDesc(int instructorId, CourseStatus status);
 
 	@Query(value="SELECT DISTINCT catagory FROM CourseDetails", nativeQuery=true)
 	List<String> findAllCourseGenreAvailable();

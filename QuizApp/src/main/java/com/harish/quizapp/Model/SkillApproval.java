@@ -20,16 +20,18 @@ public class SkillApproval
 	
 	@ManyToOne
 	@JoinColumn(name= "instrutor_id")
-	private UserRegistration instrutor;
+	private UserRegistration instructor;
 	
 	@ManyToOne
-	@JoinColumn(name= "instrutor_id")
+	@JoinColumn(name= "Handled_admin_id")
 	private UserRegistration admin;
 	
 	private String skillApplied;
 	
 	@Enumerated(EnumType.STRING)
 	private SkillStatus status;
+	
+	private String comments;
 
 	public int getId() {
 		return id;
@@ -40,11 +42,11 @@ public class SkillApproval
 	}
 
 	public UserRegistration getInstrutor() {
-		return instrutor;
+		return instructor;
 	}
 
-	public void setInstrutor(UserRegistration instrutor) {
-		this.instrutor = instrutor;
+	public void setInstrutor(UserRegistration instructor) {
+		this.instructor = instructor;
 	}
 
 	public UserRegistration getAdmin() {
@@ -69,6 +71,14 @@ public class SkillApproval
 
 	public void setStatus(SkillStatus status) {
 		this.status = status;
+	}
+
+	public String getComments() {
+		return comments;
+	}
+
+	public void setComments(String comments) {
+		this.comments = comments;
 	}
 	
 

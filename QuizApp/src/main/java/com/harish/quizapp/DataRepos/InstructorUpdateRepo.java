@@ -5,5 +5,5 @@ import com.harish.quizapp.Model.InstructorUpdatedTable;
 
 public interface InstructorUpdateRepo extends JpaRepository<InstructorUpdatedTable, Integer>
 {
-
+	int countByAdmin_Id(int id);
 }

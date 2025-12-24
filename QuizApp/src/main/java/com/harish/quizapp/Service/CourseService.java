@@ -49,7 +49,7 @@ public class CourseService
 		}
 		
 		cd.setInstructor(instructor);
-		cd.setCreated_at(LocalDateTime.now());
+		cd.setCreatedAt(LocalDateTime.now());
 		cd.setStatus(CourseStatus.Active);
 		
 		cr.save(cd);

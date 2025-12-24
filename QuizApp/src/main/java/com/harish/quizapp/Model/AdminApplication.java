@@ -38,8 +38,8 @@ public class AdminApplication
 	private Boolean isVerified;
 	
 	@ManyToOne
-	@JoinColumn(name="Super_Admin_Name")
-	private UserRegistration superAdmin;
+	@JoinColumn(name="ADMIN_MANAGER")
+	private UserRegistration adminManager;
 	
 	private LocalDateTime reviewedOn;
 	private String remarks;
@@ -147,12 +147,16 @@ public class AdminApplication
 		this.isVerified = isVerified;
 	}
 
-	public UserRegistration getSuperAdmin() {
-		return superAdmin;
+	public UserRegistration getAdminManager() {
+		return adminManager;
 	}
 
-	public void setSuperAdmin(UserRegistration superAdmin) {
-		this.superAdmin = superAdmin;
+	public void setAdminManager(UserRegistration adminManager) {
+		this.adminManager = adminManager;
+	}
+
+	public Boolean getAutoEvaluation() {
+		return autoEvaluation;
 	}
 
 	public LocalDateTime getReviewedOn() {

@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import com.harish.quizapp.DataRepos.AdminPromotionRepo;
 import com.harish.quizapp.DataRepos.CourseCompletionRepo;
@@ -28,6 +29,7 @@ import com.harish.quizapp.enums.PromotionStatus;
 import com.harish.quizapp.enums.PromotionType;
 
 @Service
+@Component
 public class InstructorService 
 {
 	@Autowired
@@ -77,7 +79,8 @@ public class InstructorService
 		
 		LocalDateTime now=LocalDateTime.now();
 		LocalDateTime join= user.getJoinedDate();
-		long exp=ChronoUnit.YEARS.between(now, join);
+		long exp=ChronoUnit.MONTHS.between(join, now);
+		long exp1=exp/12;
 		
 		int nostud= er.countDistinctUserByCourse_Instructor(user);
 		Optional<OtpLogs> isVerified= otp.findByUserAndIsVerifiedTrue(user);
@@ -98,7 +101,7 @@ public class InstructorService
 		admin.setAppliedDate(date);
 		admin.setAvgrating(avgrating);
 		admin.setDocumentsUrl(app.getDocumentUrl());
-		admin.setExpYears(exp);
+		admin.setExpYears(exp1);
 		admin.setFeedbackcount(feedbackcount);
 		admin.setInstructorEmail(email);
 		admin.setIsVerified(verified);
@@ -106,7 +109,7 @@ public class InstructorService
 		admin.setRemarks(null);
 		admin.setReviewedOn(date);
 		admin.setStudTrained(nostud);
-		admin.setSuperAdmin(null);
+		admin.setAdminManager(null);
 		admin.setTotcourses(totcourses);
 		admin.setUser(user);
 		admin.setIsViolated(violation);

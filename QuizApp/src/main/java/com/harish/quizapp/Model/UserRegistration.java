@@ -21,7 +21,7 @@ public class UserRegistration
 	private String name;
 	private String password;
 	
-	@Column(unique=true)
+	@Column(unique=true, name="user_name")
 	private String userName;
 	
 	private String email;

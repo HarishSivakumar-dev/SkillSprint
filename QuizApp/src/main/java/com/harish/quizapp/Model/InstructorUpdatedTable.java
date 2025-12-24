@@ -2,7 +2,6 @@ package com.harish.quizapp.Model;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -28,6 +27,8 @@ public class InstructorUpdatedTable
 	private LocalDate date;
 	
 	private LocalDateTime time;
+	
+	private Boolean isPromoted;
 	
 	
 	public int getId() {
@@ -70,4 +71,12 @@ public class InstructorUpdatedTable
 		this.time = time;
 	}
 
+	public Boolean getIsPromoted() {
+		return isPromoted;
+	}
+
+	public void setIsPromoted(Boolean isPromoted) {
+		this.isPromoted = isPromoted;
+	}
+	
 }

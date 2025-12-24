@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,7 +18,6 @@ import com.harish.quizapp.Model.ComplaintsTable;
 import com.harish.quizapp.Model.InstructorApplication;
 import com.harish.quizapp.Model.SkillApproval;
 import com.harish.quizapp.Service.AdminService;
-
 import jakarta.validation.Valid;
 
 @RestController
@@ -51,22 +49,22 @@ public class AdminController
 		return as.getAllComplaints();
 	}
 	
-	@PostMapping("/complaints/update/status/{complaintid}")
+	@PostMapping("/complaints/update/status")
 	@PreAuthorize("hasRole('ADMIN')")
-	public ResponseEntity<String> updateComplaintStatus(@RequestBody UpdateStatusDto usd, @PathVariable int complaintid)
+	public ResponseEntity<String> updateComplaintStatus(@RequestBody UpdateStatusDto usd)
 	{
-		return as.updateComplaintStatus(usd,complaintid);
+		return as.updateComplaintStatus(usd);
 	}
 	
 	@GetMapping("/get/all/admin/applications")
-	@PreAuthorize("hasAnyRole('SUPER_ADMIN','ADMIN')")
+	@PreAuthorize("hasAnyRole('SUPER_ADMIN','ADMIN_MANAGER')")
 	public ResponseEntity<List<AdminApplication>> getAllPendingRequestForAdmin()
 	{
 		return as.getAllPendingApplications();
 	}
 	
 	@PostMapping("/make/changes/role/instructor")
-	@PreAuthorize("hasAnyRole('SUPER_ADMIN','ADMIN')")
+	@PreAuthorize("hasAnyRole('SUPER_ADMIN','ADMIN_MANAGER')")
 	public ResponseEntity<String> updateChangesToApplication(@RequestBody AdminPromotionDto apd)
 	{
 		return as.promoteInsttoAdmin(apd);

@@ -4,6 +4,7 @@ public class UpdateStatusDto
 {
 	private String status;
 	private String comments;
+	private int complaintId;
 
 	public String getComments() {
 		return comments;
@@ -17,4 +18,11 @@ public class UpdateStatusDto
 	public void setStatus(String status) {
 		this.status = status;
 	}
+	public int getComplaintId() {
+		return complaintId;
+	}
+	public void setComplaintId(int complaintId) {
+		this.complaintId = complaintId;
+	}
+	
 }

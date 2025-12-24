@@ -25,6 +25,8 @@ public class ComplaintAuditTable
 	@JoinColumn(name="user_id")
 	private UserRegistration user;
 	
+	private Boolean complaintHandled;
+	
 	private LocalDateTime time;
 	
 	private String comments;
@@ -68,6 +70,16 @@ public class ComplaintAuditTable
 	public void setComments(String comments) {
 		this.comments = comments;
 	}
+
+	public Boolean getComplaintHandled() {
+		return complaintHandled;
+	}
+
+	public void setComplaintHandled(Boolean complaintHandled) {
+		this.complaintHandled = complaintHandled;
+	}
+	
+	
 	
 	
 	

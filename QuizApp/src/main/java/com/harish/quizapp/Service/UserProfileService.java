@@ -5,11 +5,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
 import com.harish.quizapp.DataRepos.UserProfileRepo;
 import com.harish.quizapp.Dto.UserPersonalDetailsDto;
 import com.harish.quizapp.Dto.UserStudyProfileDto;
 import com.harish.quizapp.Model.UserProfile;
 
+
+@Service
 public class UserProfileService
 {
 	@Autowired 
@@ -19,14 +22,14 @@ public class UserProfileService
 	public ResponseEntity<UserProfile> getUserProfileDetails()
 	{
 		String user= SecurityContextHolder.getContext().getAuthentication().getName();
-		UserProfile up=upr.findByUserName(user).orElseThrow();
+		UserProfile up=upr.findByUserName_UserName(user).orElseThrow();
 		
 		return ResponseEntity.status(HttpStatus.OK).body(up);
 	}
 	
 	public ResponseEntity<String> addUserProfilePersonalDetails(UserPersonalDetailsDto uppd)
 	{
-		Optional<UserProfile> up=upr.findByUserName(SecurityContextHolder.getContext().getAuthentication().getName());
+		Optional<UserProfile> up=upr.findByUserName_UserName(SecurityContextHolder.getContext().getAuthentication().getName());
 		
 	    UserProfile profile=up.get();
 			
@@ -44,7 +47,7 @@ public class UserProfileService
 	
 	public ResponseEntity<String> addUserStudyDetails(UserStudyProfileDto dto)
 	{
-		Optional<UserProfile> up=upr.findByUserName(SecurityContextHolder.getContext().getAuthentication().getName());
+		Optional<UserProfile> up=upr.findByUserName_UserName(SecurityContextHolder.getContext().getAuthentication().getName());
 
 		UserProfile profile=up.get();
 			

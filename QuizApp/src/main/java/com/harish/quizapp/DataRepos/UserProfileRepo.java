@@ -9,6 +9,6 @@ import com.harish.quizapp.Model.UserProfile;
 public interface UserProfileRepo extends JpaRepository<UserProfile, Integer>
 {
 
-	Optional<UserProfile> findByUserName(String name);
+	Optional<UserProfile> findByUserName_UserName(String name);
 	
 }
