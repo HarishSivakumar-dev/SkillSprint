@@ -110,7 +110,7 @@ public class CourseController
 	}
 	
 	@GetMapping("/course/get/all/Genre")
-	@PreAuthorize("hasAnyRole('USER','INSTRUCTOR','ADMIN')")
+	@PreAuthorize("hasRole('USER')")
 	public ResponseEntity<List<String>> getAllAvailableCourseGenres()
 	{
 		return cs.fetchAllCoursesAvailabe();
