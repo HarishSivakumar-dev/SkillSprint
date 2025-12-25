@@ -6,6 +6,7 @@ public class RegistrationDto
 	private String password;
 	private String userName;
 	private String email;
+	
 	public String getName() {
 		return name;
 	}
