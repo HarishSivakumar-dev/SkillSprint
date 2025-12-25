@@ -51,7 +51,7 @@ public class JwtUtil
 	public String generateRefresh(String name, String pass)
 	{
 		
-		UserRegistration ur=new UserRegistration();
+		UserRegistration ur= user.findByUserName(name).orElseThrow();
 		List<Roles> rl=ur.getRoles();
 		
 		List<String> roles=rl.stream()
