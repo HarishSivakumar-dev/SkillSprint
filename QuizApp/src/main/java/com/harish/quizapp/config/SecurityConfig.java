@@ -28,7 +28,7 @@ public class SecurityConfig
 	public SecurityFilterChain securityFilterChain(HttpSecurity sec) throws Exception
 	{
 		return sec.csrf(csrf->csrf.disable())
-				  .authorizeHttpRequests(request->request.requestMatchers("/app/login","/app/register","/app/refresh").permitAll().anyRequest().authenticated())
+				  .authorizeHttpRequests(request->request.requestMatchers("/app/login","/app/register","/app/refresh", "/app/otp/registration/send").permitAll().anyRequest().authenticated())
 				  .authenticationProvider(caf)
 				  .sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				  .formLogin(login->login.disable())
