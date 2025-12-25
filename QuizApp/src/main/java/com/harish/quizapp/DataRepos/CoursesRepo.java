@@ -25,7 +25,7 @@ public interface CoursesRepo extends JpaRepository<CourseDetails,Integer>
 	
 	List<CourseDetails> findTop3ByInstructor_IdAndStatusOrderByCreatedAtDesc(int instructorId, CourseStatus status);
 
-	@Query(value="SELECT DISTINCT catagory FROM CourseDetails", nativeQuery=true)
+	@Query(value="SELECT DISTINCT catagory FROM course_details", nativeQuery=true)
 	List<String> findAllCourseGenreAvailable();
 	
 	
