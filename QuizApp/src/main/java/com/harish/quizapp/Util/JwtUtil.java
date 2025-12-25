@@ -4,7 +4,11 @@ import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 import javax.crypto.SecretKey;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import com.harish.quizapp.DataRepos.UserRepo;
 import com.harish.quizapp.Model.Roles;
 import com.harish.quizapp.Model.UserRegistration;
 import io.jsonwebtoken.Jwts;
@@ -14,7 +18,8 @@ import io.jsonwebtoken.security.Keys;
 @Component
 public class JwtUtil
 {
-	
+	@Autowired
+	public UserRepo user;
 	
 	String accesstokenkey="iuiouo*7(**64%^$^HFJgkuyiukNNBCx%^$^&*))*(JOJKkvhcgfeazh}{][)*)&(*^&*%64";
 	String refreshtokenkey="poplmwndkj&^&*%#$#)((**(OJmbbgcvxewecgck(*)(890Ijmnnvxr@%$^%*&^897895878(}{}?><,**^&%";
@@ -24,7 +29,7 @@ public class JwtUtil
 	@SuppressWarnings("deprecation")
 	public String generateToken(String name)
 	{		
-		UserRegistration ur=new UserRegistration();
+		UserRegistration ur= user.findByUserName(name).orElseThrow();
 		List<Roles>roles=ur.getRoles();
 		
 		List<String> role=roles.stream()
