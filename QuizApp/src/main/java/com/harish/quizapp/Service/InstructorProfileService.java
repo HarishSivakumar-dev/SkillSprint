@@ -40,7 +40,7 @@ public class InstructorProfileService
 	public ResponseEntity<InstructorProfile> getInstructorProfile()
 	{
 		InstructorProfile prof= ir.findByUserName_UserName(SecurityContextHolder.getContext().getAuthentication().getName()).orElseThrow();
-		prof.setCourseDetails(cr.findTop3ByInstructor_IdAndStatusOrderByCreated_atDesc(prof.getId(), CourseStatus.Active));
+		prof.setCourseDetails(cr.findTop3ByInstructor_IdAndStatusOrderByCreatedAtDesc(prof.getId(), CourseStatus.Active));
 		 
 		return ResponseEntity.status(HttpStatus.OK).body(prof);
 	}
@@ -83,7 +83,7 @@ public class InstructorProfileService
 				
 				if(flag==1)
 				{
-					ip.getSkills().add(skr.findBySkillName(st));
+					ip.getSkills().add(skr.findBySkillName(st).get());
 					approvedNo++;
 					
 				}
