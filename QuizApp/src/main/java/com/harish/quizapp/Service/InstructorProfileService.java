@@ -13,12 +13,15 @@ import com.harish.quizapp.DataRepos.InstructorRepo;
 import com.harish.quizapp.DataRepos.SkillApprovalRepo;
 import com.harish.quizapp.DataRepos.SkillsRepo;
 import com.harish.quizapp.DataRepos.UserRepo;
+import com.harish.quizapp.DataRepos.ViolationTableRepo;
 import com.harish.quizapp.Dto.InstructorDto;
 import com.harish.quizapp.Dto.SkillResponseDto;
+import com.harish.quizapp.Dto.ViolationResultDto;
 import com.harish.quizapp.Model.InstructorProfile;
 import com.harish.quizapp.Model.SkillApproval;
 import com.harish.quizapp.Model.Skills;
 import com.harish.quizapp.Model.UserRegistration;
+import com.harish.quizapp.Model.ViolationsTable;
 import com.harish.quizapp.enums.CourseStatus;
 import com.harish.quizapp.enums.SkillStatus;
 
@@ -35,6 +38,8 @@ public class InstructorProfileService
 	private UserRepo ur;
 	@Autowired
 	private SkillApprovalRepo rep;
+	@Autowired 
+	private ViolationTableRepo vtr;
 	
 	
 	public ResponseEntity<InstructorProfile> getInstructorProfile()
@@ -146,6 +151,28 @@ public class InstructorProfileService
 			return ResponseEntity.status(HttpStatus.OK).body(response);
 		}
 		
+	}
+
+	public ResponseEntity<ViolationResultDto> getViolationDetails()
+	{
+		String name=SecurityContextHolder.getContext().getAuthentication().getName();
+		Optional<ViolationsTable> vt= vtr.findByInstructor_Id(ur.findByUserName(name).get().getId());
+		ViolationResultDto vrd = new ViolationResultDto();
+		
+		if(vt.isEmpty())
+		{
+			vrd.setFinalViolationCount(0);
+			vrd.setInitialViolationCount(0);
+			vrd.setIsViolated(false);
+		}
+		else
+		{
+			vrd.setFinalViolationCount(vt.get().getFinalViolationCount());
+			vrd.setInitialViolationCount(vt.get().getInitialViolationCount());
+			vrd.setIsViolated(true);
+		}
+		
+		return ResponseEntity.status(HttpStatus.OK).body(vrd);
 	}
 	
 }
