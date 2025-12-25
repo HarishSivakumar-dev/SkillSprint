@@ -38,7 +38,7 @@ public class JwtUtil
 				   .claim("roles",role)
 				   .setIssuedAt(Date.from(is))
 				   .signWith(access_key, SignatureAlgorithm.HS256)
-				   .setExpiration(Date.from(is.plusSeconds(300)))
+				   .setExpiration(Date.from(is.plusSeconds(3600)))
 				   .compact();
 	}
 
