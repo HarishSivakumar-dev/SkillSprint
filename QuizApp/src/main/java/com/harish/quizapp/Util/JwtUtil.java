@@ -4,10 +4,8 @@ import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 import javax.crypto.SecretKey;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 import com.harish.quizapp.DataRepos.UserRepo;
 import com.harish.quizapp.Model.Roles;
 import com.harish.quizapp.Model.UserRegistration;

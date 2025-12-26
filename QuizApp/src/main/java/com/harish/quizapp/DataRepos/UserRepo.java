@@ -10,4 +10,5 @@ import com.harish.quizapp.Model.UserRegistration;
 public interface UserRepo extends JpaRepository<UserRegistration,Integer>
 {
 	Optional<UserRegistration> findByUserName(String name);
+	Optional<UserRegistration> findByEmail(String email);
 }

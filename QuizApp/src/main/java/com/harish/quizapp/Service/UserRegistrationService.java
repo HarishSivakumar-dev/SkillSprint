@@ -41,10 +41,11 @@ public class UserRegistrationService
 	public ResponseEntity<String> registerUserIntoDb(RegistrationDto ru)
 	{		
 		Optional<UserRegistration> reg= this.ur.findByUserName(ru.getUserName());
+		Optional<UserRegistration> mail= this.ur.findByEmail(ru.getEmail());
 		
-		if(!reg.isEmpty())
+		if(!reg.isEmpty() || !mail.isEmpty())
 		{
-			return ResponseEntity.status(HttpStatus.CONFLICT).body("Username Already Exists !");
+			return ResponseEntity.status(HttpStatus.CONFLICT).body("Username / MailId Exists Already Exists !");
 		}
 		
 		if(etr.findByEmailAndIsVerifiedTrue(ru.getEmail()).isPresent())
