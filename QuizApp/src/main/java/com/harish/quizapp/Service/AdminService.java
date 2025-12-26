@@ -89,6 +89,8 @@ public class AdminService
 		
 		app.setIsPending(false);
 		
+		System.out.println(dto.isApproved());
+		
 		if(!dto.isApproved())
 		{
 			app.setIsRejected(true);

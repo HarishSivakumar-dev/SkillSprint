@@ -3,7 +3,7 @@ package com.harish.quizapp.Dto;
 public class PromotionDto
 {
 	private int userId;
-	private boolean Approved;
+	private boolean approved;
 	
 	
 	public int getUserId() {
@@ -13,10 +13,11 @@ public class PromotionDto
 		this.userId = userId;
 	}
 	public boolean isApproved() {
-		return Approved;
+		return approved;
 	}
 	public void setApproved(boolean approved) {
-		Approved = approved;
+		this.approved = approved;
 	}
+	
 
 }
