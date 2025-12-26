@@ -28,6 +28,7 @@ import com.harish.quizapp.DataRepos.UserRepo;
 import com.harish.quizapp.DataRepos.ViolationTableRepo;
 import com.harish.quizapp.Dto.AdminManagerDetailsDto;
 import com.harish.quizapp.Dto.AdminPromotionDto;
+import com.harish.quizapp.Dto.PromotionApplicationUserDto;
 import com.harish.quizapp.Dto.PromotionDto;
 import com.harish.quizapp.Dto.SkillApprovalDto;
 import com.harish.quizapp.Dto.UpdateStatusDto;
@@ -117,14 +118,34 @@ public class AdminService
 		
 		return ResponseEntity.status(HttpStatus.ACCEPTED).body("User Status Updated !");
 	}
-	public ResponseEntity<List<InstructorApplication>> getAllApplications()
+	public ResponseEntity<List<PromotionApplicationUserDto>> getAllApplications()
 	{
-		return ResponseEntity.status(HttpStatus.ACCEPTED).body(iar.findByIsPending(true));
+		List<InstructorApplication> lst =iar.findByIsPending(true);
+		List<PromotionApplicationUserDto> dto= new ArrayList<>();
+		
+		for(InstructorApplication app : lst)
+		{
+			PromotionApplicationUserDto usr = new PromotionApplicationUserDto();
+			
+			usr.setId(app.getId());
+			usr.setEmail(app.getUser().getEmail());
+			usr.setUserId(app.getUser().getId());
+			usr.setLinkedin(app.getLinkedin());
+			usr.setName(app.getUser().getName());
+			usr.setQualification(app.getQualification());
+			usr.setReason(app.getReason());
+			usr.setResumeUrl(app.getResumeUrl());
+			usr.setIsPending(app.getIsPending());
+			
+			dto.add(usr);
+		}
+		
+		return ResponseEntity.status(HttpStatus.OK).body(dto);
 	}
 	
 	public ResponseEntity<List<ComplaintsTable>> getAllComplaints()
 	{
-		return ResponseEntity.status(HttpStatus.ACCEPTED).body(comp.findByStatus(ComplaintStatus.Pending));
+		return ResponseEntity.status(HttpStatus.OK).body(comp.findByStatus(ComplaintStatus.Pending));
 	}
 	public ResponseEntity<List<AdminApplication>> getAllPendingApplications()
 	{

@@ -11,12 +11,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.harish.quizapp.Dto.AdminManagerDetailsDto;
 import com.harish.quizapp.Dto.AdminPromotionDto;
+import com.harish.quizapp.Dto.PromotionApplicationUserDto;
 import com.harish.quizapp.Dto.PromotionDto;
 import com.harish.quizapp.Dto.SkillApprovalDto;
 import com.harish.quizapp.Dto.UpdateStatusDto;
 import com.harish.quizapp.Model.AdminApplication;
 import com.harish.quizapp.Model.ComplaintsTable;
-import com.harish.quizapp.Model.InstructorApplication;
 import com.harish.quizapp.Model.SkillApproval;
 import com.harish.quizapp.Service.AdminService;
 import jakarta.validation.Valid;
@@ -38,7 +38,7 @@ public class AdminController
 	
 	@GetMapping("/get/instructor/applications")
 	@PreAuthorize("hasRole('ADMIN')")
-	public ResponseEntity<List<InstructorApplication>> getApplications()
+	public ResponseEntity<List<PromotionApplicationUserDto>> getApplications()
 	{
 		return as.getAllApplications();
 	}
