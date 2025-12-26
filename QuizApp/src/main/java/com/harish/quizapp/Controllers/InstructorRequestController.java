@@ -29,6 +29,7 @@ public class InstructorRequestController
 	@PreAuthorize("hasRole('USER')")
 	public ResponseEntity<String> applyForPromotiontoInstructor(@RequestBody InstructorApplicationDto application)
 	{
+		System.out.println("Entered controller");
 		return ars.applyForInstructor(application);
 	}
 	@GetMapping("/user/role/upgrade/view/status")
