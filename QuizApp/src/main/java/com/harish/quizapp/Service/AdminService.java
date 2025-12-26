@@ -93,7 +93,7 @@ public class AdminService
 		{
 			app.setIsRejected(true);
 			iut.setIsPromoted(false);
-			iar.save(app);
+			iar.delete(app);
 			iur.save(iut);
 			
 			return ResponseEntity.status(HttpStatus.ACCEPTED).body("Update Success !");
