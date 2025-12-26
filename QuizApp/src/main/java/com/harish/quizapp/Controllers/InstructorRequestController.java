@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.harish.quizapp.Dto.ApplicationDto;
+import com.harish.quizapp.Dto.InstructorApplicationDto;
 import com.harish.quizapp.Model.AdminApplication;
-import com.harish.quizapp.Model.InstructorApplication;
 import com.harish.quizapp.Service.ApplicationRequestService;
 import com.harish.quizapp.Service.InstructorService;
 
@@ -27,7 +27,7 @@ public class InstructorRequestController
 	
 	@PostMapping("/user/role/upgrade/toInstructor")
 	@PreAuthorize("hasRole('USER')")
-	public ResponseEntity<String> applyForPromotiontoInstructor(@RequestBody InstructorApplication application)
+	public ResponseEntity<String> applyForPromotiontoInstructor(@RequestBody InstructorApplicationDto application)
 	{
 		return ars.applyForInstructor(application);
 	}

@@ -10,6 +10,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import com.harish.quizapp.DataRepos.InstAppRepo;
 import com.harish.quizapp.DataRepos.UserRepo;
+import com.harish.quizapp.Dto.InstructorApplicationDto;
 import com.harish.quizapp.Model.InstructorApplication;
 import com.harish.quizapp.Model.UserRegistration;
 
@@ -21,7 +22,7 @@ public class ApplicationRequestService
 	@Autowired
 	private InstAppRepo iar;
 	
-	public ResponseEntity<String> applyForInstructor(InstructorApplication application) 
+	public ResponseEntity<String> applyForInstructor(InstructorApplicationDto application) 
 	{
 		String name=SecurityContextHolder.getContext().getAuthentication().getName();
 		
