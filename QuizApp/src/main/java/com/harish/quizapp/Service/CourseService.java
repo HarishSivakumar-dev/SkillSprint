@@ -12,15 +12,19 @@ import com.harish.quizapp.Model.StudentsDTO;
 import com.harish.quizapp.DataRepos.CourseContentsRepo;
 import com.harish.quizapp.DataRepos.CoursesRepo;
 import com.harish.quizapp.DataRepos.EnrollmentRepo;
+import com.harish.quizapp.DataRepos.InstructorRepo;
 import com.harish.quizapp.DataRepos.MaterialsRepo;
 import com.harish.quizapp.DataRepos.UserRepo;
 import com.harish.quizapp.Dto.StatusUpdateDto;
 import com.harish.quizapp.Model.CourseContents;
 import com.harish.quizapp.Model.CourseDetails;
 import com.harish.quizapp.Model.EnrollmentData;
+import com.harish.quizapp.Model.InstructorProfile;
 import com.harish.quizapp.Model.MaterialsDto;
 import com.harish.quizapp.Model.UserRegistration;
 import com.harish.quizapp.enums.CourseStatus;
+
+import jakarta.transaction.Transactional;
 
 @Service
 public class CourseService 
@@ -39,7 +43,11 @@ public class CourseService
 	
 	@Autowired
 	private MaterialsRepo mr;
+	
+	@Autowired
+	private InstructorRepo ipr;
 
+	@Transactional
 	public ResponseEntity<String> createCourses(CourseDetails cd, String name)
 	{
 		UserRegistration instructor=ur.findByUserName(name).orElseThrow(()->new BadCredentialsException("No Instructor Found"));
@@ -53,6 +61,10 @@ public class CourseService
 		cd.setStatus(CourseStatus.Active);
 		
 		cr.save(cd);
+		
+		InstructorProfile ip= ipr.findByUserName_UserName(name).orElseThrow();
+		ip.setTotCourses(cr.countByInstructor(instructor));
+		ipr.save(ip);
 		
 		return ResponseEntity.status(HttpStatus.CREATED).body("Requested Course creation successfull");
 	}
