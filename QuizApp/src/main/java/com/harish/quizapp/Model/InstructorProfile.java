@@ -3,6 +3,9 @@ package com.harish.quizapp.Model;
 import java.time.LocalDate;
 import java.util.List;
 import org.hibernate.validator.constraints.URL;
+
+import com.harish.quizapp.Dto.CourseDetailsDto;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -59,7 +62,7 @@ public class InstructorProfile
 	private List<Skills> skills;
 	
 	@Transient
-	private List<CourseDetails> courseDetails;
+	private List<CourseDetailsDto> courseDetails;
 	
 
 	public int getId() {
@@ -222,11 +225,11 @@ public class InstructorProfile
 		this.skills = skills;
 	}
 
-	public List<CourseDetails> getCourseDetails() {
+	public List<CourseDetailsDto> getCourseDetails() {
 		return courseDetails;
 	}
 
-	public void setCourseDetails(List<CourseDetails> courseDetails) {
+	public void setCourseDetails(List<CourseDetailsDto> courseDetails) {
 		this.courseDetails = courseDetails;
 	}
 

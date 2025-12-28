@@ -14,9 +14,12 @@ import com.harish.quizapp.DataRepos.SkillApprovalRepo;
 import com.harish.quizapp.DataRepos.SkillsRepo;
 import com.harish.quizapp.DataRepos.UserRepo;
 import com.harish.quizapp.DataRepos.ViolationTableRepo;
+import com.harish.quizapp.Dto.CourseDetailsDto;
 import com.harish.quizapp.Dto.InstructorDto;
+import com.harish.quizapp.Dto.InstructorProfileDto;
 import com.harish.quizapp.Dto.SkillResponseDto;
 import com.harish.quizapp.Dto.ViolationResultDto;
+import com.harish.quizapp.Model.CourseDetails;
 import com.harish.quizapp.Model.InstructorProfile;
 import com.harish.quizapp.Model.SkillApproval;
 import com.harish.quizapp.Model.Skills;
@@ -42,12 +45,37 @@ public class InstructorProfileService
 	private ViolationTableRepo vtr;
 	
 	
-	public ResponseEntity<InstructorProfile> getInstructorProfile()
+	public ResponseEntity<InstructorProfileDto> getInstructorProfile()
 	{
 		InstructorProfile prof= ir.findByUserName_UserName(SecurityContextHolder.getContext().getAuthentication().getName()).orElseThrow();
-		prof.setCourseDetails(cr.findTop3ByInstructor_IdAndStatusOrderByCreatedAtDesc(prof.getId(), CourseStatus.Active));
-		 
-		return ResponseEntity.status(HttpStatus.OK).body(prof);
+		List<CourseDetails> cd =cr.findTop3ByInstructor_IdAndStatusOrderByCreatedAtDesc(prof.getId(), CourseStatus.Active);
+		List<CourseDetailsDto> ew= new ArrayList<>();
+		
+		for(CourseDetails det : cd)
+		{
+			CourseDetailsDto dto= new CourseDetailsDto();
+			
+			dto.setUserName(det.getInstructor().getUserName());
+			dto.setCourseId(det.getId());
+			dto.setInstructorId(det.getInstructor().getId());
+			dto.setTitle(det.getTitle());
+			dto.setCatagory(det.getCatagory());
+			dto.setDescription(det.getDescription());
+			dto.setDuration(det.getDuration());
+			dto.setLevel(det.getLevel());
+			dto.setFullName(det.getInstructor().getName());
+			dto.setStatus(det.getStatus());
+			dto.setRating(det.getRating());
+			dto.setCreatedAt(det.getCreatedAt());
+			
+			ew.add(dto);
+		}
+		
+		prof.setCourseDetails(ew);
+		
+		InstructorProfileDto dt= new InstructorProfileDto(prof.getUserName().getUserName(), prof.getUserName().getName(),prof.getMail(), prof.getJoinedDate(), prof.getHeadLine(), prof.getShortBio(), prof.getAboutSec(), prof.getPhone(), prof.getIsViolated(), prof.getLinkedinUrl(), prof.getGithubUrl(), prof.getWebUrl(), prof.getPortfolioUrl(), prof.getTotCourses(), prof.getTotStudents(), prof.getTotReviews(), prof.getAvgRating(), prof.getCompletionRate(), prof.getTotExp(), prof.getSkills(), prof.getCourseDetails());
+		
+		return ResponseEntity.status(HttpStatus.OK).body(dt);
 	}
 	
 	public ResponseEntity<String> setInstructorProfile(InstructorDto instdt)

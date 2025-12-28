@@ -18,6 +18,8 @@ public class CourseDetailsDto
 	private LocalDateTime createdAt;
 	private CourseStatus status;
 	private float rating;
+	
+	
 	public int getCourseId() {
 		return courseId;
 	}
