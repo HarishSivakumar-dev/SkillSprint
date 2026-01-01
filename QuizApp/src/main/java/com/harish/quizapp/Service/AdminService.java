@@ -47,6 +47,8 @@ import com.harish.quizapp.enums.ComplaintStatus;
 import com.harish.quizapp.enums.PromotionStatus;
 import com.harish.quizapp.enums.SkillStatus;
 
+import jakarta.transaction.Transactional;
+
 @Service
 @Component 
 public class AdminService
@@ -191,6 +193,8 @@ public class AdminService
 		}
 	
 	}
+	
+	@Transactional
 	public ResponseEntity<String> updateComplaintStatus(UpdateStatusDto usd)
 	{
 		ComplaintsTable ct= comp.findById(usd.getComplaintId()).orElseThrow();
@@ -234,15 +238,22 @@ public class AdminService
 					vt.get().setDateOfViolation(LocalDateTime.now());
 					
 					vtr.save(vt.get());
+					
+					InstructorProfile ip=vt.get().getInstProf();
+					ip.setIsViolated(true);
+					intrep.save(ip);
 				}
 				
 			}
 			else
 			{
+				InstructorProfile ip= intrep.findByUserName_UserName(ct.getInstructor().getUserName()).get();
+				
 				ViolationsTable vio=new ViolationsTable();
 				vio.setFinalViolationCount(0);
 				vio.setInitialViolationCount(1);
 				vio.setViolated(false);
+				vio.setInstProf(ip);
 				vio.setInstructor(ct.getInstructor());
 				
 				vtr.save(vio);
