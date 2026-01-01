@@ -62,24 +62,32 @@ public class ViolationResetScheduler
 	{
 		try
 		{
-			List<ViolationsTable> tbl= vtr.findAll();
+			List<ViolationsTable> tbl= vtr.findByViolatedTrue();
+			List<InstructorProfile> ip= new ArrayList<>();
+			Map<Integer, InstructorProfile> linkprof= new HashMap<>();
 			
-			List<ViolationsTable> newrec= new ArrayList<>();
+			for(ViolationsTable vio : tbl)
+			{
+				linkprof.put(vio.getId(), vio.getInstProf());
+			}
 			
 			for(ViolationsTable vt : tbl)
 			{
-				if(vt.isViolated() && vt.getDateOfViolation().isBefore(LocalDateTime.now().minusDays(30)))
+				if(vt.getDateOfViolation().isBefore(LocalDateTime.now().minusDays(30)))
 				{
 					vt.setDateOfViolation(null);
 					vt.setFinalViolationCount(0);
 					vt.setInitialViolationCount(0);
 					vt.setViolated(false);
 					
-					newrec.add(vt);	
+					InstructorProfile prof=linkprof.get(vt.getId());
+					prof.setIsViolated(false);
+					ip.add(prof);
 				}
 			}
 			
-			vtr.saveAll(newrec);
+			vtr.saveAll(tbl);
+			ir.saveAll(ip);
 		}
 		catch(Exception e)
 		{
@@ -142,6 +150,7 @@ public class ViolationResetScheduler
 	{
 		try
 		{
+			
 			List<InstructorProfile> ip= ir.findAll();
 			
 			List<ViolationsTable> vt= vtr.findAll();

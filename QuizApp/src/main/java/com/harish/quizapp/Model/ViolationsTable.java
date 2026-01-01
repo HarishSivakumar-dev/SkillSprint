@@ -19,6 +19,10 @@ public class ViolationsTable
 	@JoinColumn(name="Instructor")
 	private UserRegistration instructor;
 	
+	@OneToOne
+	@JoinColumn(name="Instructor_profile")
+	private InstructorProfile instProf;
+	
 	private int initialViolationCount;
 	
 	private int finalViolationCount;
@@ -73,6 +77,14 @@ public class ViolationsTable
 
 	public void setDateOfViolation(LocalDateTime dateOfViolation) {
 		this.dateOfViolation = dateOfViolation;
+	}
+
+	public InstructorProfile getInstProf() {
+		return instProf;
+	}
+
+	public void setInstProf(InstructorProfile instProf) {
+		this.instProf = instProf;
 	}
 	
 }
