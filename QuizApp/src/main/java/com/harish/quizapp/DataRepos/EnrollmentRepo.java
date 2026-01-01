@@ -22,6 +22,8 @@ public interface EnrollmentRepo extends JpaRepository<EnrollmentData,Integer>
 	int countDistinctUserByCourse_Instructor(UserRegistration user);
 
 	int deleteByUser_IdAndCourse_Id(int id, int courseid);
+	
+	Optional<EnrollmentData> findByUser_IdAndCourse_Id(int id, int courseid);
 
 	List<EnrollmentData> findByCourse_Id(int id);
 	

@@ -1,5 +1,6 @@
 package com.harish.quizapp.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,16 +9,20 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
-
 import com.harish.quizapp.DataRepos.AttemptsRepo;
 import com.harish.quizapp.DataRepos.EnrollmentRepo;
+import com.harish.quizapp.DataRepos.InstStatRepo;
 import com.harish.quizapp.DataRepos.QuizRepo;
 import com.harish.quizapp.DataRepos.UserRepo;
 import com.harish.quizapp.Model.CourseDetails;
 import com.harish.quizapp.Model.EnrollmentData;
+import com.harish.quizapp.Model.InstructorStatUpdate;
 import com.harish.quizapp.Model.Quiz;
 import com.harish.quizapp.Model.UserRegistration;
 import com.harish.quizapp.Model.attemptsTable;
+import com.harish.quizapp.enums.StatUpdateEvent;
+
+import jakarta.transaction.Transactional;
 
 @Service
 public class EnrollmentService
@@ -34,6 +39,9 @@ public class EnrollmentService
 	
 	@Autowired
 	private AttemptsRepo ar;
+	
+	@Autowired
+	private InstStatRepo isr; 
 	
 	
 	public ResponseEntity<String> enrollUserintoCourse(String name, CourseDetails cd)
@@ -53,6 +61,15 @@ public class EnrollmentService
 			ed.setStatus("ACTIVE");
 		
 			er.save(ed);
+			
+			InstructorStatUpdate isu= new InstructorStatUpdate();
+			isu.setProceeded(false);
+			isu.setCreatedAt(LocalDate.now());
+			isu.setDeltaValue(+1);
+			isu.setEventType(StatUpdateEvent.ENROLLMENT);
+			isu.setInstId(cd.getInstructor().getId());
+			
+			isr.save(isu);
 			
 			List<Quiz> quiz= qr.findByCourse(cd);
 			List<attemptsTable> preattempts=new ArrayList<attemptsTable>();
@@ -93,12 +110,25 @@ public class EnrollmentService
 		return ResponseEntity.status(HttpStatus.OK).body("Couse Completed !");
 	}
 
+	@Transactional
 	public ResponseEntity<String> deleteEnrollmentOfUser(String name, int courseid)
 	{
 		UserRegistration usr=ur.findByUserName(name).orElseThrow();
+		
+		UserRegistration cd= er.findByUser_IdAndCourse_Id(usr.getId(), courseid).orElseThrow().getUser();
 		int rows=er.deleteByUser_IdAndCourse_Id(usr.getId(),courseid);
 		if(rows>0)
 		{
+			
+			InstructorStatUpdate isu= new InstructorStatUpdate();
+			isu.setProceeded(false);
+			isu.setCreatedAt(LocalDate.now());
+			isu.setDeltaValue(-1);
+			isu.setEventType(StatUpdateEvent.UNENROLLMENT);
+			isu.setInstId(cd.getId());
+			
+			isr.save(isu);
+		
 			return ResponseEntity.status(HttpStatus.ACCEPTED).body("DELETED");
 		}
 		else

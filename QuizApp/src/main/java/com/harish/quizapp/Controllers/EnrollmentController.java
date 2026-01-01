@@ -1,7 +1,6 @@
 package com.harish.quizapp.Controllers;
 
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.harish.quizapp.Model.CourseDetails;
 import com.harish.quizapp.Model.EnrollmentData;
 import com.harish.quizapp.Service.EnrollmentService;
+
 
 @RestController
 @RequestMapping("/app")

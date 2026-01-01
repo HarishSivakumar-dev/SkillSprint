@@ -46,7 +46,6 @@ import com.harish.quizapp.Model.ViolationsTable;
 import com.harish.quizapp.enums.ComplaintStatus;
 import com.harish.quizapp.enums.PromotionStatus;
 import com.harish.quizapp.enums.SkillStatus;
-
 import jakarta.transaction.Transactional;
 
 @Service
