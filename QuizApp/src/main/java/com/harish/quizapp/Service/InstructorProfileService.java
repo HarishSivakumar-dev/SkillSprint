@@ -1,5 +1,7 @@
 package com.harish.quizapp.Service;
 
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -73,7 +75,16 @@ public class InstructorProfileService
 		
 		prof.setCourseDetails(ew);
 		
+		Period general= Period.between(prof.getJoinedDate(), LocalDate.now());
+		int yearOfExp= general.getYears();
+		int monthOfExp= general.getMonths();
+		String totExp= yearOfExp+" "+"Years" +monthOfExp+" "+"Months";
+		
+		prof.setTotExp(totExp);
+
+		
 		InstructorProfileDto dt= new InstructorProfileDto(prof.getUserName().getUserName(), prof.getUserName().getName(),prof.getMail(), prof.getJoinedDate(), prof.getHeadLine(), prof.getShortBio(), prof.getAboutSec(), prof.getPhone(), prof.getIsViolated(), prof.getLinkedinUrl(), prof.getGithubUrl(), prof.getWebUrl(), prof.getPortfolioUrl(), prof.getTotCourses(), prof.getTotStudents(), prof.getTotReviews(), prof.getAvgRating(), prof.getCompletionRate(), prof.getTotExp(), prof.getSkills(), prof.getCourseDetails());
+		
 		
 		return ResponseEntity.status(HttpStatus.OK).body(dt);
 	}
