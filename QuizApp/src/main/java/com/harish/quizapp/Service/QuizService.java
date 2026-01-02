@@ -3,6 +3,8 @@ package com.harish.quizapp.Service;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +13,7 @@ import org.springframework.stereotype.Service;
 import com.harish.quizapp.DataRepos.AttemptsRepo;
 import com.harish.quizapp.DataRepos.CourseCompletionRepo;
 import com.harish.quizapp.DataRepos.CoursesRepo;
+import com.harish.quizapp.DataRepos.InstStatRepo;
 import com.harish.quizapp.DataRepos.QuestionRepo;
 import com.harish.quizapp.DataRepos.QuizQuestionsRepo;
 import com.harish.quizapp.DataRepos.QuizRepo;
@@ -24,6 +27,7 @@ import com.harish.quizapp.Dto.ResultDto;
 import com.harish.quizapp.Dto.ScoresDto;
 import com.harish.quizapp.Model.CourseCompletionStatus;
 import com.harish.quizapp.Model.CourseDetails;
+import com.harish.quizapp.Model.InstructorStatUpdate;
 import com.harish.quizapp.Model.Questions;
 import com.harish.quizapp.Model.QuestionsWrapper;
 import com.harish.quizapp.Model.Quiz;
@@ -33,6 +37,9 @@ import com.harish.quizapp.Model.StreakTable;
 import com.harish.quizapp.Model.UserRegistration;
 import com.harish.quizapp.Model.attemptsTable;
 import com.harish.quizapp.enums.CompletionStatus;
+import com.harish.quizapp.enums.StatUpdateEvent;
+
+import jakarta.transaction.Transactional;
 
 
 @Service
@@ -58,6 +65,10 @@ public class QuizService
 	private StreakRepo str;
 	@Autowired
 	private StreakMainRepo smr;
+	@Autowired
+	private InstStatRepo isr;
+	@Autowired
+	private QuizService ser;
 	
 	
 	public ResponseEntity<String> deleteQuiz(int quizid)
@@ -100,12 +111,12 @@ public class QuizService
 		
 		return ResponseEntity.status(HttpStatus.OK).body(qw);
 	}
-	public ResponseEntity<ResultDto> getScore(String name,String quizname, List<ScoresDto> ls)
+	
+	@Transactional
+	public ResponseEntity<ResultDto> getScore(String name,String quizname, List<ScoresDto> ls) throws Exception
 	{
 		UserRegistration user = usr.findByUserName(name).orElseThrow();
 		Quiz ques=quizrepo.findByTitle(quizname).orElseThrow();
-		
-		QuizService ser= new QuizService();
 		
 		int streak=ser.StreakLogicForUser(user, ques);
 		
@@ -132,13 +143,22 @@ public class QuizService
 		}
 		
 		attemptsTable at= attempts.findByUserAndCourseAndQuiz(user,ques.getCourse(),ques);
+		Optional<CourseCompletionStatus> ccs= completion.findByUserAndCourse(user,ques.getCourse());
+		
+		if((ques.getIsFinal() && at.getAttemptcount()>=1) || !ccs.isEmpty())
+		{
+			throw new Exception("Already Attempted !");
+		}
+		
 		at.setAttemptcount(at.getAttemptcount()+1);
 		CourseDetails det=ques.getCourse();
+		
+		InstructorStatUpdate isu= new InstructorStatUpdate();
 		
 		if(right>=(totalmarks/2))
 		{
 			
-			if(ques.getIsFinal())
+			if(ques.getIsFinal() && at.getAttemptcount()==1)
 			{
 				CourseCompletionStatus st=new CourseCompletionStatus();
 				st.setUser(user);
@@ -146,6 +166,14 @@ public class QuizService
 				st.setCourseCompletionStatus(CompletionStatus.CompletedAndCertified);
 				
 				completion.save(st);
+				
+				isu.setCreatedAt(LocalDate.now());
+				isu.setDeltaValue(+1);
+				isu.setEventType(StatUpdateEvent.COMPLETION);
+				isu.setInstId(det.getInstructor().getId());
+				isu.setProceeded(false);
+				
+				isr.save(isu);
 			}
 			
 			at.setStatus("PASSED");
@@ -194,6 +222,14 @@ public class QuizService
 				st.setCourseCompletionStatus(CompletionStatus.Completed);
 				
 				completion.save(st);
+				
+				isu.setCreatedAt(LocalDate.now());
+				isu.setDeltaValue(+1);
+				isu.setEventType(StatUpdateEvent.COMPLETION);
+				isu.setInstId(det.getInstructor().getId());
+				isu.setProceeded(false);
+				
+				isr.save(isu);
 			}
 			
 			at.setStatus("FAILED");
