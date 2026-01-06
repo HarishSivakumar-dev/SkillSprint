@@ -56,7 +56,7 @@ public class QuizController
 	}
 	@PostMapping("/result/{quizname}")
 	@PreAuthorize("hasAnyRole('INSTRUCTOR','USER')")
-	public ResponseEntity<ResultDto> getResult(@RequestBody List<ScoresDto> scores, @PathVariable String quizname)
+	public ResponseEntity<ResultDto> getResult(@RequestBody List<ScoresDto> scores, @PathVariable String quizname) throws Exception
 	{
 		String name = SecurityContextHolder.getContext().getAuthentication().getName();
 		return qs.getScore(name,quizname, scores);
@@ -71,7 +71,7 @@ public class QuizController
 	
 	@PostMapping("/reult/final/{quizname}")
 	@PreAuthorize("hasAnyRole('INSTRUCTOR','USER')")
-	public ResponseEntity<ResultDto> getScoresFinal( @RequestBody List<ScoresDto> scores, @PathVariable String quizname )
+	public ResponseEntity<ResultDto> getScoresFinal( @RequestBody List<ScoresDto> scores, @PathVariable String quizname ) throws Exception
 	{
 		String name = SecurityContextHolder.getContext().getAuthentication().getName();
 		return qs.getScore(name,quizname, scores);

@@ -25,7 +25,7 @@ public class Quiz
 	private CourseDetails course;
 	
 	@ManyToOne
-	private UserRegistration instructor;
+	private InstructorProfile instructor;
 	
 	private Boolean isfinal;
 	
@@ -70,11 +70,11 @@ public class Quiz
 		this.course = course;
 	}
 
-	public UserRegistration getInstructor() {
+	public InstructorProfile getInstructor() {
 		return instructor;
 	}
 
-	public void setInstructor(UserRegistration instructor) {
+	public void setInstructor(InstructorProfile instructor) {
 		this.instructor = instructor;
 	}
 	

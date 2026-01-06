@@ -17,11 +17,7 @@ public class ViolationsTable
 	
 	@OneToOne
 	@JoinColumn(name="Instructor")
-	private UserRegistration instructor;
-	
-	@OneToOne
-	@JoinColumn(name="Instructor_profile")
-	private InstructorProfile instProf;
+	private InstructorProfile instructor;
 	
 	private int initialViolationCount;
 	
@@ -39,11 +35,11 @@ public class ViolationsTable
 		this.id = id;
 	}
 
-	public UserRegistration getInstructor() {
+	public InstructorProfile getInstructor() {
 		return instructor;
 	}
 
-	public void setInstructor(UserRegistration instructor) {
+	public void setInstructor(InstructorProfile instructor) {
 		this.instructor = instructor;
 	}
 	
@@ -77,14 +73,6 @@ public class ViolationsTable
 
 	public void setDateOfViolation(LocalDateTime dateOfViolation) {
 		this.dateOfViolation = dateOfViolation;
-	}
-
-	public InstructorProfile getInstProf() {
-		return instProf;
-	}
-
-	public void setInstProf(InstructorProfile instProf) {
-		this.instProf = instProf;
 	}
 	
 }

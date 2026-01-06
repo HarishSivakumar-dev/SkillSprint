@@ -57,7 +57,7 @@ public class InstructorProfileService
 		{
 			CourseDetailsDto dto= new CourseDetailsDto();
 			
-			dto.setUserName(det.getInstructor().getUserName());
+			dto.setUserName(det.getInstructor().getUserName().getUserName());
 			dto.setCourseId(det.getId());
 			dto.setInstructorId(det.getInstructor().getId());
 			dto.setTitle(det.getTitle());
@@ -65,7 +65,7 @@ public class InstructorProfileService
 			dto.setDescription(det.getDescription());
 			dto.setDuration(det.getDuration());
 			dto.setLevel(det.getLevel());
-			dto.setFullName(det.getInstructor().getName());
+			dto.setFullName(det.getInstructor().getFullName());
 			dto.setStatus(det.getStatus());
 			dto.setRating(det.getRating());
 			dto.setCreatedAt(det.getCreatedAt());
