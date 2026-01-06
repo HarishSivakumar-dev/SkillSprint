@@ -20,7 +20,7 @@ public class ComplaintsTable
 	
 	@ManyToOne
 	@JoinColumn(name="reported_inst")
-	private UserRegistration instructor;
+	private InstructorProfile instructor;
 	
 	@ManyToOne
 	@JoinColumn(name="Reporting_user")
@@ -39,10 +39,10 @@ public class ComplaintsTable
 	public void setId(int id) {
 		this.id = id;
 	}
-	public UserRegistration getInstructor() {
+	public InstructorProfile getInstructor() {
 		return instructor;
 	}
-	public void setInstructor(UserRegistration instructor) {
+	public void setInstructor(InstructorProfile instructor) {
 		this.instructor = instructor;
 	}
 	public UserRegistration getUser() {

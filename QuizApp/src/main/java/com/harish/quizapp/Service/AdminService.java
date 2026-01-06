@@ -238,7 +238,7 @@ public class AdminService
 					
 					vtr.save(vt.get());
 					
-					InstructorProfile ip=vt.get().getInstProf();
+					InstructorProfile ip=vt.get().getInstructor();
 					ip.setIsViolated(true);
 					intrep.save(ip);
 				}
@@ -246,13 +246,11 @@ public class AdminService
 			}
 			else
 			{
-				InstructorProfile ip= intrep.findByUserName_UserName(ct.getInstructor().getUserName()).get();
 				
 				ViolationsTable vio=new ViolationsTable();
 				vio.setFinalViolationCount(0);
 				vio.setInitialViolationCount(1);
 				vio.setViolated(false);
-				vio.setInstProf(ip);
 				vio.setInstructor(ct.getInstructor());
 				
 				vtr.save(vio);

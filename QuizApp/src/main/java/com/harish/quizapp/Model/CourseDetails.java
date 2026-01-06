@@ -1,9 +1,7 @@
 package com.harish.quizapp.Model;
 
 import java.time.LocalDateTime;
-
 import com.harish.quizapp.enums.CourseStatus;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -25,7 +23,7 @@ public class CourseDetails
 	
 	@ManyToOne(fetch=FetchType.EAGER)
 	@JoinColumn(name="instructor_id")
-	private UserRegistration instructor;
+	private InstructorProfile instructor;
 	private String title;
 	private String description;
 	private String catagory;
@@ -101,11 +99,11 @@ public class CourseDetails
 		this.createdAt = createdAt;
 	}
 
-	public UserRegistration getInstructor() {
+	public InstructorProfile getInstructor() {
 		return instructor;
 	}
 
-	public void setInstructor(UserRegistration instructor) {
+	public void setInstructor(InstructorProfile instructor) {
 		this.instructor = instructor;
 	}
 

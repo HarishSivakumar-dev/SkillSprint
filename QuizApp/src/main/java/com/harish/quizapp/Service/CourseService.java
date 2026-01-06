@@ -50,7 +50,7 @@ public class CourseService
 	@Transactional
 	public ResponseEntity<String> createCourses(CourseDetails cd, String name)
 	{
-		UserRegistration instructor=ur.findByUserName(name).orElseThrow(()->new BadCredentialsException("No Instructor Found"));
+		InstructorProfile instructor=ipr.findByUserName_UserName(name).orElseThrow();
 		if(cr.findByTitleAndInstructor(cd.getTitle(),instructor).isPresent())
 		{
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Course Already Created");
@@ -62,9 +62,8 @@ public class CourseService
 		
 		cr.save(cd);
 		
-		InstructorProfile ip= ipr.findByUserName_UserName(name).orElseThrow();
-		ip.setTotCourses(cr.countByInstructor(instructor));
-		ipr.save(ip);
+		instructor.setTotCourses(cr.countByInstructor(instructor));
+		ipr.save(instructor);
 		
 		return ResponseEntity.status(HttpStatus.CREATED).body("Requested Course creation successfull");
 	}
