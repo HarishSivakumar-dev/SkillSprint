@@ -52,6 +52,11 @@ public class InstructorProfile
 	private float completionRate;
 	private String totExp;
 	
+	private int rateSum;
+	private int rateCount;
+	private int totalRegistered;
+	private int totalCleared;
+	
 	@ManyToMany
 	@JoinTable
 	(
@@ -240,6 +245,38 @@ public class InstructorProfile
 	public void setIsViolated(Boolean isViolated) {
 		this.isViolated = isViolated;
 	}
-	
+
+	public int getRateSum() {
+		return rateSum;
+	}
+
+	public void setRateSum(int rateSum) {
+		this.rateSum = rateSum;
+	}
+
+	public int getRateCount() {
+		return rateCount;
+	}
+
+	public void setRateCount(int rateCount) {
+		this.rateCount = rateCount;
+	}
+
+	public int getTotalRegistered() {
+		return totalRegistered;
+	}
+
+	public void setTotalRegistered(int totalRegistered) {
+		this.totalRegistered = totalRegistered;
+	}
+
+	public int getTotalCleared() {
+		return totalCleared;
+	}
+
+	public void setTotalCleared(int totalCleared) {
+		this.totalCleared = totalCleared;
+	}
+
 	
 }

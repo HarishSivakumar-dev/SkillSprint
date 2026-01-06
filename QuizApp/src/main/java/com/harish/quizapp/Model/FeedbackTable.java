@@ -21,7 +21,7 @@ public class FeedbackTable
 	
 	@ManyToOne
 	@JoinColumn(name="instructor_id")
-	private UserRegistration instructor;
+	private InstructorProfile instructor;
 	
 	private int courseId;
 	
@@ -41,10 +41,10 @@ public class FeedbackTable
 	public void setUser(UserRegistration user) {
 		this.user = user;
 	}
-	public UserRegistration getInstructor() {
+	public InstructorProfile getInstructor() {
 		return instructor;
 	}
-	public void setInstructor(UserRegistration instructor) {
+	public void setInstructor(InstructorProfile instructor) {
 		this.instructor = instructor;
 	}
 	public int getCourseId() {
