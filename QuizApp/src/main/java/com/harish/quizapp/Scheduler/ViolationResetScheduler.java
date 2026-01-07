@@ -1,12 +1,13 @@
 package com.harish.quizapp.Scheduler;
 
-import java.time.LocalDate;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
-import java.time.Period;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -15,19 +16,22 @@ import com.harish.quizapp.DataRepos.CourseCompletionRepo;
 import com.harish.quizapp.DataRepos.CoursesRepo;
 import com.harish.quizapp.DataRepos.EnrollmentRepo;
 import com.harish.quizapp.DataRepos.FeedbackRepo;
+import com.harish.quizapp.DataRepos.InstStatRepo;
 import com.harish.quizapp.DataRepos.InstructorRepo;
+import com.harish.quizapp.DataRepos.InstructorStatUpdateProjection;
 import com.harish.quizapp.DataRepos.StreakMainRepo;
 import com.harish.quizapp.DataRepos.UserProfileRepo;
 import com.harish.quizapp.DataRepos.ViolationTableRepo;
 import com.harish.quizapp.Model.CourseDetails;
 import com.harish.quizapp.Model.FeedbackTable;
 import com.harish.quizapp.Model.InstructorProfile;
+import com.harish.quizapp.Model.InstructorStatUpdate;
 import com.harish.quizapp.Model.StreakTable;
 import com.harish.quizapp.Model.UserProfile;
-import com.harish.quizapp.Model.UserRegistration;
 import com.harish.quizapp.Model.ViolationsTable;
 import com.harish.quizapp.enums.CompletionStatus;
 import com.harish.quizapp.enums.SkillLevelEnum;
+import com.harish.quizapp.enums.StatUpdateEvent;
 import jakarta.transaction.Transactional;
 
 @Component
@@ -42,8 +46,6 @@ public class ViolationResetScheduler
 	@Autowired
 	private InstructorRepo ir;
 	@Autowired
-	private CoursesRepo cr;
-	@Autowired
 	private FeedbackRepo fr;
 	@Autowired 
 	private CourseCompletionRepo ccr;
@@ -55,6 +57,8 @@ public class ViolationResetScheduler
 	private StreakMainRepo smr;
 	@Autowired
 	private AttemptsRepo ar;
+	@Autowired
+	private InstStatRepo isr;
 	
 	@Transactional
 	@Scheduled(cron="0 0 0 * * * ")
@@ -68,7 +72,7 @@ public class ViolationResetScheduler
 			
 			for(ViolationsTable vio : tbl)
 			{
-				linkprof.put(vio.getId(), vio.getInstProf());
+				linkprof.put(vio.getId(), vio.getInstructor());
 			}
 			
 			for(ViolationsTable vt : tbl)
@@ -126,7 +130,7 @@ public class ViolationResetScheduler
 			{
 				List<FeedbackTable> cou = map.get(fd.getId());
 				
-				float rating = (cou==null || cou.isEmpty()) ? 0 : (float) (cou.stream()
+				float rating = (cou==null || cou.isEmpty()) ? 0 : (cou.stream()
 								  .mapToInt(r->r.getRating())
 								  .sum())/cou.size();
 				fd.setRating(rating);
@@ -150,57 +154,53 @@ public class ViolationResetScheduler
 	{
 		try
 		{
+			List<InstructorStatUpdateProjection> isup= isr.findByRecordsForStat();
 			
-			List<InstructorProfile> ip= ir.findAll();
+			Map<Integer, List<InstructorStatUpdateProjection>> mp1= new HashMap<>();
 			
-			List<ViolationsTable> vt= vtr.findAll();
-			
-			Map<Integer, ViolationsTable> violation= new HashMap<>();
-			
-			for(ViolationsTable vio : vt)
+			for(InstructorStatUpdateProjection isu : isup)
 			{
-				violation.put(vio.getInstructor().getId(), vio);
+				List<InstructorStatUpdateProjection> pro= mp1.get(isu.getInstId());
+				
+				if(pro==null)
+				{
+					List<InstructorStatUpdateProjection> prod= new ArrayList<>();
+					prod.add(isu);
+					mp1.put(isu.getInstId(), prod);
+				}
+				else
+				{
+					pro.add(isu);
+				}
 			}
 			
-			for(InstructorProfile pro : ip)
+			Set<Integer> instid=mp1.keySet();
+			
+			List<InstructorProfile> pr= ir.findAllById(instid);
+			List<InstructorProfile> prf= new ArrayList<>();
+			
+			for(InstructorProfile ins : pr)
 			{
-				UserRegistration usr= pro.getUserName();
+				List<InstructorStatUpdateProjection> is= mp1.get(ins.getId());
+			
+				for(InstructorStatUpdateProjection ipj : is)
+				{
+					this.applyDeltaLogic(ipj.getTotChange(),ipj.getEventType(), ins);
+				}
 				
-				 int totCourses=cr.countByInstructor(usr);
-				 int totStudents=er.countDistinctUserByCourse_Instructor(usr);
-				 int totReviews=fr.countByInstructor(usr);
-				 Boolean isViolated= violation.get(usr.getId()).isViolated();
-				 
-				 List<FeedbackTable> rat= fr.findByInstructor(usr);
-				 float avgRating=0;
-				 
-				 if(rat.size()!=0)
-				 {
-					 
-					 float sum=rat.stream()
-						 	  .mapToInt(r->r.getRating())
-						 	  .sum();
-				 
-					 avgRating= sum/rat.size();
-				 }
-				 
-				 float completionRate=(totStudents > 0) ? ( (float) ccr.countDistinctUserByCourse_Instructor_Id(usr.getId()) / (float) totStudents) * 100 : 0;
-				 Period general= Period.between(pro.getJoinedDate(), LocalDate.now());
-				 int yearOfExp= general.getYears();
-				 int monthOfExp= general.getMonths();
-				 String totExp= yearOfExp+" "+"Years" +monthOfExp+" "+"Months";
-				 
-				 pro.setTotCourses(totCourses);
-				 pro.setTotStudents(totStudents);
-				 pro.setTotReviews(totReviews);
-				 pro.setAvgRating(avgRating);
-				 pro.setCompletionRate(completionRate);
-				 pro.setTotExp(totExp);
-				 pro.setIsViolated(isViolated);
+				prf.add(ins);
 				
 			}
 			
-			ir.saveAll(ip);
+			List<InstructorStatUpdate> ipro= isr.findallPending();
+			for(InstructorStatUpdate upd: ipro)
+			{
+				upd.setProceeded(true);
+			}
+			
+			isr.saveAll(ipro);
+			ir.saveAll(prf);
+		
 		}
 		catch(Exception e)
 		{
@@ -286,5 +286,39 @@ public class ViolationResetScheduler
 		{
 			return SkillLevelEnum.Master;
 		}
+	}
+	
+	private void applyDeltaLogic(int deltaval, StatUpdateEvent sue, InstructorProfile ip)
+	{
+		if(sue.equals(StatUpdateEvent.ENROLLMENT))
+		{
+			ip.setTotStudents(ip.getTotStudents()+deltaval);
+		}
+		else if(sue.equals(StatUpdateEvent.UNENROLLMENT))
+		{
+			ip.setTotStudents(ip.getTotStudents()-deltaval);
+		}
+		else if(sue.equals(StatUpdateEvent.COURSE))
+		{
+			ip.setTotCourses(ip.getTotCourses()+deltaval);
+		}
+		else if(sue.equals(StatUpdateEvent.FEEDBACK))
+		{
+			ip.setTotReviews(ip.getTotReviews()+deltaval);
+		}
+		else if(sue.equals(StatUpdateEvent.RATING))
+		{
+			BigDecimal rating= fr.getRatingForInstructor(ip.getId());
+			float avg=rating.setScale(1, RoundingMode.HALF_UP).floatValue();
+			ip.setAvgRating(avg);
+		}
+		else if(sue.equals(StatUpdateEvent.COMPLETION))
+		{
+			int totstd= er.countByCourse_Instructor(ip);
+			int completed= ccr.countByCourse_Instructor(ip);
+			
+			ip.setCompletionRate(((float)completed/(float)totstd) * 100);
+		}
+		
 	}
 }

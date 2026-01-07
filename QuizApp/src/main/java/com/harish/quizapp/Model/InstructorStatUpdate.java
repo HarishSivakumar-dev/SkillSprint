@@ -1,18 +1,33 @@
 package com.harish.quizapp.Model;
 
-import java.time.LocalDate;
-
+import java.time.LocalDateTime;
 import com.harish.quizapp.enums.StatUpdateEvent;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 
+@Entity
 public class InstructorStatUpdate 
 {
+	@Id
+	@GeneratedValue(strategy=GenerationType.AUTO)
+	private int id;
+	
 	private int instId;
 	private StatUpdateEvent eventType;
 	private int deltaValue;
 	private Boolean proceeded;
-	private LocalDate createdAt;
+	private LocalDateTime createdAt;
 	
 	
+	
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
+	}
 	public int getInstId() {
 		return instId;
 	}
@@ -37,10 +52,10 @@ public class InstructorStatUpdate
 	public void setProceeded(Boolean proceeded) {
 		this.proceeded = proceeded;
 	}
-	public LocalDate getCreatedAt() {
+	public LocalDateTime getCreatedAt() {
 		return createdAt;
 	}
-	public void setCreatedAt(LocalDate createdAt) {
+	public void setCreatedAt(LocalDateTime createdAt) {
 		this.createdAt = createdAt;
 	}
 
