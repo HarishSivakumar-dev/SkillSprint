@@ -1,5 +1,6 @@
 package com.harish.quizapp.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -15,6 +16,7 @@ import com.harish.quizapp.DataRepos.CourseCompletionRepo;
 import com.harish.quizapp.DataRepos.CoursesRepo;
 import com.harish.quizapp.DataRepos.EnrollmentRepo;
 import com.harish.quizapp.DataRepos.FeedbackRepo;
+import com.harish.quizapp.DataRepos.InstructorRepo;
 import com.harish.quizapp.DataRepos.OtpRepo;
 import com.harish.quizapp.DataRepos.RoleRepo;
 import com.harish.quizapp.DataRepos.UserRepo;
@@ -22,6 +24,7 @@ import com.harish.quizapp.DataRepos.ViolationTableRepo;
 import com.harish.quizapp.Dto.ApplicationDto;
 import com.harish.quizapp.Model.AdminApplication;
 import com.harish.quizapp.Model.FeedbackTable;
+import com.harish.quizapp.Model.InstructorProfile;
 import com.harish.quizapp.Model.OtpLogs;
 import com.harish.quizapp.Model.Roles;
 import com.harish.quizapp.Model.UserRegistration;
@@ -50,20 +53,22 @@ public class InstructorService
 	private CourseCompletionRepo ccr;
 	@Autowired 
 	private AdminPromotionRepo apr;
+	@Autowired
+	private InstructorRepo ir;
 	
 	public ResponseEntity<String> applyForAdmin(ApplicationDto app)
 	{
 		AdminApplication admin=new AdminApplication();
 		
 		String name=SecurityContextHolder.getContext().getAuthentication().getName();
-		UserRegistration user= ur.findByUserName(name).orElseThrow();
-		String email=user.getEmail();
+		InstructorProfile rep= ir.findByUserName_UserName(name).orElseThrow();
+		String email=rep.getMail();
 		LocalDateTime date=LocalDateTime.now();
 		
-		int totcourses=cr.countByInstructorAndStatus(user, "Completed");
-		int feedbackcount=fr.countByInstructor(user);
+		int totcourses=cr.countByInstructorAndStatus(rep, "Completed");
+		int feedbackcount=fr.countByInstructor(rep);
 		
-		List<FeedbackTable> ft= fr.findByInstructor(user);
+		List<FeedbackTable> ft= fr.findByInstructor(rep);
 		
 		float rating=0;
 		int num=0;
@@ -75,15 +80,15 @@ public class InstructorService
 		
 		float avgrating=rating/num;
 		
-		Boolean violation= vtr.findByInstructor_Id(user.getId()).get().isViolated();
+		Boolean violation= vtr.findByInstructor_Id(rep.getId()).get().isViolated();
 		
 		LocalDateTime now=LocalDateTime.now();
-		LocalDateTime join= user.getJoinedDate();
+		LocalDate join= rep.getJoinedDate();
 		long exp=ChronoUnit.MONTHS.between(join, now);
 		long exp1=exp/12;
 		
-		int nostud= er.countDistinctUserByCourse_Instructor(user);
-		Optional<OtpLogs> isVerified= otp.findByUserAndIsVerifiedTrue(user);
+		int nostud= er.countDistinctUserByCourse_Instructor(rep);
+		Optional<OtpLogs> isVerified= otp.findByUserAndIsVerifiedTrue(rep);
 		Boolean verified;
 		
 		if(isVerified.isEmpty())
@@ -95,7 +100,7 @@ public class InstructorService
 			verified=true;
 		}
 		
-		int completedStud= ccr.countDistinctUserByCourse_Instructor_Id(user.getId());
+		int completedStud= ccr.countDistinctUserByCourse_Instructor_Id(rep.getId());
 	
 		admin.setAchievements(app.getApplication());
 		admin.setAppliedDate(date);
@@ -111,12 +116,13 @@ public class InstructorService
 		admin.setStudTrained(nostud);
 		admin.setAdminManager(null);
 		admin.setTotcourses(totcourses);
-		admin.setUser(user);
+		admin.setUser(rep);
 		admin.setIsViolated(violation);
 		
 		if(totcourses>=15 && feedbackcount>=20 && avgrating>=60.00 && !violation && exp>=4 && nostud>=300 && verified && completedStud>=200)
 		{
 			Roles r= rr.findByRolename("ROLE_ADMIN").orElseThrow();
+			UserRegistration user=rep.getUserName();
 			user.getRoles().add(r);
 			ur.save(user);
 			

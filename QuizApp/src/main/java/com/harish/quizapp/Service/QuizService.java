@@ -1,10 +1,10 @@
 package com.harish.quizapp.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,7 +38,6 @@ import com.harish.quizapp.Model.UserRegistration;
 import com.harish.quizapp.Model.attemptsTable;
 import com.harish.quizapp.enums.CompletionStatus;
 import com.harish.quizapp.enums.StatUpdateEvent;
-
 import jakarta.transaction.Transactional;
 
 
@@ -67,8 +66,6 @@ public class QuizService
 	private StreakMainRepo smr;
 	@Autowired
 	private InstStatRepo isr;
-	@Autowired
-	private QuizService ser;
 	
 	
 	public ResponseEntity<String> deleteQuiz(int quizid)
@@ -117,8 +114,8 @@ public class QuizService
 	{
 		UserRegistration user = usr.findByUserName(name).orElseThrow();
 		Quiz ques=quizrepo.findByTitle(quizname).orElseThrow();
-		
-		int streak=ser.StreakLogicForUser(user, ques);
+	
+		int streak=this.StreakLogicForUser(user, ques);
 		
 		List<Quiz_Questions> quiz= bridge.findByQuiz_Id(ques.getId());
 		
@@ -167,7 +164,7 @@ public class QuizService
 				
 				completion.save(st);
 				
-				isu.setCreatedAt(LocalDate.now());
+				isu.setCreatedAt(LocalDateTime.now());
 				isu.setDeltaValue(+1);
 				isu.setEventType(StatUpdateEvent.COMPLETION);
 				isu.setInstId(det.getInstructor().getId());
@@ -223,7 +220,7 @@ public class QuizService
 				
 				completion.save(st);
 				
-				isu.setCreatedAt(LocalDate.now());
+				isu.setCreatedAt(LocalDateTime.now());
 				isu.setDeltaValue(+1);
 				isu.setEventType(StatUpdateEvent.COMPLETION);
 				isu.setInstId(det.getInstructor().getId());
