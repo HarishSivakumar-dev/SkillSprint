@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import com.harish.quizapp.Model.CourseDetails;
 import com.harish.quizapp.Model.EnrollmentData;
+import com.harish.quizapp.Model.InstructorProfile;
 import com.harish.quizapp.Model.UserRegistration;
 
 
@@ -19,7 +20,9 @@ public interface EnrollmentRepo extends JpaRepository<EnrollmentData,Integer>
 	
 	int countByUser(UserRegistration usr);
 	
-	int countDistinctUserByCourse_Instructor(UserRegistration user);
+	int countDistinctUserByCourse_Instructor(InstructorProfile ip);
+	
+	int countByCourse_Instructor(InstructorProfile ip);
 
 	int deleteByUser_IdAndCourse_Id(int id, int courseid);
 	
