@@ -347,16 +347,16 @@ public class AdminService
 		
 		for(AdminApplication app : aa)
 		{
-			UserRegistration user =app.getUser();
+			InstructorProfile user =app.getUser();
 			
 			long exp=ChronoUnit.MONTHS.between(app.getReviewedOn(), LocalDate.now());
 			float exp1=exp/12;
 			int noofPromotionsHandled=iur.countByAdmin_Id(user.getId());
 			int noofSkillsHandled= sar.countByAdmin_Id(user.getId());
 			int noofViolationsHandled= car.countByAdmin_Id(user.getId());
-			String email=user.getEmail();
-			String userName=user.getUserName();
-			String name=user.getName();
+			String email=user.getMail();
+			String userName=user.getUserName().getUserName();
+			String name=user.getFullName();
 			int id=user.getId();
 			
 			AdminManagerDetailsDto dt= new AdminManagerDetailsDto();

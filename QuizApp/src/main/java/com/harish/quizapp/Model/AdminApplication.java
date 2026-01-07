@@ -22,7 +22,7 @@ public class AdminApplication
 	
 	@OneToOne
 	@JoinColumn(name="Instructor_Id")
-	private UserRegistration user;
+	private InstructorProfile user;
 	
 	private String instructorEmail;
 	private LocalDateTime appliedDate;
@@ -59,11 +59,11 @@ public class AdminApplication
 		this.id = id;
 	}
 
-	public UserRegistration getUser() {
+	public InstructorProfile getUser() {
 		return user;
 	}
 
-	public void setUser(UserRegistration user) {
+	public void setUser(InstructorProfile user) {
 		this.user = user;
 	}
 

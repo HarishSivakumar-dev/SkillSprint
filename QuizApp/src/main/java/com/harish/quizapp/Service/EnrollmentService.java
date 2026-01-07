@@ -1,6 +1,5 @@
 package com.harish.quizapp.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +20,6 @@ import com.harish.quizapp.Model.Quiz;
 import com.harish.quizapp.Model.UserRegistration;
 import com.harish.quizapp.Model.attemptsTable;
 import com.harish.quizapp.enums.StatUpdateEvent;
-
 import jakarta.transaction.Transactional;
 
 @Service
@@ -64,7 +62,7 @@ public class EnrollmentService
 			
 			InstructorStatUpdate isu= new InstructorStatUpdate();
 			isu.setProceeded(false);
-			isu.setCreatedAt(LocalDate.now());
+			isu.setCreatedAt(LocalDateTime.now());
 			isu.setDeltaValue(+1);
 			isu.setEventType(StatUpdateEvent.ENROLLMENT);
 			isu.setInstId(cd.getInstructor().getId());
@@ -122,7 +120,7 @@ public class EnrollmentService
 			
 			InstructorStatUpdate isu= new InstructorStatUpdate();
 			isu.setProceeded(false);
-			isu.setCreatedAt(LocalDate.now());
+			isu.setCreatedAt(LocalDateTime.now());
 			isu.setDeltaValue(-1);
 			isu.setEventType(StatUpdateEvent.UNENROLLMENT);
 			isu.setInstId(cd.getId());
