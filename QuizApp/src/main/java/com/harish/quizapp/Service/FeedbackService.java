@@ -1,7 +1,8 @@
 package com.harish.quizapp.Service;
 
-import java.time.LocalDate;
-
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -42,16 +43,27 @@ public class FeedbackService
 		ft.setInstructor(ins);
 		fr.save(ft);
 		
-		
-		
 		InstructorStatUpdate isu= new InstructorStatUpdate();
 		isu.setProceeded(false);
-		isu.setCreatedAt(LocalDate.now());
+		isu.setCreatedAt(LocalDateTime.now());
 		isu.setDeltaValue(+1);
 		isu.setEventType(StatUpdateEvent.FEEDBACK);
 		isu.setInstId(cd.getInstructor().getId());
 		
-		isr.save(isu);
+		
+		InstructorStatUpdate isu1= new InstructorStatUpdate();
+		isu1.setProceeded(false);
+		isu1.setDeltaValue(+0);
+		isu1.setEventType(StatUpdateEvent.RATING);
+		isu1.setInstId(cd.getInstructor().getId());
+		isu1.setCreatedAt(LocalDateTime.now());
+		
+		
+		List<InstructorStatUpdate> upd= new ArrayList<>();
+		upd.add(isu1);
+		upd.add(isu);
+		
+		isr.saveAll(upd);
 		
 		return ResponseEntity.status(HttpStatus.OK).body("Feedback Submitted !");
 	}
