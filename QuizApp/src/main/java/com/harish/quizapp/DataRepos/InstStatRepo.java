@@ -18,7 +18,7 @@ public interface InstStatRepo extends JpaRepository<InstructorStatUpdate, Intege
 	List<InstructorStatUpdateProjection> findByRecordsForStat();
 	
 	
-	@Query(value="SELECT * FROM instructor_stat_update WHERE processed=false", nativeQuery=true)
+	@Query(value="SELECT * FROM instructor_stat_update WHERE proceeded=false", nativeQuery=true)
 	List<InstructorStatUpdate> findallPending();
 
 }
