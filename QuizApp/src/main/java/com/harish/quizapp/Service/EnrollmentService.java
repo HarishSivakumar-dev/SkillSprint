@@ -9,10 +9,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 import com.harish.quizapp.DataRepos.AttemptsRepo;
+import com.harish.quizapp.DataRepos.CoursesRepo;
 import com.harish.quizapp.DataRepos.EnrollmentRepo;
 import com.harish.quizapp.DataRepos.InstStatRepo;
 import com.harish.quizapp.DataRepos.QuizRepo;
 import com.harish.quizapp.DataRepos.UserRepo;
+import com.harish.quizapp.Dto.CourseDetailsDto;
 import com.harish.quizapp.Model.CourseDetails;
 import com.harish.quizapp.Model.EnrollmentData;
 import com.harish.quizapp.Model.InstructorStatUpdate;
@@ -41,12 +43,16 @@ public class EnrollmentService
 	@Autowired
 	private InstStatRepo isr; 
 	
+	@Autowired
+	private CoursesRepo cr;
 	
-	public ResponseEntity<String> enrollUserintoCourse(String name, CourseDetails cd)
+	
+	public ResponseEntity<String> enrollUserintoCourse(String name, CourseDetailsDto cdp)
 	{
 		UserRegistration user=ur.findByUserName(name).orElseThrow(()->new BadCredentialsException("No users found !"));
+		CourseDetails cd= cr.findById(cdp.getCourseId()).orElseThrow(()-> new BadCredentialsException("No Course Found"));
 		
-		if(er.findByUserAndCourse(user,cd).isPresent())
+		if(er.findByUserAndCourse_Id(user,cd).isPresent())
 		{
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Already Registered !");
 		}
@@ -100,7 +106,7 @@ public class EnrollmentService
 	{
 		UserRegistration usr=ur.findByUserName(name).orElseThrow();
 		
-		EnrollmentData ed=er.findByUserAndCourse(usr,cs).orElseThrow(()->new BadCredentialsException("User Not Enrolled "));
+		EnrollmentData ed=er.findByUserAndCourse_Id(usr,cs).orElseThrow(()->new BadCredentialsException("User Not Enrolled "));
 		ed.setStatus("COMPLETED");
 		
 		er.save(ed);

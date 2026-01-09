@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.harish.quizapp.Dto.CourseDetailsDto;
 import com.harish.quizapp.Model.CourseDetails;
 import com.harish.quizapp.Model.EnrollmentData;
 import com.harish.quizapp.Service.EnrollmentService;
@@ -28,7 +30,7 @@ public class EnrollmentController
 
 	@PostMapping("/enroll")
 	@PreAuthorize("hasAnyRole('USER','INSTRUCTOR')")
-	public ResponseEntity<String> enrollmentCourse(@RequestBody CourseDetails cd)
+	public ResponseEntity<String> enrollmentCourse(@RequestBody CourseDetailsDto cd)
 	{
 		String name=SecurityContextHolder.getContext().getAuthentication().getName();
 		
@@ -63,3 +65,4 @@ public class EnrollmentController
 	
 	
 }
+ 

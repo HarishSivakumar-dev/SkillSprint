@@ -14,7 +14,7 @@ import com.harish.quizapp.Model.UserRegistration;
 public interface EnrollmentRepo extends JpaRepository<EnrollmentData,Integer>
 {
 
-	Optional<EnrollmentData> findByUserAndCourse(UserRegistration user, CourseDetails course);
+	Optional<EnrollmentData> findByUserAndCourse_Id(UserRegistration user, CourseDetails course);
 
 	List<EnrollmentData> findByUser(UserRegistration usr);
 	
