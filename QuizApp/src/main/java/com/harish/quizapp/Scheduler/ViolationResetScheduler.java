@@ -154,6 +154,8 @@ public class ViolationResetScheduler
 	{
 		try
 		{
+			System.out.println("Entered Instructor Profile scheduler !");
+			
 			List<InstructorStatUpdateProjection> isup= isr.findByRecordsForStat();
 			
 			Map<Integer, List<InstructorStatUpdateProjection>> mp1= new HashMap<>();
@@ -215,6 +217,8 @@ public class ViolationResetScheduler
 	{
 		try
 		{
+			System.out.println("Entered user profile scheduler !");
+			
 			List<UserProfile> usr= upr.findAll();
 			
 			for(UserProfile up : usr)

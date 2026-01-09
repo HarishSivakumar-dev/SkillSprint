@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.harish.quizapp.Dto.CourseDetailsDto;
 import com.harish.quizapp.Dto.StatusUpdateDto;
 import com.harish.quizapp.Model.CourseContents;
 import com.harish.quizapp.Model.CourseDetails;
@@ -62,7 +64,7 @@ public class CourseController
 	
 	@GetMapping("/user/courses/getall")
 	@PreAuthorize("hasAnyRole('ADMIN','INSTRUCTOR','USER')")
-	public ResponseEntity<List<CourseDetails>> getAllCourses()
+	public ResponseEntity<List<CourseDetailsDto>> getAllCourses()
 	{
 		return cs.getAllCourses();
 	}

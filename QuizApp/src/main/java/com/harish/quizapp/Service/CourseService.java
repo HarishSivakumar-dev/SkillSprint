@@ -15,6 +15,7 @@ import com.harish.quizapp.DataRepos.EnrollmentRepo;
 import com.harish.quizapp.DataRepos.InstructorRepo;
 import com.harish.quizapp.DataRepos.MaterialsRepo;
 import com.harish.quizapp.DataRepos.UserRepo;
+import com.harish.quizapp.Dto.CourseDetailsDto;
 import com.harish.quizapp.Dto.StatusUpdateDto;
 import com.harish.quizapp.Model.CourseContents;
 import com.harish.quizapp.Model.CourseDetails;
@@ -93,9 +94,31 @@ public class CourseService
 		}
 	}
 	
-	public ResponseEntity<List<CourseDetails>> getAllCourses()
+	public ResponseEntity<List<CourseDetailsDto>> getAllCourses()
 	{
-		return ResponseEntity.status(HttpStatus.OK).body(cr.findByStatus(CourseStatus.Active));
+		List<CourseDetails> cd=cr.findByStatus(CourseStatus.Active);
+		List<CourseDetailsDto> dto= new ArrayList<>();
+		
+		for(CourseDetails dt : cd)
+		{
+			CourseDetailsDto cdd= new CourseDetailsDto();
+			cdd.setCatagory(dt.getCatagory());
+			cdd.setCourseId(dt.getId());
+			cdd.setCreatedAt(dt.getCreatedAt());
+			cdd.setDescription(dt.getDescription());
+			cdd.setDuration(dt.getDuration());
+			cdd.setFullName(dt.getInstructor().getFullName());
+			cdd.setInstructorId(dt.getInstructor().getId());
+			cdd.setLevel(dt.getLevel());
+			cdd.setRating(dt.getRating());
+			cdd.setStatus(dt.getStatus());
+			cdd.setTitle(dt.getTitle());
+			cdd.setUserName(dt.getInstructor().getUserName().getUserName());
+			
+			dto.add(cdd);
+		}
+		
+		return ResponseEntity.status(HttpStatus.OK).body(dto);
 	}
 
 	public ResponseEntity<String> updateCourseStatus(StatusUpdateDto sud)

@@ -5,5 +5,4 @@ public enum CourseStatus
 	Active,
 	Inactive,
 	InProcess
-
 }
