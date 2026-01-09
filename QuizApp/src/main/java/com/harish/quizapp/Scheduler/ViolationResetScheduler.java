@@ -158,50 +158,59 @@ public class ViolationResetScheduler
 			
 			List<InstructorStatUpdateProjection> isup= isr.findByRecordsForStat();
 			
-			Map<Integer, List<InstructorStatUpdateProjection>> mp1= new HashMap<>();
-			
-			for(InstructorStatUpdateProjection isu : isup)
+			if(isup.isEmpty())
 			{
-				List<InstructorStatUpdateProjection> pro= mp1.get(isu.getInstId());
-				
-				if(pro==null)
-				{
-					List<InstructorStatUpdateProjection> prod= new ArrayList<>();
-					prod.add(isu);
-					mp1.put(isu.getInstId(), prod);
-				}
-				else
-				{
-					pro.add(isu);
-				}
+				return;
 			}
-			
-			Set<Integer> instid=mp1.keySet();
-			
-			List<InstructorProfile> pr= ir.findAllById(instid);
-			List<InstructorProfile> prf= new ArrayList<>();
-			
-			for(InstructorProfile ins : pr)
+			else
 			{
-				List<InstructorStatUpdateProjection> is= mp1.get(ins.getId());
-			
-				for(InstructorStatUpdateProjection ipj : is)
+				Map<Integer, List<InstructorStatUpdateProjection>> mp1= new HashMap<>();
+				
+				for(InstructorStatUpdateProjection isu : isup)
 				{
-					this.applyDeltaLogic(ipj.getTotChange(),ipj.getEventType(), ins);
+					List<InstructorStatUpdateProjection> pro= mp1.get(isu.getInstId());
+					
+					if(pro==null)
+					{
+						List<InstructorStatUpdateProjection> prod= new ArrayList<>();
+						prod.add(isu);
+						mp1.put(isu.getInstId(), prod);
+					}
+					else
+					{
+						pro.add(isu);
+					}
 				}
 				
-				prf.add(ins);
+				Set<Integer> instid=mp1.keySet();
 				
+				List<InstructorProfile> pr= ir.findAllById(instid);
+				List<InstructorProfile> prf= new ArrayList<>();
+				
+				for(InstructorProfile ins : pr)
+				{
+					List<InstructorStatUpdateProjection> is= mp1.get(ins.getId());
+				
+					for(InstructorStatUpdateProjection ipj : is)
+					{
+						this.applyDeltaLogic(ipj.getTotChange(),ipj.getEventType(), ins);
+					}
+					
+					prf.add(ins);
+					
+				}
+				
+				List<InstructorStatUpdate> ipro= isr.findallPending();
+				for(InstructorStatUpdate upd: ipro)
+				{
+					upd.setProceeded(true);
+				}
+				
+				isr.saveAll(ipro);
+				ir.saveAll(prf);
 			}
 			
-			List<InstructorStatUpdate> ipro= isr.findallPending();
-			for(InstructorStatUpdate upd: ipro)
-			{
-				upd.setProceeded(true);
-			}
 			
-			isr.saveAll(ipro);
-			ir.saveAll(prf);
 		
 		}
 		catch(Exception e)
