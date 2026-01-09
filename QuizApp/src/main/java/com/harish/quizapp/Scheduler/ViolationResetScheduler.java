@@ -37,6 +37,7 @@ import jakarta.transaction.Transactional;
 @Component
 public class ViolationResetScheduler
 {
+
 	@Autowired
 	private ViolationTableRepo vtr;
 	@Autowired
@@ -59,6 +60,8 @@ public class ViolationResetScheduler
 	private AttemptsRepo ar;
 	@Autowired
 	private InstStatRepo isr;
+
+ 
 	
 	@Transactional
 	@Scheduled(cron="0 0 0 * * * ")
@@ -154,7 +157,6 @@ public class ViolationResetScheduler
 	{
 		try
 		{
-			System.out.println("Entered Instructor Profile scheduler !");
 			
 			List<InstructorStatUpdateProjection> isup= isr.findByRecordsForStat();
 			
