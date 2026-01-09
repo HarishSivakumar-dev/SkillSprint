@@ -3,6 +3,8 @@ package com.harish.quizapp.Model;
 import java.time.LocalDateTime;
 import com.harish.quizapp.enums.StatUpdateEvent;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -15,6 +17,8 @@ public class InstructorStatUpdate
 	private int id;
 	
 	private int instId;
+	
+	@Enumerated(EnumType.STRING)
 	private StatUpdateEvent eventType;
 	private int deltaValue;
 	private Boolean proceeded;
