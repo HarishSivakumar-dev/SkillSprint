@@ -52,7 +52,7 @@ public class EnrollmentService
 		UserRegistration user=ur.findByUserName(name).orElseThrow(()->new BadCredentialsException("No users found !"));
 		CourseDetails cd= cr.findById(cdp.getCourseId()).orElseThrow(()-> new BadCredentialsException("No Course Found"));
 		
-		if(er.findByUserAndCourse_Id(user,cd).isPresent())
+		if(er.findByUserAndCourse(user,cd).isPresent())
 		{
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Already Registered !");
 		}
@@ -106,7 +106,7 @@ public class EnrollmentService
 	{
 		UserRegistration usr=ur.findByUserName(name).orElseThrow();
 		
-		EnrollmentData ed=er.findByUserAndCourse_Id(usr,cs).orElseThrow(()->new BadCredentialsException("User Not Enrolled "));
+		EnrollmentData ed=er.findByUserAndCourse(usr,cs).orElseThrow(()->new BadCredentialsException("User Not Enrolled "));
 		ed.setStatus("COMPLETED");
 		
 		er.save(ed);

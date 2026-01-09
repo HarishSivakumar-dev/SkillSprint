@@ -15,7 +15,7 @@ public class EnrollmentData
 {
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
-	private int enrollment_id;
+	private int id;
 	
 	
 	@ManyToOne
@@ -30,11 +30,12 @@ public class EnrollmentData
 	private String status;
 	
 	
-	public int getEnrollment_id() {
-		return enrollment_id;
+	
+	public int getId() {
+		return id;
 	}
-	public void setEnrollment_id(int enrollment_id){
-		this.enrollment_id = enrollment_id;
+	public void setId(int id) {
+		this.id = id;
 	}
 	public UserRegistration getUser() {
 		return user;
