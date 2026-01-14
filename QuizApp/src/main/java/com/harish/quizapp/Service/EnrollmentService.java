@@ -13,15 +13,19 @@ import com.harish.quizapp.DataRepos.CoursesRepo;
 import com.harish.quizapp.DataRepos.EnrollmentRepo;
 import com.harish.quizapp.DataRepos.InstStatRepo;
 import com.harish.quizapp.DataRepos.QuizRepo;
+import com.harish.quizapp.DataRepos.UserDeltaRepo;
 import com.harish.quizapp.DataRepos.UserRepo;
 import com.harish.quizapp.Dto.CourseDetailsDto;
 import com.harish.quizapp.Model.CourseDetails;
 import com.harish.quizapp.Model.EnrollmentData;
 import com.harish.quizapp.Model.InstructorStatUpdate;
 import com.harish.quizapp.Model.Quiz;
+import com.harish.quizapp.Model.UserProfileDelta;
 import com.harish.quizapp.Model.UserRegistration;
 import com.harish.quizapp.Model.attemptsTable;
 import com.harish.quizapp.enums.StatUpdateEvent;
+import com.harish.quizapp.enums.UserDeltaAction;
+
 import jakarta.transaction.Transactional;
 
 @Service
@@ -45,6 +49,9 @@ public class EnrollmentService
 	
 	@Autowired
 	private CoursesRepo cr;
+	
+	@Autowired
+	private UserDeltaRepo updr;
 	
 	
 	public ResponseEntity<String> enrollUserintoCourse(String name, CourseDetailsDto cdp)
@@ -74,6 +81,14 @@ public class EnrollmentService
 			isu.setInstId(cd.getInstructor().getId());
 			
 			isr.save(isu);
+			
+			UserProfileDelta upd= new UserProfileDelta();
+			upd.setAction(UserDeltaAction.Enrolled);
+			upd.setDeltaValue(+1);
+			upd.setIsProcessed(false);
+			upd.setUserId(user.getId());
+
+			updr.save(upd);
 			
 			List<Quiz> quiz= qr.findByCourse(cd);
 			List<attemptsTable> preattempts=new ArrayList<attemptsTable>();
