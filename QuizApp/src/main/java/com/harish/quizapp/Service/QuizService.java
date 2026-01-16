@@ -19,6 +19,7 @@ import com.harish.quizapp.DataRepos.QuizQuestionsRepo;
 import com.harish.quizapp.DataRepos.QuizRepo;
 import com.harish.quizapp.DataRepos.StreakMainRepo;
 import com.harish.quizapp.DataRepos.StreakRepo;
+import com.harish.quizapp.DataRepos.UserDeltaRepo;
 import com.harish.quizapp.DataRepos.UserRepo;
 import com.harish.quizapp.Dto.ExistingQuestionsDto;
 import com.harish.quizapp.Dto.NewQuestionsDto;
@@ -34,10 +35,13 @@ import com.harish.quizapp.Model.Quiz;
 import com.harish.quizapp.Model.Quiz_Questions;
 import com.harish.quizapp.Model.StreakLogs;
 import com.harish.quizapp.Model.StreakTable;
+import com.harish.quizapp.Model.UserProfileDelta;
 import com.harish.quizapp.Model.UserRegistration;
 import com.harish.quizapp.Model.attemptsTable;
 import com.harish.quizapp.enums.CompletionStatus;
 import com.harish.quizapp.enums.StatUpdateEvent;
+import com.harish.quizapp.enums.UserDeltaAction;
+
 import jakarta.transaction.Transactional;
 
 
@@ -66,6 +70,8 @@ public class QuizService
 	private StreakMainRepo smr;
 	@Autowired
 	private InstStatRepo isr;
+	@Autowired
+	private UserDeltaRepo udr;
 	
 	
 	public ResponseEntity<String> deleteQuiz(int quizid)
@@ -144,16 +150,37 @@ public class QuizService
 		
 		if((ques.getIsFinal() && at.getAttemptcount()>=1) || !ccs.isEmpty())
 		{
-			throw new Exception("Already Attempted !");
+			throw new IllegalStateException("Already Attempted !");
 		}
+		
+		UserProfileDelta dl= new UserProfileDelta();
+		dl.setAction(UserDeltaAction.QuizAttended);
+		dl.setDeltaValue(+1);
+		dl.setIsProcessed(false);
+		dl.setUserId(user.getId());
+		
+		udr.save(dl);
 		
 		at.setAttemptcount(at.getAttemptcount()+1);
 		CourseDetails det=ques.getCourse();
 		
 		InstructorStatUpdate isu= new InstructorStatUpdate();
+		UserProfileDelta upd= new UserProfileDelta();
+		UserProfileDelta upd1=new UserProfileDelta();
+		List<UserProfileDelta> lis= new ArrayList<>();
 		
 		if(right>=(totalmarks/2))
 		{
+			UserProfileDelta del= new UserProfileDelta();
+			del.setAction(UserDeltaAction.QuizCleared);
+			del.setDeltaValue(+1);
+			del.setIsProcessed(false);
+			del.setUserId(user.getId());
+			
+			udr.save(del);
+			
+			at.setStatus("PASSED");
+			attempts.save(at);
 			
 			if(ques.getIsFinal() && at.getAttemptcount()==1)
 			{
@@ -170,11 +197,33 @@ public class QuizService
 				isu.setInstId(det.getInstructor().getId());
 				isu.setProceeded(false);
 				
+				upd.setAction(UserDeltaAction.Certificates);
+				upd.setDeltaValue(+1);
+				upd.setIsProcessed(false);
+				upd.setUserId(user.getId());
+				
+				upd1.setAction(UserDeltaAction.Completed);
+				upd1.setDeltaValue(+1);
+				upd1.setIsProcessed(false);
+				upd1.setUserId(user.getId());
+				
+				lis.add(upd);
+				lis.add(upd1);
+				
+				udr.saveAll(lis);
+				
 				isr.save(isu);
+				
+				
+				ResultDto res= new ResultDto();
+				
+				res.setNextquizid(-2);
+				res.setScore(right);
+				res.setStatus("COMPLETED AND CERTIFIED");
+				res.setStreak(streak);
+				
+				return ResponseEntity.status(HttpStatus.OK).body(res);
 			}
-			
-			at.setStatus("PASSED");
-			attempts.save(at);
 			
 			List<Quiz> all=quizrepo.findByCourseOrderByIdAsc(det);
 			
@@ -211,6 +260,9 @@ public class QuizService
 		}
 		else
 		{
+			at.setStatus("FAILED");
+			attempts.save(at);
+			
 			if(ques.getIsFinal())
 			{
 				CourseCompletionStatus st=new CourseCompletionStatus();
@@ -226,12 +278,25 @@ public class QuizService
 				isu.setInstId(det.getInstructor().getId());
 				isu.setProceeded(false);
 				
+				upd.setAction(UserDeltaAction.Completed);
+				upd.setDeltaValue(+1);
+				upd.setIsProcessed(false);
+				upd.setUserId(user.getId());
+				
+				udr.save(upd);
+				
 				isr.save(isu);
+				
+				ResultDto res= new ResultDto();
+				
+				res.setNextquizid(-2);
+				res.setScore(right);
+				res.setStatus("COMPLETED");
+				res.setStreak(streak);
+				
+				return ResponseEntity.status(HttpStatus.OK).body(res);
 			}
 			
-			at.setStatus("FAILED");
-			
-			attempts.save(at);
 			
 			ResultDto res= new ResultDto();
 			
