@@ -7,6 +7,9 @@ public enum UserDeltaAction
 	Certificates,
 	QuizAttended,
 	QuizCleared,
+	AvgClearingRate,
+	AvgCompletionRate,
+	AvgCertificationRate
 	
 
 }
