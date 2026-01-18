@@ -41,6 +41,7 @@ import com.harish.quizapp.Model.attemptsTable;
 import com.harish.quizapp.enums.CompletionStatus;
 import com.harish.quizapp.enums.StatUpdateEvent;
 import com.harish.quizapp.enums.UserDeltaAction;
+import com.harish.quizapp.helpers.EnumHelperClass;
 
 import jakarta.transaction.Transactional;
 
@@ -72,6 +73,8 @@ public class QuizService
 	private InstStatRepo isr;
 	@Autowired
 	private UserDeltaRepo udr;
+	@Autowired
+	private EnumHelperClass cls;
 	
 	
 	public ResponseEntity<String> deleteQuiz(int quizid)
@@ -120,6 +123,7 @@ public class QuizService
 	{
 		UserRegistration user = usr.findByUserName(name).orElseThrow();
 		Quiz ques=quizrepo.findByTitle(quizname).orElseThrow();
+		List<UserProfileDelta> delsave= new ArrayList<>();
 	
 		int streak=this.StreakLogicForUser(user, ques);
 		
@@ -153,43 +157,32 @@ public class QuizService
 			throw new IllegalStateException("Already Attempted !");
 		}
 		
-		UserProfileDelta dl= new UserProfileDelta();
-		dl.setAction(UserDeltaAction.QuizAttended);
-		dl.setDeltaValue(+1);
-		dl.setIsProcessed(false);
-		dl.setUserId(user.getId());
-		
-		udr.save(dl);
+		UserProfileDelta dl= cls.deltaReturn(UserDeltaAction.QuizAttended,+1,user.getId());
+		delsave.add(dl);
 		
 		at.setAttemptcount(at.getAttemptcount()+1);
 		CourseDetails det=ques.getCourse();
 		
 		InstructorStatUpdate isu= new InstructorStatUpdate();
+		CourseCompletionStatus st=new CourseCompletionStatus();
 		UserProfileDelta upd= new UserProfileDelta();
-		UserProfileDelta upd1=new UserProfileDelta();
-		List<UserProfileDelta> lis= new ArrayList<>();
+		UserProfileDelta upd1= new UserProfileDelta();
+		ResultDto res= new ResultDto();
 		
 		if(right>=(totalmarks/2))
 		{
-			UserProfileDelta del= new UserProfileDelta();
-			del.setAction(UserDeltaAction.QuizCleared);
-			del.setDeltaValue(+1);
-			del.setIsProcessed(false);
-			del.setUserId(user.getId());
-			
-			udr.save(del);
+			UserProfileDelta del= cls.deltaReturn(UserDeltaAction.QuizCleared,+1,user.getId());
+			delsave.add(del);
 			
 			at.setStatus("PASSED");
-			attempts.save(at);
 			
 			if(ques.getIsFinal() && at.getAttemptcount()==1)
 			{
-				CourseCompletionStatus st=new CourseCompletionStatus();
+
 				st.setUser(user);
 				st.setCourse(det);
 				st.setCourseCompletionStatus(CompletionStatus.CompletedAndCertified);
 				
-				completion.save(st);
 				
 				isu.setCreatedAt(LocalDateTime.now());
 				isu.setDeltaValue(+1);
@@ -197,80 +190,62 @@ public class QuizService
 				isu.setInstId(det.getInstructor().getId());
 				isu.setProceeded(false);
 				
-				upd.setAction(UserDeltaAction.Certificates);
-				upd.setDeltaValue(+1);
-				upd.setIsProcessed(false);
-				upd.setUserId(user.getId());
 				
-				upd1.setAction(UserDeltaAction.Completed);
-				upd1.setDeltaValue(+1);
-				upd1.setIsProcessed(false);
-				upd1.setUserId(user.getId());
+				upd= cls.deltaReturn(UserDeltaAction.Certificates,+1,user.getId());
+				upd1= cls.deltaReturn(UserDeltaAction.Completed,+1,user.getId());
 				
-				lis.add(upd);
-				lis.add(upd1);
+				delsave.add(upd);
+				delsave.add(upd1);
 				
-				udr.saveAll(lis);
-				
-				isr.save(isu);
-				
-				
-				ResultDto res= new ResultDto();
 				
 				res.setNextquizid(-2);
 				res.setScore(right);
 				res.setStatus("COMPLETED AND CERTIFIED");
 				res.setStreak(streak);
-				
-				return ResponseEntity.status(HttpStatus.OK).body(res);
-			}
 			
-			List<Quiz> all=quizrepo.findByCourseOrderByIdAsc(det);
-			
-			int eligible=0;
-			for(Quiz qz : all)
-			{
-				if(qz.getId()==ques.getId())
-				{
-					eligible=all.indexOf(qz)+1;
-					break;
-				}
-			}
-			
-			ResultDto res= new ResultDto();
-			
-			res.setStreak(streak);
-			
-			if(eligible<all.size())
-			{
-				int quizid= all.get(eligible).getId();
-				
-				res.setNextquizid(quizid);
-				res.setStatus("PASSED");
-				res.setScore(right);
 			}
 			else
 			{
-				res.setNextquizid(-1);
-				res.setScore(right);
-				res.setStatus("OPEN FINAL QUIZ");
+				List<Quiz> all=quizrepo.findByCourseOrderByIdAsc(det);
+				
+				int eligible=0;
+				for(Quiz qz : all)
+				{
+					if(qz.getId()==ques.getId())
+					{
+						eligible=all.indexOf(qz)+1;
+						break;
+					}
+				}
+				
+				res.setStreak(streak);
+				
+				if(eligible<all.size())
+				{
+					int quizid= all.get(eligible).getId();
+					
+					res.setNextquizid(quizid);
+					res.setStatus("PASSED");
+					res.setScore(right);
+				}
+				else
+				{
+					res.setNextquizid(-1);
+					res.setScore(right);
+					res.setStatus("OPEN FINAL QUIZ");
+				}
 			}
 			
-			return ResponseEntity.status(HttpStatus.OK).body(res);
 		}
 		else
 		{
 			at.setStatus("FAILED");
-			attempts.save(at);
 			
 			if(ques.getIsFinal())
 			{
-				CourseCompletionStatus st=new CourseCompletionStatus();
 				st.setUser(user);
 				st.setCourse(det);
 				st.setCourseCompletionStatus(CompletionStatus.Completed);
-				
-				completion.save(st);
 				
 				isu.setCreatedAt(LocalDateTime.now());
 				isu.setDeltaValue(+1);
@@ -278,34 +253,36 @@ public class QuizService
 				isu.setInstId(det.getInstructor().getId());
 				isu.setProceeded(false);
 				
-				upd.setAction(UserDeltaAction.Completed);
-				upd.setDeltaValue(+1);
-				upd.setIsProcessed(false);
-				upd.setUserId(user.getId());
+				upd= cls.deltaReturn(UserDeltaAction.Completed,+1, user.getId());
 				
-				udr.save(upd);
-				
-				isr.save(isu);
-				
-				ResultDto res= new ResultDto();
+				delsave.add(upd);
 				
 				res.setNextquizid(-2);
 				res.setScore(right);
 				res.setStatus("COMPLETED");
 				res.setStreak(streak);
-				
-				return ResponseEntity.status(HttpStatus.OK).body(res);
+			
 			}
-			
-			
-			ResultDto res= new ResultDto();
-			
-			res.setStreak(streak);
-			res.setStatus("FAILED");
-			res.setScore(right);
-			
-			return ResponseEntity.status(HttpStatus.OK).body(res);
+			else
+			{
+				res.setStreak(streak);
+				res.setStatus("FAILED");
+				res.setScore(right);
+			}
+		
 		}
+		
+		attempts.save(at);
+		
+		if(st!=null)
+		{
+			completion.save(st);
+		}
+		
+		isr.save(isu);
+		udr.saveAll(delsave);
+	
+		return ResponseEntity.status(HttpStatus.OK).body(res);
 				
 	}
 	public ResponseEntity<String> createQuiz(QuizDto dto, int courseid)
