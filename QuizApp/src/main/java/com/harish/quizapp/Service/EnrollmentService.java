@@ -25,6 +25,7 @@ import com.harish.quizapp.Model.UserRegistration;
 import com.harish.quizapp.Model.attemptsTable;
 import com.harish.quizapp.enums.StatUpdateEvent;
 import com.harish.quizapp.enums.UserDeltaAction;
+import com.harish.quizapp.helpers.EnumHelperClass;
 
 import jakarta.transaction.Transactional;
 
@@ -52,6 +53,9 @@ public class EnrollmentService
 	
 	@Autowired
 	private UserDeltaRepo updr;
+	
+	@Autowired
+	private EnumHelperClass cls;
 	
 	
 	public ResponseEntity<String> enrollUserintoCourse(String name, CourseDetailsDto cdp)
@@ -82,12 +86,7 @@ public class EnrollmentService
 			
 			isr.save(isu);
 			
-			UserProfileDelta upd= new UserProfileDelta();
-			upd.setAction(UserDeltaAction.Enrolled);
-			upd.setDeltaValue(+1);
-			upd.setIsProcessed(false);
-			upd.setUserId(user.getId());
-
+			UserProfileDelta upd= cls.deltaReturn(UserDeltaAction.Enrolled,+1,user.getId());
 			updr.save(upd);
 			
 			List<Quiz> quiz= qr.findByCourse(cd);
