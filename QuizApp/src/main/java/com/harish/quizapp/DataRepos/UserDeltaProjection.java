@@ -4,7 +4,7 @@ import com.harish.quizapp.enums.UserDeltaAction;
 
 public interface UserDeltaProjection
 {
-	int getDeltaValue();
+	int getTotDelta();
 	int getUserId();
 	UserDeltaAction getUserAction();
 }
