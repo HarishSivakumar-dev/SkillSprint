@@ -2,9 +2,7 @@ package com.harish.quizapp.Model;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-
 import org.hibernate.validator.constraints.URL;
-
 import com.harish.quizapp.enums.GenderEnum;
 import com.harish.quizapp.enums.SkillLevelEnum;
 import jakarta.persistence.Entity;
@@ -45,8 +43,10 @@ public class UserProfile
 	private int coursesCompleted;//
 	private int noOfCertificates;//
 	private int quizzesAttended;//
-	private int avgQuizezCleared;//
+	private int quizzesCleared;//
+	private float avgQuizezCleared;//
 	private float avgClearingRate;//
+	private float avgCertificationRate;
 	private int streakMaintanance;
 	
 	@Enumerated(EnumType.STRING)
@@ -155,10 +155,10 @@ public class UserProfile
 	public void setQuizzesAttended(int quizzesAttended) {
 		this.quizzesAttended = quizzesAttended;
 	}
-	public int getAvgQuizezCleared() {
+	public float getAvgQuizezCleared() {
 		return avgQuizezCleared;
 	}
-	public void setAvgQuizezCleared(int avgQuizezCleared) {
+	public void setAvgQuizezCleared(float avgQuizezCleared) {
 		this.avgQuizezCleared = avgQuizezCleared;
 	}
 	public int getStreakMaintanance() {
@@ -197,4 +197,19 @@ public class UserProfile
 	public void setLinkedIn(String linkedIn) {
 		this.linkedIn = linkedIn;
 	}
+	public float getAvgCertificationRate() {
+		return avgCertificationRate;
+	}
+	public void setAvgCertificationRate(float avgCertificationRate) {
+		this.avgCertificationRate = avgCertificationRate;
+	}
+	public int getQuizzesCleared() {
+		return quizzesCleared;
+	}
+	public void setQuizzesCleared(int quizzesCleared) {
+		this.quizzesCleared = quizzesCleared;
+	}
+	
+	
+	
 }

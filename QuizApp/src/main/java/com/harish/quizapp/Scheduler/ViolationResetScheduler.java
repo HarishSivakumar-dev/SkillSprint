@@ -11,27 +11,25 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import com.harish.quizapp.DataRepos.AttemptsRepo;
 import com.harish.quizapp.DataRepos.CourseCompletionRepo;
 import com.harish.quizapp.DataRepos.CoursesRepo;
-import com.harish.quizapp.DataRepos.EnrollmentRepo;
 import com.harish.quizapp.DataRepos.FeedbackRepo;
 import com.harish.quizapp.DataRepos.InstStatRepo;
 import com.harish.quizapp.DataRepos.InstructorRepo;
 import com.harish.quizapp.DataRepos.InstructorStatUpdateProjection;
-import com.harish.quizapp.DataRepos.StreakMainRepo;
+import com.harish.quizapp.DataRepos.UserDeltaProjection;
+import com.harish.quizapp.DataRepos.UserDeltaRepo;
 import com.harish.quizapp.DataRepos.UserProfileRepo;
 import com.harish.quizapp.DataRepos.ViolationTableRepo;
 import com.harish.quizapp.Model.CourseDetails;
 import com.harish.quizapp.Model.FeedbackTable;
 import com.harish.quizapp.Model.InstructorProfile;
 import com.harish.quizapp.Model.InstructorStatUpdate;
-import com.harish.quizapp.Model.StreakTable;
 import com.harish.quizapp.Model.UserProfile;
 import com.harish.quizapp.Model.ViolationsTable;
-import com.harish.quizapp.enums.CompletionStatus;
 import com.harish.quizapp.enums.SkillLevelEnum;
 import com.harish.quizapp.enums.StatUpdateEvent;
+import com.harish.quizapp.enums.UserDeltaAction;
 import jakarta.transaction.Transactional;
 
 @Component
@@ -50,17 +48,12 @@ public class ViolationResetScheduler
 	private FeedbackRepo fr;
 	@Autowired 
 	private CourseCompletionRepo ccr;
-	@Autowired
-	private EnrollmentRepo er;
 	@Autowired 
 	private UserProfileRepo upr;
 	@Autowired
-	private StreakMainRepo smr;
-	@Autowired
-	private AttemptsRepo ar;
-	@Autowired
 	private InstStatRepo isr;
-
+	@Autowired
+	private UserDeltaRepo udr;
  
 	
 	@Transactional
@@ -230,38 +223,51 @@ public class ViolationResetScheduler
 		{
 			System.out.println("Entered user profile scheduler !");
 			
-			List<UserProfile> usr= upr.findAll();
+			List<UserDeltaProjection> usr= udr.findAllPendingDeltas();
 			
-			for(UserProfile up : usr)
+			Map<Integer,List<UserDeltaProjection>> mp= new HashMap<>();
+			
+			if(usr.isEmpty())
 			{
-				
-			StreakTable tb= smr.findByUserId(up.getUserName());
-			
-			int coursesEnrolled=er.countByUser(up.getUserName());
-			int coursesCompleted=ccr.countByUser(up.getUserName());
-			int certificates=ccr.countByUserAndCourseCompletionStatus(up.getUserName(),CompletionStatus.CompletedAndCertified);
-			int quizzesAttended= ar.countByUser(up.getUserName());
-			int quizzesCleared=ar.countByUserAndStatus(up.getUserName(),"PASSED");
-			
-			float avgClearingRate= (quizzesAttended >0 ) ? (quizzesCleared/ (float)quizzesAttended)*100 : 0;
-			float avgCompletionRate= (coursesEnrolled >0) ? (coursesCompleted/ (float)coursesEnrolled)*100 : 0;
-			float avgCertiRate=(coursesCompleted>0) ? (certificates/ (float)coursesCompleted)*100 : 0;
-			
-			
-			SkillLevelEnum level= this.allocateLevel(avgClearingRate, avgCompletionRate, avgCertiRate);
-			
-			up.setTotCoursesEnrolled(coursesEnrolled);
-			up.setCoursesCompleted(coursesCompleted);
-			up.setNoOfCertificates(certificates);
-			up.setQuizzesAttended(quizzesAttended);
-			up.setAvgQuizezCleared(quizzesCleared);
-			up.setAvgClearingRate(avgClearingRate);
-			up.setStreakMaintanance(tb.getStreak());
-			up.setLevel(level);
-			
+				return;
 			}
 			
-			upr.saveAll(usr);
+			for(UserDeltaProjection udp : usr)
+			{
+				
+				if(mp.containsKey(udp.getUserId()))
+				{
+					mp.get(udp.getUserId()).add(udp);
+				}
+				else
+				{
+					List<UserDeltaProjection> pr= new ArrayList<>();
+					pr.add(udp);
+					mp.put(udp.getUserId(),pr);
+				}
+			}
+			
+			Set<Integer> userids= mp.keySet();
+			List<UserProfile> changedusers= upr.findAllById(userids);
+			List<UserProfile> dbsave= new ArrayList<>();
+			
+			for(UserProfile pro : changedusers)
+			{
+				List<UserDeltaProjection> evn= mp.get(pro.getId());
+				
+				for(UserDeltaProjection prj : evn)
+				{
+					this.applyUserDeltaLogic(prj.getTotDelta(),prj.getUserAction(),pro);
+				}
+				
+				this.recalculateDerivedDeltas(pro);
+				this.allocateLevel(pro);
+				dbsave.add(pro);
+				
+			}
+			
+			upr.saveAll(dbsave);
+				
 		}
 		catch(Exception e)
 		{
@@ -329,11 +335,54 @@ public class ViolationResetScheduler
 		}
 		else if(sue.equals(StatUpdateEvent.COMPLETION))
 		{
-			int totstd= er.countByCourse_Instructor(ip);
+			int totstd= ip.getTotalCleared();
 			int completed= ccr.countByCourse_Instructor(ip);
 			
 			ip.setCompletionRate(((float)completed/(float)totstd) * 100);
 		}
 		
+	}
+	
+	private void applyUserDeltaLogic(int deltaval, UserDeltaAction act, UserProfile pr)
+	{
+		if(act.equals(UserDeltaAction.Enrolled))
+		{
+			pr.setTotCoursesEnrolled(pr.getTotCoursesEnrolled()+deltaval);
+		}
+		else if(act.equals(UserDeltaAction.QuizAttended))
+		{
+			pr.setQuizzesAttended(pr.getQuizzesAttended()+deltaval);
+		}
+		else if(act.equals(UserDeltaAction.QuizCleared))
+		{
+			pr.setQuizzesCleared(pr.getQuizzesCleared()+deltaval);
+		}
+		else if(act.equals(UserDeltaAction.Completed))
+		{
+			pr.setCoursesCompleted(pr.getCoursesCompleted()+deltaval);
+		}
+		else if(act.equals(UserDeltaAction.Certificates))
+		{
+			pr.setNoOfCertificates(pr.getNoOfCertificates()+deltaval);
+		}
+	}
+	
+	private void recalculateDerivedDeltas(UserProfile up)
+	{
+		int totcert=up.getNoOfCertificates();
+		int coursescomplete=up.getCoursesCompleted();
+		int enrolled=up.getTotCoursesEnrolled();
+		int quizcleared= up.getQuizzesCleared();
+		int quizattended=up.getQuizzesAttended();
+		
+		up.setAvgCertificationRate((coursescomplete>0) ? (totcert/ (float)coursescomplete)*100 : 0);
+		up.setAvgClearingRate((enrolled >0) ? (coursescomplete/ (float)enrolled)*100 : 0);
+		up.setAvgQuizezCleared((quizattended >0 ) ? (quizcleared/ (float)quizattended)*100 : 0);
+		
+	}
+	
+	private void allocateLevel(UserProfile up)
+	{
+		up.setLevel(this.allocateLevel(up.getAvgQuizezCleared(),up.getAvgClearingRate(),up.getAvgCertificationRate()));
 	}
 }
