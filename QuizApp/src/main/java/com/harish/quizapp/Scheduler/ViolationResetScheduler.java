@@ -216,7 +216,7 @@ public class ViolationResetScheduler
 	}
 	
 	@Transactional
-	@Scheduled(cron="0 0 * * * * ")
+	@Scheduled(cron="0 */5 * * * * ")
 	public void updateUserProfileDetails()
 	{
 		try
