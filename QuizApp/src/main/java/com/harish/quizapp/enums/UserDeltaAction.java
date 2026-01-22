@@ -7,5 +7,6 @@ public enum UserDeltaAction
 	Certificates,
 	QuizAttended,
 	QuizCleared,
+	Unenrolled
 
 }

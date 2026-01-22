@@ -146,6 +146,9 @@ public class EnrollmentService
 			isu.setInstId(cd.getId());
 			
 			isr.save(isu);
+			
+			UserProfileDelta del= cls.deltaReturn(UserDeltaAction.Unenrolled,+1,usr.getId());
+			updr.save(del);
 		
 			return ResponseEntity.status(HttpStatus.ACCEPTED).body("DELETED");
 		}
