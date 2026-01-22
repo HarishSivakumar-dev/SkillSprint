@@ -11,5 +11,7 @@ public interface UserDeltaRepo extends JpaRepository<UserProfileDelta, Integer>
 {
 	@Query(value=" SELECT user_id as userId, action as userAction, SUM(delta_value) as totDelta FROM user_profile_delta WHERE is_processed=false GROUP BY user_id,action ", nativeQuery=true)
 	List<UserDeltaProjection> findAllPendingDeltas();
+
+	List<UserProfileDelta> findByIsProcessedFalse();
 	
 }

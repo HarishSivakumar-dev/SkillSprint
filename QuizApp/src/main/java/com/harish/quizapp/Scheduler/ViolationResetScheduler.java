@@ -26,6 +26,7 @@ import com.harish.quizapp.Model.FeedbackTable;
 import com.harish.quizapp.Model.InstructorProfile;
 import com.harish.quizapp.Model.InstructorStatUpdate;
 import com.harish.quizapp.Model.UserProfile;
+import com.harish.quizapp.Model.UserProfileDelta;
 import com.harish.quizapp.Model.ViolationsTable;
 import com.harish.quizapp.enums.SkillLevelEnum;
 import com.harish.quizapp.enums.StatUpdateEvent;
@@ -224,6 +225,8 @@ public class ViolationResetScheduler
 			System.out.println("Entered user profile scheduler !");
 			
 			List<UserDeltaProjection> usr= udr.findAllPendingDeltas();
+			List<UserProfileDelta> dl= udr.findByIsProcessedFalse();
+
 			
 			Map<Integer,List<UserDeltaProjection>> mp= new HashMap<>();
 			
@@ -266,6 +269,9 @@ public class ViolationResetScheduler
 				
 			}
 			
+			dl.forEach(r ->r.setIsProcessed(true));
+			
+			udr.saveAll(dl);
 			upr.saveAll(dbsave);
 				
 		}
