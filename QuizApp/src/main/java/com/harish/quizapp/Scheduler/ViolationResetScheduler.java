@@ -371,6 +371,10 @@ public class ViolationResetScheduler
 		{
 			pr.setNoOfCertificates(pr.getNoOfCertificates()+deltaval);
 		}
+		else if(act.equals(UserDeltaAction.Unenrolled))
+		{
+			pr.setTotCoursesEnrolled(pr.getTotCoursesEnrolled()-deltaval);
+		}
 	}
 	
 	private void recalculateDerivedDeltas(UserProfile up)
