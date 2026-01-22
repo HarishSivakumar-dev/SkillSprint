@@ -69,11 +69,34 @@ public class CourseService
 		return ResponseEntity.status(HttpStatus.CREATED).body("Requested Course creation successfull");
 	}
 	
-	public ResponseEntity<List<CourseDetails>> displayRelevantCourses(String name)
+	public ResponseEntity<List<CourseDetailsDto>> displayRelevantCourses(String name)
 	{
 		InstructorProfile inst=ipr.findByUserName_UserName(name).orElseThrow(()-> new BadCredentialsException("No Instructor Found"));
+		List<CourseDetails> res= cr.findByInstructor(inst);
 		
-		return ResponseEntity.status(HttpStatus.OK).body(cr.findByInstructor(inst));
+		List<CourseDetailsDto> dto= new ArrayList<>();
+		
+		for(CourseDetails det : res)
+		{
+			CourseDetailsDto od= new CourseDetailsDto();
+		
+			od.setCatagory(det.getCatagory());
+			od.setCourseId(det.getId());
+			od.setCreatedAt(det.getCreatedAt());
+			od.setDescription(det.getDescription());
+			od.setDuration(det.getDuration());
+			od.setFullName(det.getInstructor().getFullName());
+			od.setInstructorId(det.getInstructor().getId());
+			od.setLevel(det.getLevel());
+			od.setRating(det.getRating());
+			od.setStatus(det.getStatus());
+			od.setTitle(det.getTitle());
+			od.setUserName(det.getInstructor().getUserName().getUserName());
+			
+			dto.add(od);	
+		}
+		
+		return ResponseEntity.status(HttpStatus.OK).body(dto);
 	}
 	
 	public ResponseEntity<String> deleteCourses(int id,String name)

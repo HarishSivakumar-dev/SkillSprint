@@ -41,7 +41,7 @@ public class CourseController
 	
 	@GetMapping("/user/courses/get")
 	@PreAuthorize("hasRole('INSTRUCTOR')")
-	public ResponseEntity<List<CourseDetails>> getRelatedCourses()
+	public ResponseEntity<List<CourseDetailsDto>> getRelatedCourses()
 	{
 		String name=SecurityContextHolder.getContext().getAuthentication().getName();
 		return cs.displayRelevantCourses(name);
