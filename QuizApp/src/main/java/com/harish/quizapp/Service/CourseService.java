@@ -71,7 +71,7 @@ public class CourseService
 	
 	public ResponseEntity<List<CourseDetails>> displayRelevantCourses(String name)
 	{
-		UserRegistration inst=ur.findByUserName(name).orElseThrow(()-> new BadCredentialsException("No Instructor Found"));
+		InstructorProfile inst=ipr.findByUserName_UserName(name).orElseThrow(()-> new BadCredentialsException("No Instructor Found"));
 		
 		return ResponseEntity.status(HttpStatus.OK).body(cr.findByInstructor(inst));
 	}
