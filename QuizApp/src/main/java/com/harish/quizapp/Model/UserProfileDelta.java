@@ -3,6 +3,8 @@ package com.harish.quizapp.Model;
 import com.harish.quizapp.enums.UserDeltaAction;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -17,6 +19,8 @@ public class UserProfileDelta
 	private Boolean isProcessed;
 	private int deltaValue;
 	private int userId;
+	
+	@Enumerated(EnumType.STRING)
 	private UserDeltaAction action;
 	
 	
