@@ -28,7 +28,7 @@ public class EnrollmentData
 	
 	private LocalDateTime enrollment_date;
 	private String status;
-	
+	private int instId;
 	
 	
 	public int getId() {
@@ -60,6 +60,12 @@ public class EnrollmentData
 	}
 	public void setStatus(String status) {
 		this.status = status;
+	}
+	public int getInstId() {
+		return instId;
+	}
+	public void setInstId(int instId) {
+		this.instId = instId;
 	}
 
 }

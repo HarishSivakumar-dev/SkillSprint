@@ -30,4 +30,6 @@ public interface EnrollmentRepo extends JpaRepository<EnrollmentData,Integer>
 
 	List<EnrollmentData> findByCourse_Id(int id);
 	
+	int countDistinctUser_IdByInstId(int instid);
+	
 }

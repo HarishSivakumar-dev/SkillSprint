@@ -3,6 +3,8 @@ package com.harish.quizapp.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -74,6 +76,7 @@ public class EnrollmentService
 			ed.setUser(user);
 			ed.setEnrollment_date(LocalDateTime.now());
 			ed.setStatus("ACTIVE");
+			ed.setInstId(cdp.getInstructorId());
 		
 			er.save(ed);
 			
@@ -133,7 +136,7 @@ public class EnrollmentService
 	{
 		UserRegistration usr=ur.findByUserName(name).orElseThrow();
 		
-		UserRegistration cd= er.findByUser_IdAndCourse_Id(usr.getId(), courseid).orElseThrow().getUser();
+		Optional<EnrollmentData> cd= er.findByUser_IdAndCourse_Id(usr.getId(), courseid);
 		int rows=er.deleteByUser_IdAndCourse_Id(usr.getId(),courseid);
 		if(rows>0)
 		{
@@ -141,9 +144,9 @@ public class EnrollmentService
 			InstructorStatUpdate isu= new InstructorStatUpdate();
 			isu.setProceeded(false);
 			isu.setCreatedAt(LocalDateTime.now());
-			isu.setDeltaValue(-1);
+			isu.setDeltaValue(+1);
 			isu.setEventType(StatUpdateEvent.UNENROLLMENT);
-			isu.setInstId(cd.getId());
+			isu.setInstId(cd.get().getCourse().getInstructor().getId());
 			
 			isr.save(isu);
 			
