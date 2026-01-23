@@ -32,6 +32,8 @@ public class InstructorProfile
 	private String aboutSec;
 	private String phone;
 	private Boolean isViolated;
+	
+	@Transient
 	private int trainedStud;
 	
 	@URL

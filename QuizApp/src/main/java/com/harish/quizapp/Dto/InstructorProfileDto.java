@@ -20,20 +20,19 @@ public class InstructorProfileDto
 	private String webUrl;
 	private String portfolioUrl;
 	private int totCourses;
-	private int totStudents;
+	private int totEnrollments;
 	private int totReviews;
 	private float avgRating;
 	private float completionRate;
 	private String totExp;
 	private List<Skills> skills;
 	private List<CourseDetailsDto> courseDetails;
-	
-	
-	
-	
+	private int trainedStudents;
+
+
 	public InstructorProfileDto(String userName, String fullName, String mail, LocalDate joinedDate, String headLine,
 			String shortBio, String aboutSec, String phone, Boolean isViolated, String linkedinUrl, String githubUrl,
-			String webUrl, String portfolioUrl, int totCourses, int totStudents, int totReviews, float avgRating,
+			String webUrl, String portfolioUrl, int totCourses, int totEnrollments, int trainedStudents, int totReviews, float avgRating,
 			float completionRate, String totExp, List<Skills> skills, List<CourseDetailsDto> courseDetails) {
 		super();
 		this.userName = userName;
@@ -50,13 +49,14 @@ public class InstructorProfileDto
 		this.webUrl = webUrl;
 		this.portfolioUrl = portfolioUrl;
 		this.totCourses = totCourses;
-		this.totStudents = totStudents;
+		this.totEnrollments = totEnrollments;
 		this.totReviews = totReviews;
 		this.avgRating = avgRating;
 		this.completionRate = completionRate;
 		this.totExp = totExp;
 		this.skills = skills;
 		this.courseDetails = courseDetails;
+		this.trainedStudents=trainedStudents;
 	}
 
 
@@ -104,8 +104,8 @@ public class InstructorProfileDto
 	public int getTotCourses() {
 		return totCourses;
 	}
-	public int getTotStudents() {
-		return totStudents;
+	public int getTotEnrollments() {
+		return totEnrollments;
 	}
 	public int getTotReviews() {
 		return totReviews;
@@ -125,4 +125,7 @@ public class InstructorProfileDto
 	public List<CourseDetailsDto> getCourseDetails() {
 		return courseDetails;
 	}	
+	public int getTrainedStudents() {
+		return trainedStudents;
+	}
 }
