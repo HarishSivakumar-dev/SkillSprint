@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import com.harish.quizapp.DataRepos.CoursesRepo;
+import com.harish.quizapp.DataRepos.EnrollmentRepo;
 import com.harish.quizapp.DataRepos.InstructorRepo;
 import com.harish.quizapp.DataRepos.SkillApprovalRepo;
 import com.harish.quizapp.DataRepos.SkillsRepo;
@@ -45,6 +46,8 @@ public class InstructorProfileService
 	private SkillApprovalRepo rep;
 	@Autowired 
 	private ViolationTableRepo vtr;
+	@Autowired
+	private EnrollmentRepo rp;
 	
 	
 	public ResponseEntity<InstructorProfileDto> getInstructorProfile()
@@ -74,11 +77,13 @@ public class InstructorProfileService
 		}
 		
 		prof.setCourseDetails(ew);
+		prof.setTrainedStud(rp.countDistinctUser_IdByInstId(prof.getId()));
 		
 		Period general= Period.between(prof.getJoinedDate(), LocalDate.now());
 		int yearOfExp= general.getYears();
 		int monthOfExp= general.getMonths();
-		String totExp= yearOfExp+" "+"Years" +monthOfExp+" "+"Months";
+		int days=general.getDays();
+		String totExp= yearOfExp+" "+" Years" +monthOfExp+" "+" Months" +days+" Days";
 		
 		prof.setTotExp(totExp);
 

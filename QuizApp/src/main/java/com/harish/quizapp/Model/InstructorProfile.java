@@ -3,9 +3,7 @@ package com.harish.quizapp.Model;
 import java.time.LocalDate;
 import java.util.List;
 import org.hibernate.validator.constraints.URL;
-
 import com.harish.quizapp.Dto.CourseDetailsDto;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -34,6 +32,7 @@ public class InstructorProfile
 	private String aboutSec;
 	private String phone;
 	private Boolean isViolated;
+	private int trainedStud;
 	
 	@URL
 	private String linkedinUrl;
@@ -278,5 +277,13 @@ public class InstructorProfile
 		this.totalCleared = totalCleared;
 	}
 
+	public int getTrainedStud() {
+		return trainedStud;
+	}
+
+	public void setTrainedStud(int trainedStud) {
+		this.trainedStud = trainedStud;
+	}
+	
 	
 }
