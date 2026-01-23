@@ -88,7 +88,7 @@ public class InstructorProfileService
 		prof.setTotExp(totExp);
 
 		
-		InstructorProfileDto dt= new InstructorProfileDto(prof.getUserName().getUserName(), prof.getUserName().getName(),prof.getMail(), prof.getJoinedDate(), prof.getHeadLine(), prof.getShortBio(), prof.getAboutSec(), prof.getPhone(), prof.getIsViolated(), prof.getLinkedinUrl(), prof.getGithubUrl(), prof.getWebUrl(), prof.getPortfolioUrl(), prof.getTotCourses(), prof.getTotStudents(), prof.getTotReviews(), prof.getAvgRating(), prof.getCompletionRate(), prof.getTotExp(), prof.getSkills(), prof.getCourseDetails());
+		InstructorProfileDto dt= new InstructorProfileDto(prof.getUserName().getUserName(), prof.getUserName().getName(),prof.getMail(), prof.getJoinedDate(), prof.getHeadLine(), prof.getShortBio(), prof.getAboutSec(), prof.getPhone(), prof.getIsViolated(), prof.getLinkedinUrl(), prof.getGithubUrl(), prof.getWebUrl(), prof.getPortfolioUrl(), prof.getTotCourses(), prof.getTotalRegistered(),prof.getTrainedStud(), prof.getTotReviews(), prof.getAvgRating(), prof.getCompletionRate(), prof.getTotExp(), prof.getSkills(), prof.getCourseDetails());
 		
 		
 		return ResponseEntity.status(HttpStatus.OK).body(dt);
