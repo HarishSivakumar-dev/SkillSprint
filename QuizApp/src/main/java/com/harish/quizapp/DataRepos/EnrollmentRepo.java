@@ -3,6 +3,8 @@ package com.harish.quizapp.DataRepos;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import com.harish.quizapp.Model.CourseDetails;
 import com.harish.quizapp.Model.EnrollmentData;
@@ -30,6 +32,7 @@ public interface EnrollmentRepo extends JpaRepository<EnrollmentData,Integer>
 
 	List<EnrollmentData> findByCourse_Id(int id);
 	
-	int countDistinctUser_IdByInstId(int instid);
+	@Query(value="SELECT COUNT(DISTINCT e.user.id) from EnrollmentData e WHERE e.instId= :instid")
+	int countDistinctUserId(@Param(value="instid") int instid);
 	
 }

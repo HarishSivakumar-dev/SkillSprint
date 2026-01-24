@@ -13,6 +13,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import com.harish.quizapp.DataRepos.CourseCompletionRepo;
 import com.harish.quizapp.DataRepos.CoursesRepo;
+import com.harish.quizapp.DataRepos.EnrollmentRepo;
 import com.harish.quizapp.DataRepos.FeedbackRepo;
 import com.harish.quizapp.DataRepos.InstStatRepo;
 import com.harish.quizapp.DataRepos.InstructorRepo;
@@ -55,6 +56,8 @@ public class ViolationResetScheduler
 	private InstStatRepo isr;
 	@Autowired
 	private UserDeltaRepo udr;
+	@Autowired
+	private EnrollmentRepo enrol;
  
 	
 	@Transactional
@@ -265,6 +268,7 @@ public class ViolationResetScheduler
 				
 				this.recalculateDerivedDeltas(pro);
 				this.allocateLevel(pro);
+				
 				dbsave.add(pro);
 				
 			}
@@ -319,11 +323,13 @@ public class ViolationResetScheduler
 	{
 		if(sue.equals(StatUpdateEvent.ENROLLMENT))
 		{
-			ip.setTotStudents(ip.getTotStudents()+deltaval);
+			ip.setTotalRegistered(ip.getTotalRegistered()+deltaval);
+			ip.setTrainedStud(enrol.countDistinctUserId(ip.getId()));
 		}
 		else if(sue.equals(StatUpdateEvent.UNENROLLMENT))
 		{
-			ip.setTotStudents(ip.getTotStudents()-deltaval);
+			ip.setTotalRegistered(ip.getTotalRegistered()-deltaval);
+			ip.setTrainedStud(enrol.countDistinctUserId(ip.getId()));
 		}
 		else if(sue.equals(StatUpdateEvent.COURSE))
 		{
