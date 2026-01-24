@@ -47,7 +47,6 @@ public class InstructorProfile
 	
 	//overall course datum
 	private int totCourses;
-	private int totStudents;
 	private int totReviews;
 	private float avgRating;
 	private float completionRate;
@@ -174,15 +173,7 @@ public class InstructorProfile
 	public void setTotCourses(int totCourses) {
 		this.totCourses = totCourses;
 	}
-
-	public int getTotStudents() {
-		return totStudents;
-	}
-
-	public void setTotStudents(int totStudents) {
-		this.totStudents = totStudents;
-	}
-
+	
 	public int getTotReviews() {
 		return totReviews;
 	}

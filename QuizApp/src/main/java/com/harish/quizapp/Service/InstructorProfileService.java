@@ -77,7 +77,8 @@ public class InstructorProfileService
 		}
 		
 		prof.setCourseDetails(ew);
-		prof.setTrainedStud(rp.countDistinctUser_IdByInstId(prof.getId()));
+		prof.setTrainedStud(rp.countDistinctUserId(prof.getId()));
+		System.out.println(rp.countDistinctUserId(prof.getId()));
 		
 		Period general= Period.between(prof.getJoinedDate(), LocalDate.now());
 		int yearOfExp= general.getYears();
