@@ -7,10 +7,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import com.harish.quizapp.DataRepos.AdminPromotionRepo;
 import com.harish.quizapp.DataRepos.CourseCompletionRepo;
 import com.harish.quizapp.DataRepos.CoursesRepo;
 import com.harish.quizapp.DataRepos.EnrollmentRepo;
@@ -18,17 +20,22 @@ import com.harish.quizapp.DataRepos.FeedbackRepo;
 import com.harish.quizapp.DataRepos.InstStatRepo;
 import com.harish.quizapp.DataRepos.InstructorRepo;
 import com.harish.quizapp.DataRepos.InstructorStatUpdateProjection;
+import com.harish.quizapp.DataRepos.SuperAdminRepo;
 import com.harish.quizapp.DataRepos.UserDeltaProjection;
 import com.harish.quizapp.DataRepos.UserDeltaRepo;
 import com.harish.quizapp.DataRepos.UserProfileRepo;
+import com.harish.quizapp.DataRepos.UserRepo;
 import com.harish.quizapp.DataRepos.ViolationTableRepo;
 import com.harish.quizapp.Model.CourseDetails;
 import com.harish.quizapp.Model.FeedbackTable;
 import com.harish.quizapp.Model.InstructorProfile;
 import com.harish.quizapp.Model.InstructorStatUpdate;
+import com.harish.quizapp.Model.SuperAdminAnalytics;
 import com.harish.quizapp.Model.UserProfile;
 import com.harish.quizapp.Model.UserProfileDelta;
 import com.harish.quizapp.Model.ViolationsTable;
+import com.harish.quizapp.enums.CourseStatus;
+import com.harish.quizapp.enums.PromotionStatus;
 import com.harish.quizapp.enums.SkillLevelEnum;
 import com.harish.quizapp.enums.StatUpdateEvent;
 import com.harish.quizapp.enums.UserDeltaAction;
@@ -58,6 +65,12 @@ public class ViolationResetScheduler
 	private UserDeltaRepo udr;
 	@Autowired
 	private EnrollmentRepo enrol;
+	@Autowired
+	private SuperAdminRepo sar;
+	@Autowired
+	private AdminPromotionRepo apr;
+	@Autowired
+	private UserRepo ur;
  
 	
 	@Transactional
@@ -283,6 +296,47 @@ public class ViolationResetScheduler
 		{
 			System.out.println(e);
 		}
+	}
+	
+	@Transactional
+	@Scheduled(cron="0 */10 * * * * ")
+	public void recomputeSuperAdminAnalytics()
+	{
+		Optional<SuperAdminAnalytics> al= sar.findById(1);
+		SuperAdminAnalytics sp= al.get();
+		
+		LocalDateTime start=LocalDateTime.now().withDayOfMonth(1).withHour(0).withMinute(0).withSecond(0);
+		LocalDateTime end=start.plusMonths(1);
+		
+		if(al.isEmpty())
+		{
+			SuperAdminAnalytics ana= new SuperAdminAnalytics();
+			ana.setLastComputedAt(LocalDateTime.now());
+			ana.setTotAdmins(apr.countByPromotionStatus(PromotionStatus.Promoted));
+			ana.setTotCourses(rep.countByStatus(CourseStatus.Active));
+			ana.setTotInstructors(ir.count());
+			ana.setTotStudents(ur.countByRoles("ROLE_USER"));
+			ana.setTotAdminManagers(ur.countByRoles("ROLE_ADMIN_MANAGER"));
+			
+			ana.setMonthlyNewRegistrations(ur.countByMonthlyRegistrations(start, end));
+			
+			sar.save(ana);
+			
+		}
+		else
+		{
+			sp.setLastComputedAt(LocalDateTime.now());
+			sp.setTotAdmins(apr.countByPromotionStatus(PromotionStatus.Promoted));
+			sp.setTotCourses(rep.countByStatus(CourseStatus.Active));
+			sp.setTotInstructors(ir.count());
+			sp.setTotStudents(ur.countByRoles("ROLE_USER"));
+			sp.setTotAdminManagers(ur.countByRoles("ROLE_ADMIN_MANAGER"));
+			
+			sp.setMonthlyNewRegistrations(ur.countByMonthlyRegistrations(start, end));
+			
+			sar.save(sp);
+		}
+		
 	}
 	
 	private SkillLevelEnum allocateLevel(float clearingrate, float completionrate, float certrate)
