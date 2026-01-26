@@ -15,4 +15,6 @@ public interface AdminPromotionRepo extends JpaRepository<AdminApplication, Inte
 	
 	Optional<AdminApplication> findByUser_Id(int id);
 	
+	int countByPromotionStatus(PromotionStatus ps);
+	
 }
