@@ -303,7 +303,6 @@ public class ViolationResetScheduler
 	public void recomputeSuperAdminAnalytics()
 	{
 		Optional<SuperAdminAnalytics> al= sar.findById(1);
-		SuperAdminAnalytics sp= al.get();
 		
 		LocalDateTime start=LocalDateTime.now().withDayOfMonth(1).withHour(0).withMinute(0).withSecond(0);
 		LocalDateTime end=start.plusMonths(1);
@@ -325,6 +324,8 @@ public class ViolationResetScheduler
 		}
 		else
 		{
+			SuperAdminAnalytics sp= al.get();
+			
 			sp.setLastComputedAt(LocalDateTime.now());
 			sp.setTotAdmins(apr.countByPromotionStatus(PromotionStatus.Promoted));
 			sp.setTotCourses(rep.countByStatus(CourseStatus.Active));
