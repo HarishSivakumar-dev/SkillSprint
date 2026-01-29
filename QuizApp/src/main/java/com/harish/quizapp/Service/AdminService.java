@@ -15,6 +15,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import com.harish.quizapp.DataRepos.AdminLogsRepo;
 import com.harish.quizapp.DataRepos.AdminPromotionRepo;
 import com.harish.quizapp.DataRepos.ComplaintAuditRepo;
 import com.harish.quizapp.DataRepos.ComplaintsRepo;
@@ -33,6 +34,7 @@ import com.harish.quizapp.Dto.PromotionDto;
 import com.harish.quizapp.Dto.SkillApprovalDto;
 import com.harish.quizapp.Dto.UpdateStatusDto;
 import com.harish.quizapp.Model.AdminApplication;
+import com.harish.quizapp.Model.AdminLogs;
 import com.harish.quizapp.Model.ComplaintAuditTable;
 import com.harish.quizapp.Model.ComplaintsTable;
 import com.harish.quizapp.Model.InstructorApplication;
@@ -74,6 +76,8 @@ public class AdminService
 	private SkillApprovalRepo sar;
 	@Autowired 
 	private SkillsRepo sklrep;
+	@Autowired
+	private AdminLogsRepo alr;
 	
 	public ResponseEntity<String> updateUserRoles(PromotionDto dto)
 	{
@@ -81,6 +85,13 @@ public class AdminService
 		UserRegistration ur= rep.findByUserName(SecurityContextHolder.getContext().getAuthentication().getName()).orElseThrow(()->new BadCredentialsException("No Admin Found"));
 		UserRegistration user=rep.findById(dto.getUserId()).orElseThrow();
 		InstructorApplication app=iar.findByUser(user).orElseThrow();
+		AdminLogs al= alr.findByAdminId(ur.getId()).orElseThrow();
+		
+		if(!al.getLastActive().equals(LocalDate.now()))
+		{
+			al.setLastActive(LocalDate.now());
+			alr.save(al);
+		}
 		
 		iut.setAdmin(ur);
 		iut.setUser(user);
@@ -173,6 +184,12 @@ public class AdminService
 			
 			aa.setPromotionStatus(PromotionStatus.Promoted);
 			apr.save(aa);
+			
+			AdminLogs lgs= new AdminLogs();
+			lgs.setAdminId(regs.getId());
+			lgs.setLastActive(LocalDate.now());
+			
+			alr.save(lgs);
 			
 			return ResponseEntity.status(HttpStatus.ACCEPTED).body("Changes Updated !");
 		}
@@ -268,6 +285,10 @@ public class AdminService
 		
 		car.save(cat);
 		
+		AdminLogs al= alr.findByAdminId(ur.getId()).orElseThrow();
+		al.setLastActive(LocalDate.now());
+		alr.save(al);
+		
 		return ResponseEntity.status(HttpStatus.OK).body("UPDATED");
 	}
 	
@@ -333,6 +354,10 @@ public class AdminService
 			}
 		}
 		sar.saveAll(sk);
+		
+		AdminLogs al= alr.findByAdminId(user.getId()).orElseThrow();
+		al.setLastActive(LocalDate.now());
+		alr.save(al);
 		
 		return ResponseEntity.status(HttpStatus.OK).body("Update Successfull ");
 	}
