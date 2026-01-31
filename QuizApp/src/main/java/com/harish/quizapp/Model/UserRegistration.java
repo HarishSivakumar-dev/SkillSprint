@@ -34,6 +34,8 @@ public class UserRegistration
 			joinColumns= @JoinColumn(name="user_id"),
 			inverseJoinColumns= @JoinColumn(name="role_id"))
 	private List<Roles> roles=new ArrayList<Roles>();
+	private String accountStatus;
+	private LocalDateTime lastLogin;
 	
 	public int getId() {
 		return id;
@@ -83,5 +85,18 @@ public class UserRegistration
 	public void setIsEmailVerified(Boolean isEmailVerified) {
 		this.isEmailVerified = isEmailVerified;
 	}
+	public String getAccountStatus() {
+		return accountStatus;
+	}
+	public void setAccountStatus(String accountStatus) {
+		this.accountStatus = accountStatus;
+	}
+	public LocalDateTime getLastLogin() {
+		return lastLogin;
+	}
+	public void setLastLogin(LocalDateTime lastLogin) {
+		this.lastLogin = lastLogin;
+	}
+	
 	
 }
