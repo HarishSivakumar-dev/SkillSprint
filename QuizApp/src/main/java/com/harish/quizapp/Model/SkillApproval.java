@@ -1,7 +1,7 @@
 package com.harish.quizapp.Model;
 
+import java.time.LocalDate;
 import com.harish.quizapp.enums.SkillStatus;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -31,6 +31,8 @@ public class SkillApproval
 	@Enumerated(EnumType.STRING)
 	private SkillStatus status;
 	
+	private LocalDate date;
+	
 	private String comments;
 
 	public int getId() {
@@ -39,14 +41,6 @@ public class SkillApproval
 
 	public void setId(int id) {
 		this.id = id;
-	}
-
-	public UserRegistration getInstrutor() {
-		return instructor;
-	}
-
-	public void setInstrutor(UserRegistration instructor) {
-		this.instructor = instructor;
 	}
 
 	public UserRegistration getAdmin() {
@@ -80,6 +74,22 @@ public class SkillApproval
 	public void setComments(String comments) {
 		this.comments = comments;
 	}
-	
 
+	public UserRegistration getInstructor() {
+		return instructor;
+	}
+
+	public void setInstructor(UserRegistration instructor) {
+		this.instructor = instructor;
+	}
+
+	public LocalDate getDate() {
+		return date;
+	}
+
+	public void setDate(LocalDate date) {
+		this.date = date;
+	}
+	
+	
 }
