@@ -35,7 +35,7 @@ Super Admin (GM)
 
 ---
 
-### Production-Ready Technical Implementations
+## Production-Ready Technical Implementations
 
 SkillSprint is engineered for scalability, security, and reliability in enterprise environments:
 
