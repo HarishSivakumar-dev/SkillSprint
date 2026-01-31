@@ -142,7 +142,7 @@ public class InstructorProfileService
 				else
 				{
 					SkillApproval sa= new SkillApproval();
-					sa.setInstrutor(reg);
+					sa.setInstructor(reg);
 					sa.setStatus(SkillStatus.Pending);
 					sa.setSkillApplied(st);
 					

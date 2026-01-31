@@ -1,5 +1,6 @@
 package com.harish.quizapp.Model;
 
+import java.time.LocalDate;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -25,6 +26,7 @@ public class InstructorApplication
 	private String reason;
 	private Boolean isPending;
 	private Boolean isRejected;
+	private LocalDate appliedAt;
 	
 	public int getId() {
 		return id;
@@ -80,5 +82,12 @@ public class InstructorApplication
 	public void setIsRejected(Boolean isRejected) {
 		this.isRejected = isRejected;
 	}
+	public LocalDate getAppliedAt() {
+		return appliedAt;
+	}
+	public void setAppliedAt(LocalDate appliedAt) {
+		this.appliedAt = appliedAt;
+	}
+	
 
 }

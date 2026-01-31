@@ -1,5 +1,6 @@
 package com.harish.quizapp.DataRepos;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,5 +15,9 @@ public interface InstAppRepo extends JpaRepository<InstructorApplication, Intege
 	Optional<InstructorApplication> findByUser(UserRegistration ar);
 	
 	List<InstructorApplication> findByIsPending(Boolean val);
+	
+	int countByIsPendingTrueAndAppliedAt(LocalDate date);
+	
+	int countByIsPendingTrueAndAppliedAtIsBefore(LocalDate date);
 	
 }
