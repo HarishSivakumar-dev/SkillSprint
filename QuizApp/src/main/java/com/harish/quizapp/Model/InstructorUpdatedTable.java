@@ -21,7 +21,7 @@ public class InstructorUpdatedTable
 	private UserRegistration admin;
 	
 	@ManyToOne
-	@JoinColumn(name="Instructor_Id")
+	@JoinColumn(name="User_Id")
 	private UserRegistration user;
 	
 	private LocalDate date;
