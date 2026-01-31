@@ -33,6 +33,8 @@ Super Admin (GM)
 │   │   │   └── Learner (Junior Developer / Fresher)
 ```
 
+---
+
 ### Production-Ready Technical Implementations
 
 SkillSprint is engineered for scalability, security, and reliability in enterprise environments:
@@ -47,6 +49,7 @@ SkillSprint is engineered for scalability, security, and reliability in enterpri
 
 * **Secure RBAC & Scalable Architecture:** Fine-grained role-based access with stateless REST APIs, ready for microservices evolution.
 
+---
 
 ### Role Responsibilities
 
