@@ -51,7 +51,7 @@ SkillSprint is engineered for scalability, security, and reliability in enterpri
 
 ---
 
-### Role Responsibilities
+## Role Responsibilities
 
 **Super Admin (GM)**
 
