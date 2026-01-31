@@ -113,6 +113,17 @@ SkillSprint is engineered for scalability, security, and reliability in enterpri
 
 ---
 
+## Asynchronous Request Flow
+
+The following diagram illustrates how incoming requests are processed synchronously for core operations,
+while heavy analytics workloads are offloaded to a dedicated asynchronous executor to preserve API latency.
+
+<p align="center">
+  <img src="images/async-request-flow.png" alt="Async Request Flow Diagram" width="850">
+</p>
+
+---
+
 ## Asynchronous Analytics
 
 Analytics and dashboard metrics are computed asynchronously to ensure:
