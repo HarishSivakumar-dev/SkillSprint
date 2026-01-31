@@ -328,7 +328,7 @@ public class AdminService
 			if(map.get(sv.getId()).getStatus()==SkillStatus.Approved)
 			{
 				Optional<Skills> opt=sklrep.findBySkillName(sv.getSkillApplied());
-				InstructorProfile ip= map1.get(sv.getInstrutor().getId());
+				InstructorProfile ip= map1.get(sv.getInstructor().getId());
 				
 				if(opt.isEmpty())
 				{

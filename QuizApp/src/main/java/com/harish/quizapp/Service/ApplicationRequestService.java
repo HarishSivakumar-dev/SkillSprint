@@ -1,5 +1,6 @@
 package com.harish.quizapp.Service;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +42,7 @@ public class ApplicationRequestService
 			ia.setResumeUrl(application.getResumeUrl());
 			ia.setIsPending(true);
 			ia.setIsRejected(false);
+			ia.setAppliedAt(LocalDate.now());
 			
 			iar.save(ia);
 			
