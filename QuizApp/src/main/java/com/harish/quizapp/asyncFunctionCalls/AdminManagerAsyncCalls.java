@@ -6,11 +6,13 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 import com.harish.quizapp.DataRepos.AdminLogsRepo;
 import com.harish.quizapp.DataRepos.AdminPromotionRepo;
 import com.harish.quizapp.DataRepos.UserRepo;
 import com.harish.quizapp.enums.PromotionStatus;
 
+@Component
 public class AdminManagerAsyncCalls
 {
 	@Autowired
