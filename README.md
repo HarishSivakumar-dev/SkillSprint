@@ -119,7 +119,7 @@ The following diagram illustrates how incoming requests are processed synchronou
 while heavy analytics workloads are offloaded to a dedicated asynchronous executor to preserve API latency.
 
 <p align="center">
-  <img src="images/async-request-flow.png" alt="Async Request Flow Diagram" width="850">
+  <img src="images/requestFlow.png" alt="Async Request Flow Diagram" width="850">
 </p>
 
 ---
