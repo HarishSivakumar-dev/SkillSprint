@@ -62,6 +62,7 @@ public class UserRegistrationService
 			ur.setPassword(enc.encode(ru.getPassword()));
 			ur.setIsEmailVerified(true);
 			ur.setUserName(ru.getUserName());
+			ur.setAccountStatus("ACTIVE");
 			
 			
 			UserRegistration regi=this.ur.save(ur);
