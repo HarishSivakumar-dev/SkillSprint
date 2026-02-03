@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
 import com.harish.quizapp.DataRepos.CoursesRepo;
 import com.harish.quizapp.DataRepos.QuestionRepo;
 import com.harish.quizapp.Model.CourseDetails;
@@ -31,7 +30,7 @@ public class QuestionService
 		
 		for(Questions ques : questions)
 		{
-			ques.setCourse(det);
+			ques.setInstId(det.getInstructor().getId());
 		}
 		
 		qr.saveAll(questions);
@@ -49,9 +48,9 @@ public class QuestionService
 		qr.deleteById(id);
 		return ResponseEntity.status(HttpStatus.OK).body("DELETED !");
 	}
-	public ResponseEntity<List<Questions>> getQuestionsforInstructor(int courseid)
+	public ResponseEntity<List<Questions>> getQuestionsforInstructor(int instid)
 	{
-		List<Questions> ques=qr.findByCourse_Id(courseid);
+		List<Questions> ques=qr.findByInstId(instid);
 		return ResponseEntity.status(HttpStatus.CONTINUE).body(ques);
 	}
 

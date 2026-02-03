@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import com.harish.quizapp.DataRepos.AttemptsRepo;
 import com.harish.quizapp.DataRepos.CourseCompletionRepo;
 import com.harish.quizapp.DataRepos.CoursesRepo;
+import com.harish.quizapp.DataRepos.EnrollmentRepo;
 import com.harish.quizapp.DataRepos.InstStatRepo;
 import com.harish.quizapp.DataRepos.QuestionRepo;
 import com.harish.quizapp.DataRepos.QuizQuestionsRepo;
@@ -28,6 +29,7 @@ import com.harish.quizapp.Dto.ResultDto;
 import com.harish.quizapp.Dto.ScoresDto;
 import com.harish.quizapp.Model.CourseCompletionStatus;
 import com.harish.quizapp.Model.CourseDetails;
+import com.harish.quizapp.Model.EnrollmentData;
 import com.harish.quizapp.Model.InstructorStatUpdate;
 import com.harish.quizapp.Model.Questions;
 import com.harish.quizapp.Model.QuestionsWrapper;
@@ -75,6 +77,8 @@ public class QuizService
 	private UserDeltaRepo udr;
 	@Autowired
 	private EnumHelperClass cls;
+	@Autowired
+	private EnrollmentRepo er;
 	
 	
 	public ResponseEntity<String> deleteQuiz(int quizid)
@@ -290,6 +294,7 @@ public class QuizService
 			List<Questions> qnew=new ArrayList<Questions>();
 			List<Integer> ids=new ArrayList<Integer>();
 			List<Questions> tempList=new ArrayList<Questions>();
+			List<Questions> qold= new ArrayList<Questions>();
 			
 			CourseDetails course= courses.findById(courseid).orElseThrow();
 			
@@ -297,18 +302,21 @@ public class QuizService
 			{
 				for(NewQuestionsDto nw : dto.getQuestions())
 				{
-					Questions qa=new Questions(nw.getDifficuty(),nw.getCatagory(),nw.getQuestion(),nw.getOption1(),nw.getOption2(),nw.getOption3(),nw.getOption4(),nw.getOption5(),nw.getRightans(),course);
+					Questions qa=new Questions(nw.getDifficuty(),nw.getCatagory(),nw.getQuestion(),nw.getOption1(),nw.getOption2(),nw.getOption3(),nw.getOption4(),nw.getOption5(),nw.getRightans(),course.getInstructor().getId());
 					tempList.add(qa);
 				}
 				qnew.addAll(qr.saveAll(tempList));
 			}
 			
-			for(ExistingQuestionsDto ex : dto.getQuestionid())
+			else
 			{
-				ids.add(ex.getQuestionId());
+				for(ExistingQuestionsDto ex : dto.getQuestionid())
+				{
+					ids.add(ex.getQuestionId());
+				}
+				
+				qold= qr.findAllById(ids);
 			}
-			
-			List<Questions> qold= qr.findAllById(ids);
 			
 			Quiz qes=new Quiz();
 			
@@ -335,10 +343,10 @@ public class QuizService
 			
 			Quiz q=quizrepo.save(qes);
 			
-			List<attemptsTable> users= attempts.findByCourse(course);
+			List<EnrollmentData> users= er.findByCourse_Id(courseid);
 			List<attemptsTable> newQuizzes= new ArrayList<attemptsTable>();
 			
-			for(attemptsTable at : users)
+			for(EnrollmentData at : users)
 			{
 				attemptsTable rec= new attemptsTable();
 				rec.setAttemptcount(0);
@@ -354,16 +362,6 @@ public class QuizService
 			List<Quiz_Questions> bridgeval=new ArrayList<Quiz_Questions>();
 			
 			int i=0;
-			for(ExistingQuestionsDto qu : dto.getQuestionid())
-			{
-				Quiz_Questions qs=new Quiz_Questions();
-				qs.setQuiz(q);
-				qs.setQuestions(qold.get(i));
-				qs.setMarks(qu.getMarks());
-				bridgeval.add(qs);
-				i++;
-			}
-			
 			if(!dto.getQuestions().isEmpty() && dto.getQuestions()!=null)
 			{
 				i=0;
@@ -376,7 +374,19 @@ public class QuizService
 					bridgeval.add(qs);
 					i++;
 				}
-			}        
+			}  
+			else 
+			{
+				for(ExistingQuestionsDto qu : dto.getQuestionid())
+				{
+					Quiz_Questions qs=new Quiz_Questions();
+					qs.setQuiz(q);
+					qs.setQuestions(qold.get(i));
+					qs.setMarks(qu.getMarks());
+					bridgeval.add(qs);
+					i++;
+				}
+			}
 			bridge.saveAll(bridgeval);
 			return ResponseEntity.status(HttpStatus.CREATED).body("Quiz Added");
 	}
