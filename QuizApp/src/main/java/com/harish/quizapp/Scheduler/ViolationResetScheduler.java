@@ -12,7 +12,6 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import com.harish.quizapp.DataRepos.AdminPromotionRepo;
 import com.harish.quizapp.DataRepos.CourseCompletionRepo;
 import com.harish.quizapp.DataRepos.CoursesRepo;
 import com.harish.quizapp.DataRepos.EnrollmentRepo;
@@ -35,7 +34,6 @@ import com.harish.quizapp.Model.UserProfile;
 import com.harish.quizapp.Model.UserProfileDelta;
 import com.harish.quizapp.Model.ViolationsTable;
 import com.harish.quizapp.enums.CourseStatus;
-import com.harish.quizapp.enums.PromotionStatus;
 import com.harish.quizapp.enums.SkillLevelEnum;
 import com.harish.quizapp.enums.StatUpdateEvent;
 import com.harish.quizapp.enums.UserDeltaAction;
@@ -67,8 +65,6 @@ public class ViolationResetScheduler
 	private EnrollmentRepo enrol;
 	@Autowired
 	private SuperAdminRepo sar;
-	@Autowired
-	private AdminPromotionRepo apr;
 	@Autowired
 	private UserRepo ur;
  
@@ -311,7 +307,7 @@ public class ViolationResetScheduler
 		{
 			SuperAdminAnalytics ana= new SuperAdminAnalytics();
 			ana.setLastComputedAt(LocalDateTime.now());
-			ana.setTotAdmins(apr.countByPromotionStatus(PromotionStatus.Promoted));
+			ana.setTotAdmins(ur.countByRoles("ROLE_ADMIN"));
 			ana.setTotCourses(rep.countByStatus(CourseStatus.Active));
 			ana.setTotInstructors(ir.count());
 			ana.setTotStudents(ur.countByRoles("ROLE_USER"));
@@ -327,7 +323,7 @@ public class ViolationResetScheduler
 			SuperAdminAnalytics sp= al.get();
 			
 			sp.setLastComputedAt(LocalDateTime.now());
-			sp.setTotAdmins(apr.countByPromotionStatus(PromotionStatus.Promoted));
+			sp.setTotAdmins(ur.countByRoles("ROLE_ADMIN"));
 			sp.setTotCourses(rep.countByStatus(CourseStatus.Active));
 			sp.setTotInstructors(ir.count());
 			sp.setTotStudents(ur.countByRoles("ROLE_USER"));
