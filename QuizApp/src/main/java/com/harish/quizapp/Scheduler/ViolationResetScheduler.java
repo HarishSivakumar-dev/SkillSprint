@@ -317,7 +317,7 @@ public class ViolationResetScheduler
 			ana.setTotStudents(ur.countByRoles("ROLE_USER"));
 			ana.setTotAdminManagers(ur.countByRoles("ROLE_ADMIN_MANAGER"));
 			
-			ana.setMonthlyNewRegistrations(ur.countByMonthlyRegistrations(start, end));
+			ana.setMonthlyNewRegistrations(ur.countByMonthlyRegistrations(start, end, "ROLE_USER"));
 			
 			sar.save(ana);
 			
@@ -333,7 +333,7 @@ public class ViolationResetScheduler
 			sp.setTotStudents(ur.countByRoles("ROLE_USER"));
 			sp.setTotAdminManagers(ur.countByRoles("ROLE_ADMIN_MANAGER"));
 			
-			sp.setMonthlyNewRegistrations(ur.countByMonthlyRegistrations(start, end));
+			sp.setMonthlyNewRegistrations(ur.countByMonthlyRegistrations(start, end, "ROLE_USER"));
 			
 			sar.save(sp);
 		}

@@ -15,10 +15,10 @@ public interface UserRepo extends JpaRepository<UserRegistration, Integer>
 	Optional<UserRegistration> findByEmail(String email);
 	
 	
-	@Query(value="SELECT COUNT(u) from UserRegistration u JOIN u.roles r WHERE r.rolename= :rolename ")
+	@Query(value="SELECT COUNT(u) from UserRegistration u JOIN u.roles r WHERE r.rolename= :rolename AND SIZE(u.roles)=1 ")
 	int countByRoles(@Param(value="rolename") String role);
 	
-	@Query(value="SELECT COUNT(u) from UserRegistration u WHERE u.joinedDate >=:start AND u.joinedDate< :end")
-	int countByMonthlyRegistrations(@Param(value="start") LocalDateTime start, @Param(value="end") LocalDateTime end);
+	@Query(value="SELECT COUNT(u) from UserRegistration u WHERE u.joinedDate >=:start AND u.joinedDate< :end AND r.rolename= :rolename AND SIZE(u.roles)=1")
+	int countByMonthlyRegistrations(@Param(value="start") LocalDateTime start, @Param(value="end") LocalDateTime end, @Param(value="rolename") String rolename );
 
 }
