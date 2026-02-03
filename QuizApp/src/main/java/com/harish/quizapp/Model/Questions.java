@@ -4,9 +4,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-
 
 @Entity
 public class Questions
@@ -23,11 +20,16 @@ public class Questions
 	private String option4;
 	private String option5;
 	
+	public Questions()
+	{
+		//
+	}
+	
 	public Questions(String difficuty, String catagory, String question, String option1, String option2,
-			String option3, String option4, String option5, String rightans, CourseDetails course) {
+			String option3, String option4, String option5, String rightans, int instid) {
 		super();
 		this.difficuty = difficuty;
-		Catagory = catagory;
+		this.Catagory = catagory;
 		this.question = question;
 		this.option1 = option1;
 		this.option2 = option2;
@@ -35,13 +37,11 @@ public class Questions
 		this.option4 = option4;
 		this.option5 = option5;
 		this.rightans = rightans;
-		this.course = course;
+		this.instId= instid;
 	}
 	private String rightans;
 	
-	@ManyToOne
-	@JoinColumn(name="course_id")
-	private CourseDetails course;
+	private int instId;
 	
 	
 	public int getId() {
@@ -104,11 +104,13 @@ public class Questions
 	public void setRightans(String rightans) {
 		this.rightans = rightans;
 	}
-	public CourseDetails getCourse() {
-		return course;
+	public int getInstId() {
+		return instId;
 	}
-	public void setCourse(CourseDetails course) {
-		this.course = course;
+	public void setInstId(int instId) {
+		this.instId = instId;
 	}
+	
+	
 
 }
