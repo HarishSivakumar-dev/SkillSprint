@@ -218,9 +218,9 @@ public class CourseService
 		return ResponseEntity.status(HttpStatus.ACCEPTED).body(materialsDto);
 	}
 	
-	public ResponseEntity<String> addMoreMaterials(int topicid,CourseContents cc)
+	public ResponseEntity<String> addMoreMaterials(int topicid, int courseid, CourseContents cc)
 	{
-		CourseContents contents=ccr.findById(topicid).orElseThrow();
+		CourseContents contents=ccr.findByCourse_IdAndTopicid(topicid, courseid).orElseThrow();
 		
 		List<MaterialsDto> mt=cc.getMaterialsdto();
 		for(MaterialsDto md : mt)

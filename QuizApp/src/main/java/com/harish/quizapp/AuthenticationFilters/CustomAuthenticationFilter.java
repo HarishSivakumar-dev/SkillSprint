@@ -15,17 +15,18 @@ import com.harish.quizapp.Model.UserRegistration;
 @Component
 public class CustomAuthenticationFilter implements AuthenticationProvider
 {
+
 	@Autowired
 	private UserRepo ur;
 	
 	BCryptPasswordEncoder enc=new BCryptPasswordEncoder(15);
+
 
 	@Override
 	public Authentication authenticate(Authentication authentication) throws AuthenticationException
 	{
 		String name=authentication.getName();
 		String pass=authentication.getCredentials().toString();
-		
 		
 		
 		UserRegistration encode=ur.findByUserName(name).orElseThrow(()-> new BadCredentialsException("NO USERS FOUND"));
