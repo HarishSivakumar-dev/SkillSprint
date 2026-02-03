@@ -14,7 +14,7 @@ public interface QuestionRepo extends JpaRepository<Questions,Integer>
 	@Query(value="SELECT*FROM Questions WHERE catagory =:catagory ORDER BY RAND()", nativeQuery=true)
 	List<Questions> getQuestionsforQuestions(@Param("catagory") String catagory);
 	
-	List<Questions> findByCourse_Id(int courseid);
+	List<Questions> findByInstId(int id);
 
 }
 
