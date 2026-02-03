@@ -104,11 +104,11 @@ public class CourseController
 		return cs.getMaterialsforTopic(courseid,topicid);
 	}
 	
-	@PutMapping("/course/content/{topicid}/materials")
+	@PutMapping("add/course/content/{topicid}/{courseid}")
 	@PreAuthorize("hasRole('INSTRUCTOR')")
-	public ResponseEntity<String> addMoreMaterialsforCourseTopic(@PathVariable int topicid, @RequestBody CourseContents md)
+	public ResponseEntity<String> addMoreMaterialsforCourseTopic(@PathVariable int topicid,@PathVariable int courseid, @RequestBody CourseContents md)
 	{
-		return cs.addMoreMaterials(topicid, md);
+		return cs.addMoreMaterials(topicid,courseid, md);
 	}
 	
 	@GetMapping("/course/get/all/Genre")

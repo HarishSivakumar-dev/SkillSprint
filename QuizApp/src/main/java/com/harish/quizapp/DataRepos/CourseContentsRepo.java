@@ -1,6 +1,8 @@
 package com.harish.quizapp.DataRepos;
 
 import java.util.List;
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -16,5 +18,7 @@ public interface CourseContentsRepo extends JpaRepository<CourseContents, Intege
 	int findByMaxCourseId(@Param(value="courseid") int courseid);
 	
 	List<CourseContents> findByCourse_Id(int courseid);
+	
+	Optional<CourseContents> findByCourse_IdAndTopicid(int courseid, int topicid);
 
 }
