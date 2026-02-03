@@ -30,7 +30,7 @@ public class UserLoginService
 		String pass=rd.getPassword();
 		
 		am.authenticate(new UsernamePasswordAuthenticationToken(name,pass));
-		
+		System.out.println("came in !");
 		UserRegistration usr= ur.findByUserName(name).orElseThrow();
 		usr.setLastLogin(LocalDateTime.now());
 		ur.save(usr);

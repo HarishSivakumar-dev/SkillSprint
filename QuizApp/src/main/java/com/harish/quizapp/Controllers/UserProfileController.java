@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.harish.quizapp.Dto.UserPersonalDetailsDto;
+import com.harish.quizapp.Dto.UserStudyProfileDto;
 import com.harish.quizapp.Model.UserProfile;
 import com.harish.quizapp.Service.UserProfileService;
 
@@ -25,6 +26,13 @@ public class UserProfileController
 	public ResponseEntity<String> addUserPersonalDataToProfile(@RequestBody UserPersonalDetailsDto upd)
 	{
 		return ups.addUserProfilePersonalDetails(upd);
+	}
+	
+	@PostMapping("/education")
+	@PreAuthorize("hasRole('USER')")
+	public ResponseEntity<String> addUserEducationalDataToProfile(@RequestBody UserStudyProfileDto dto)
+	{
+		return ups.addUserStudyDetails(dto);
 	}
 	
 	@GetMapping("/")
