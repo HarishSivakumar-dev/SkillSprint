@@ -85,12 +85,23 @@ public class AdminService
 		UserRegistration ur= rep.findByUserName(SecurityContextHolder.getContext().getAuthentication().getName()).orElseThrow(()->new BadCredentialsException("No Admin Found"));
 		UserRegistration user=rep.findById(dto.getUserId()).orElseThrow();
 		InstructorApplication app=iar.findByUser(user).orElseThrow();
-		AdminLogs al= alr.findByAdminId(ur.getId()).orElseThrow();
+		Optional<AdminLogs> al= alr.findByAdminId(ur.getId()); 
 		
-		if(!al.getLastActive().equals(LocalDate.now()))
+		if(al.isEmpty())
 		{
-			al.setLastActive(LocalDate.now());
-			alr.save(al);
+			AdminLogs logs= new AdminLogs();
+			logs.setAdminId(ur.getId());
+			logs.setLastActive(LocalDate.now());
+			
+			alr.save(logs);
+		}
+		else 
+		{
+			if(!al.get().getLastActive().equals(LocalDate.now()))
+			{
+				al.get().setLastActive(LocalDate.now());
+				alr.save(al.get());
+			}
 		}
 		
 		iut.setAdmin(ur);

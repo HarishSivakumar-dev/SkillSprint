@@ -12,7 +12,7 @@ import com.harish.quizapp.Model.CourseContents;
 public interface CourseContentsRepo extends JpaRepository<CourseContents, Integer>
 {
 	
-	@Query(value="SELECT COALESCE(MAX(topicid),0) FROM CourseContents WHERE course_id=:courseid", nativeQuery=true)
+	@Query(value="SELECT COALESCE(MAX(topicid),0) FROM course_contents WHERE course_id=:courseid", nativeQuery=true)
 	int findByMaxCourseId(@Param(value="courseid") int courseid);
 	
 	List<CourseContents> findByCourse_Id(int courseid);
