@@ -115,7 +115,7 @@ public class QuizService
 	
 		for(Questions q : allques)
 		{
-			QuestionsWrapper qz=new QuestionsWrapper(q.getQuestion(),q.getOption1(),q.getOption2(),q.getOption3(),q.getOption4(),q.getOption5());
+			QuestionsWrapper qz=new QuestionsWrapper(q.getId(),q.getQuestion(),q.getOption1(),q.getOption2(),q.getOption3(),q.getOption4(),q.getOption5());
 			qw.add(qz);
 		}
 		

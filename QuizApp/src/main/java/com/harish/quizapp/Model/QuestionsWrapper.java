@@ -2,7 +2,7 @@ package com.harish.quizapp.Model;
 
 public class QuestionsWrapper 
 {
-	
+	private int questionId;
 	private String question;
 	private String option1;
 	private String option2;
@@ -12,9 +12,11 @@ public class QuestionsWrapper
 	
 	
 	
-	public QuestionsWrapper(String question, String option1, String option2, String option3, String option4,
+	public QuestionsWrapper(int questionId,String question, String option1, String option2, String option3, String option4,
 			String option5) {
 		super();
+		
+		this.questionId= questionId;
 		this.question = question;
 		this.option1 = option1;
 		this.option2 = option2;
@@ -70,6 +72,16 @@ public class QuestionsWrapper
 	public void setOption5(String option5) {
 		this.option5 = option5;
 	}
+
+	public int getQuestionId() {
+		return questionId;
+	}
+
+	public void setQuestionId(int questionId) {
+		this.questionId = questionId;
+	}
+	
+	
 	
 
 }
