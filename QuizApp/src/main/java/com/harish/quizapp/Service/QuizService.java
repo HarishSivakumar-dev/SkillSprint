@@ -377,6 +377,7 @@ public class QuizService
 			}  
 			 if(!dto.getQuestionid().isEmpty() && dto.getQuestionid()!=null)
 			 {
+				 i=0;
 				 for(ExistingQuestionsDto qu : dto.getQuestionid())
 					{
 						Quiz_Questions qs=new Quiz_Questions();
