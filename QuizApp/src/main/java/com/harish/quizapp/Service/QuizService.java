@@ -318,12 +318,24 @@ public class QuizService
 				qold= qr.findAllById(ids);
 			}
 			
-			Quiz qes=new Quiz();
+			Optional<Quiz> first= quizrepo.findBySequenceNumberAndCourse_Id(1,courseid);
 			
+			Quiz qes=new Quiz();
 			qes.setTitle(dto.getTitle());
 			qes.setCourse(course);
 			qes.setTopicid(dto.getTopicid());
 			qes.setInstructor(course.getInstructor());
+			
+			if(first.isEmpty())
+			{
+				qes.setSequenceNumber(1);
+			}
+			else 
+			{
+				int seq= quizrepo.findMaxOfSequenceNumber(courseid);
+				qes.setSequenceNumber(seq+1);
+			}
+			
 			
 			if(dto.getIsFinal())
 			{

@@ -23,7 +23,7 @@ public interface QuizRepo extends JpaRepository<Quiz,Integer>
 	
 	Boolean existsByCourseAndIsfinalTrue(CourseDetails cd);
 	
-	Optional<Quiz> findBySequenceNumber(int num);
+	Optional<Quiz> findBySequenceNumberAndCourse_Id(int num, int id);
 	
 	@Query("SELECT MAX(u.sequenceNumber) FROM Quiz u WHERE u.course.id= :id")
 	int findMaxOfSequenceNumber(@Param(value="id") int id);
