@@ -34,11 +34,11 @@ public class QuestionController
 	{
 		return questionservice.addQuestions(questions,courseid);
 	}
-	@GetMapping("/get/instructor/{courseid}")
+	@GetMapping("/get/instructor/{instid}")
 	@PreAuthorize("hasRole('INSTRUCTOR')")
-	public ResponseEntity<List<Questions>> getQuestionsforInstructor(@PathVariable int courseid)
+	public ResponseEntity<List<Questions>> getQuestionsforInstructor(@PathVariable int instid)
 	{
-		return questionservice.getQuestionsforInstructor(courseid);
+		return questionservice.getQuestionsforInstructor(instid);
 	}
 	@GetMapping("/getQuestions/{catagory}/{numQ}")
 	public ResponseEntity<List<Questions>> getQuestionsForQuiz(@PathVariable String catagory,@PathVariable int numQ)
