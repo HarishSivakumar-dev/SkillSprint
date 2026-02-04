@@ -308,7 +308,7 @@ public class QuizService
 				qnew.addAll(qr.saveAll(tempList));
 			}
 			
-			else
+			if(!dto.getQuestionid().isEmpty() && dto.getQuestionid()!=null)
 			{
 				for(ExistingQuestionsDto ex : dto.getQuestionid())
 				{
