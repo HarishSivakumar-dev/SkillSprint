@@ -397,7 +397,7 @@ public class QuizService
 					i++;
 				}
 			}  
-			 if(!dto.getQuestionid().isEmpty() && dto.getQuestionid()!=null)
+			 if(dto.getQuestionid()!=null && !dto.getQuestionid().isEmpty())
 			 {
 				 i=0;
 				 for(ExistingQuestionsDto qu : dto.getQuestionid())
