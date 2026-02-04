@@ -34,11 +34,11 @@ public class QuizController
 		return qs.createQuiz(dto,courseid);
 	}
 	
-	@GetMapping("/getQuiz/{quizname}")
+	@GetMapping("courses/{courseid}/getQuiz/{quizname}")
 	@PreAuthorize("hasAnyRole('INSTRUCTOR','USER','ADMIN')")
-	public ResponseEntity<List<QuestionsWrapper>> getQuizQuestions(@PathVariable String quizname)
+	public ResponseEntity<List<QuestionsWrapper>> getQuizQuestions(@PathVariable int courseid, @PathVariable String quizname)
 	{
-		return qs.getQuestionsforQuiz(quizname);
+		return qs.getQuestionsforQuiz(quizname,courseid);
 	}
 	
 	@DeleteMapping("/courses/quizzes/quiz/{quizid}")
@@ -54,12 +54,13 @@ public class QuizController
 	{
 		return qs.getQuizzesforCourse(courseid);
 	}
-	@PostMapping("/result/{quizname}")
+	
+	@PostMapping("{quizname}/course/{courseid}/result")
 	@PreAuthorize("hasAnyRole('INSTRUCTOR','USER')")
-	public ResponseEntity<ResultDto> getResult(@RequestBody List<ScoresDto> scores, @PathVariable String quizname) throws Exception
+	public ResponseEntity<ResultDto> getResult(@RequestBody List<ScoresDto> scores, @PathVariable String quizname, @PathVariable int courseid) throws Exception
 	{
 		String name = SecurityContextHolder.getContext().getAuthentication().getName();
-		return qs.getScore(name,quizname, scores);
+		return qs.getScore(name,quizname, scores, courseid);
 	}
 	
 	@PostMapping("/create/finalquiz/{courseid}")
@@ -69,11 +70,11 @@ public class QuizController
 		return qs.createQuiz(dto, courseid);
 	}
 	
-	@PostMapping("/reult/final/{quizname}")
+	@PostMapping("{quizname}/course/{courseid}/result/final")
 	@PreAuthorize("hasAnyRole('INSTRUCTOR','USER')")
-	public ResponseEntity<ResultDto> getScoresFinal( @RequestBody List<ScoresDto> scores, @PathVariable String quizname ) throws Exception
+	public ResponseEntity<ResultDto> getScoresFinal( @RequestBody List<ScoresDto> scores, @PathVariable String quizname, @PathVariable int courseid) throws Exception
 	{
 		String name = SecurityContextHolder.getContext().getAuthentication().getName();
-		return qs.getScore(name,quizname, scores);
+		return qs.getScore(name,quizname, scores, courseid);
 	}
 }

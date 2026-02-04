@@ -131,10 +131,10 @@ public class QuizService
 	}
 	
 	@Transactional
-	public ResponseEntity<ResultDto> getScore(String name,String quizname, List<ScoresDto> ls) throws Exception
+	public ResponseEntity<ResultDto> getScore(String name,String quizname, List<ScoresDto> ls, int courseid) throws Exception
 	{
 		UserRegistration user = usr.findByUserName(name).orElseThrow();
-		Quiz ques=quizrepo.findByTitle(quizname).orElseThrow();
+		Quiz ques=quizrepo.findByTitleAndCourse_Id(quizname,courseid).get();
 		List<UserProfileDelta> delsave= new ArrayList<>();
 	
 		int streak=this.StreakLogicForUser(user, ques);
@@ -306,113 +306,122 @@ public class QuizService
 			List<Questions> tempList=new ArrayList<Questions>();
 			List<Questions> qold= new ArrayList<Questions>();
 			
-			CourseDetails course= courses.findById(courseid).orElseThrow();
-			
-			if(!dto.getQuestions().isEmpty() && dto.getQuestions()!=null)
+			if(quizrepo.findByTitleAndCourse_Id(dto.getTitle(), courseid).isEmpty())
 			{
-				for(NewQuestionsDto nw : dto.getQuestions())
+				CourseDetails course= courses.findById(courseid).orElseThrow();
+				
+				if(dto.getQuestions()!=null  && !dto.getQuestions().isEmpty())
 				{
-					Questions qa=new Questions(nw.getDifficuty(),nw.getCatagory(),nw.getQuestion(),nw.getOption1(),nw.getOption2(),nw.getOption3(),nw.getOption4(),nw.getOption5(),nw.getRightans(),course.getInstructor().getId());
-					tempList.add(qa);
-				}
-				qnew.addAll(qr.saveAll(tempList));
-			}
-			
-			if(dto.getQuestionid()!=null && !dto.getQuestionid().isEmpty())
-			{
-				for(ExistingQuestionsDto ex : dto.getQuestionid())
-				{
-					ids.add(ex.getQuestionId());
+					for(NewQuestionsDto nw : dto.getQuestions())
+					{
+						Questions qa=new Questions(nw.getDifficuty(),nw.getCatagory(),nw.getQuestion(),nw.getOption1(),nw.getOption2(),nw.getOption3(),nw.getOption4(),nw.getOption5(),nw.getRightans(),course.getInstructor().getId());
+						tempList.add(qa);
+					}
+					qnew.addAll(qr.saveAll(tempList));
 				}
 				
-				qold= qr.findAllById(ids);
-			}
-			
-			Optional<Quiz> first= quizrepo.findBySequenceNumberAndCourse_Id(1,courseid);
-			
-			Quiz qes=new Quiz();
-			qes.setTitle(dto.getTitle());
-			qes.setCourse(course);
-			qes.setTopicid(dto.getTopicid());
-			qes.setInstructor(course.getInstructor());
-			
-			if(first.isEmpty())
-			{
-				qes.setSequenceNumber(1);
-			}
-			else 
-			{
-				int seq= quizrepo.findMaxOfSequenceNumber(courseid);
-				qes.setSequenceNumber(seq+1);
-			}
-			
-			
-			if(dto.getIsFinal())
-			{
-				if(quizrepo.existsByCourseAndIsfinalTrue(course))
+				if(dto.getQuestionid()!=null && !dto.getQuestionid().isEmpty())
 				{
-					return ResponseEntity.status(HttpStatus.CONFLICT).body("Final Quiz Already Exists");
+					for(ExistingQuestionsDto ex : dto.getQuestionid())
+					{
+						ids.add(ex.getQuestionId());
+					}
+					
+					qold= qr.findAllById(ids);
+				}
+				
+				Optional<Quiz> first= quizrepo.findBySequenceNumberAndCourse_Id(1,courseid);
+				
+				Quiz qes=new Quiz();
+				qes.setTitle(dto.getTitle());
+				qes.setCourse(course);
+				qes.setTopicid(dto.getTopicid());
+				qes.setInstructor(course.getInstructor());
+				
+				if(first.isEmpty())
+				{
+					qes.setSequenceNumber(1);
+				}
+				else 
+				{
+					int seq= quizrepo.findMaxOfSequenceNumber(courseid);
+					qes.setSequenceNumber(seq+1);
+				}
+				
+				
+				if(dto.getIsFinal())
+				{
+					if(quizrepo.existsByCourseAndIsfinalTrue(course))
+					{
+						return ResponseEntity.status(HttpStatus.CONFLICT).body("Final Quiz Already Exists");
+					}
+					else
+					{
+						qes.setIsFinal(true);
+					}
 				}
 				else
 				{
-					qes.setIsFinal(true);
+					qes.setIsFinal(false);
 				}
-			}
-			else
-			{
-				qes.setIsFinal(false);
-			}
-			
-			Quiz q=quizrepo.save(qes);
-			
-			List<EnrollmentData> users= er.findByCourse_Id(courseid);
-			List<attemptsTable> newQuizzes= new ArrayList<attemptsTable>();
-			
-			for(EnrollmentData at : users)
-			{
-				attemptsTable rec= new attemptsTable();
-				rec.setAttemptcount(0);
-				rec.setCourse(course);
-				rec.setQuiz(q);
-				rec.setStatus("NOT_COMPLETED");
-				rec.setUser(at.getUser());
 				
-				newQuizzes.add(rec);
-			}
-			attempts.saveAll(newQuizzes);
-			
-			List<Quiz_Questions> bridgeval=new ArrayList<Quiz_Questions>();
-			
-			int i=0;
-			if(!dto.getQuestions().isEmpty() && dto.getQuestions()!=null)
-			{
-				i=0;
-				for(NewQuestionsDto newdata : dto.getQuestions())
+				Quiz q=quizrepo.save(qes);
+				
+				List<EnrollmentData> users= er.findByCourse_Id(courseid);
+				List<attemptsTable> newQuizzes= new ArrayList<attemptsTable>();
+				
+				for(EnrollmentData at : users)
 				{
-					Quiz_Questions qs=new Quiz_Questions();
-					qs.setQuiz(q);
-					qs.setQuestions(qnew.get(i));
-					qs.setMarks(newdata.getMarks());
-					bridgeval.add(qs);
-					i++;
+					attemptsTable rec= new attemptsTable();
+					rec.setAttemptcount(0);
+					rec.setCourse(course);
+					rec.setQuiz(q);
+					rec.setStatus("NOT_COMPLETED");
+					rec.setUser(at.getUser());
+					
+					newQuizzes.add(rec);
 				}
-			}  
-			 if(dto.getQuestionid()!=null && !dto.getQuestionid().isEmpty())
-			 {
-				 i=0;
-				 for(ExistingQuestionsDto qu : dto.getQuestionid())
+				attempts.saveAll(newQuizzes);
+				
+				List<Quiz_Questions> bridgeval=new ArrayList<Quiz_Questions>();
+				
+				int i=0;
+				if(!dto.getQuestions().isEmpty() && dto.getQuestions()!=null)
+				{
+					i=0;
+					for(NewQuestionsDto newdata : dto.getQuestions())
 					{
 						Quiz_Questions qs=new Quiz_Questions();
 						qs.setQuiz(q);
-						qs.setQuestions(qold.get(i));
-						qs.setMarks(qu.getMarks());
+						qs.setQuestions(qnew.get(i));
+						qs.setMarks(newdata.getMarks());
 						bridgeval.add(qs);
 						i++;
 					}
-			 }			
-			 bridge.saveAll(bridgeval);
-			 
-			return ResponseEntity.status(HttpStatus.CREATED).body("Quiz Added");
+				}  
+				 if(dto.getQuestionid()!=null && !dto.getQuestionid().isEmpty())
+				 {
+					 i=0;
+					 for(ExistingQuestionsDto qu : dto.getQuestionid())
+						{
+							Quiz_Questions qs=new Quiz_Questions();
+							qs.setQuiz(q);
+							qs.setQuestions(qold.get(i));
+							qs.setMarks(qu.getMarks());
+							bridgeval.add(qs);
+							i++;
+						}
+				 }			
+				 bridge.saveAll(bridgeval);
+				 
+				return ResponseEntity.status(HttpStatus.CREATED).body("Quiz Added");
+			}
+			else 
+			{
+				return ResponseEntity.status(HttpStatus.CONFLICT).body("Title already exists in the added quizzes !");
+			}
+			
+			
 	}
 	
 	public int StreakLogicForUser(UserRegistration user, Quiz quiz)
