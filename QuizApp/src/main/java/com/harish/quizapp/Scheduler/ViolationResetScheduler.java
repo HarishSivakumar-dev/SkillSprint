@@ -19,6 +19,7 @@ import com.harish.quizapp.DataRepos.FeedbackRepo;
 import com.harish.quizapp.DataRepos.InstStatRepo;
 import com.harish.quizapp.DataRepos.InstructorRepo;
 import com.harish.quizapp.DataRepos.InstructorStatUpdateProjection;
+import com.harish.quizapp.DataRepos.StreakMainRepo;
 import com.harish.quizapp.DataRepos.SuperAdminRepo;
 import com.harish.quizapp.DataRepos.UserDeltaProjection;
 import com.harish.quizapp.DataRepos.UserDeltaRepo;
@@ -67,6 +68,8 @@ public class ViolationResetScheduler
 	private SuperAdminRepo sar;
 	@Autowired
 	private UserRepo ur;
+	@Autowired
+	private StreakMainRepo smr;
  
 	
 	@Transactional
@@ -415,6 +418,7 @@ public class ViolationResetScheduler
 		else if(act.equals(UserDeltaAction.QuizAttended))
 		{
 			pr.setQuizzesAttended(pr.getQuizzesAttended()+deltaval);
+			pr.setStreakMaintanance(smr.findByUserId(pr.getUserName()).getId());
 		}
 		else if(act.equals(UserDeltaAction.QuizCleared))
 		{
