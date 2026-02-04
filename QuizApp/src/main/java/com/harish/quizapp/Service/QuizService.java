@@ -298,6 +298,7 @@ public class QuizService
 				
 	}
 	
+	@Transactional
 	public ResponseEntity<String> createQuiz(QuizDto dto, int courseid)
 	{
 			List<Questions> qnew=new ArrayList<Questions>();
@@ -317,7 +318,7 @@ public class QuizService
 				qnew.addAll(qr.saveAll(tempList));
 			}
 			
-			if(!dto.getQuestionid().isEmpty() && dto.getQuestionid()!=null)
+			if(dto.getQuestionid()!=null && !dto.getQuestionid().isEmpty())
 			{
 				for(ExistingQuestionsDto ex : dto.getQuestionid())
 				{
