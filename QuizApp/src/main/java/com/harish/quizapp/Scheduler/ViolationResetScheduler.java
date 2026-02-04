@@ -34,6 +34,7 @@ import com.harish.quizapp.Model.SuperAdminAnalytics;
 import com.harish.quizapp.Model.UserProfile;
 import com.harish.quizapp.Model.UserProfileDelta;
 import com.harish.quizapp.Model.ViolationsTable;
+import com.harish.quizapp.enums.CompletionStatus;
 import com.harish.quizapp.enums.CourseStatus;
 import com.harish.quizapp.enums.SkillLevelEnum;
 import com.harish.quizapp.enums.StatUpdateEvent;
@@ -401,10 +402,8 @@ public class ViolationResetScheduler
 		}
 		else if(sue.equals(StatUpdateEvent.COMPLETION))
 		{
-			int totstd= ip.getTotalCleared();
-			int completed= ccr.countByCourse_Instructor(ip);
-			
-			ip.setCompletionRate(((float)completed/(float)totstd) * 100);
+			int completed= ccr.countByCourse_InstructorAndCourseCompletionStatus(ip, CompletionStatus.CompletedAndCertified);
+			ip.setCompletionRate(((float)completed/(float)ip.getTotalRegistered()) * 100);
 		}
 		
 	}
@@ -418,7 +417,7 @@ public class ViolationResetScheduler
 		else if(act.equals(UserDeltaAction.QuizAttended))
 		{
 			pr.setQuizzesAttended(pr.getQuizzesAttended()+deltaval);
-			pr.setStreakMaintanance(smr.findByUserId(pr.getUserName()).getId());
+			pr.setStreakMaintanance(smr.findByUserId(pr.getUserName()).getStreak());
 		}
 		else if(act.equals(UserDeltaAction.QuizCleared))
 		{
