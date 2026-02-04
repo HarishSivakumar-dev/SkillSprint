@@ -99,9 +99,9 @@ public class QuizService
 	}
 	
 	@Transactional
-	public ResponseEntity<List<QuestionsWrapper>> getQuestionsforQuiz(String quizname)
+	public ResponseEntity<List<QuestionsWrapper>> getQuestionsforQuiz(String quizname,int courseid)
 	{
-		Quiz ques=quizrepo.findByTitle(quizname).orElseThrow();
+		Quiz ques=quizrepo.findByTitleAndCourse_Id(quizname,courseid).orElseThrow();
 		String user= SecurityContextHolder.getContext().getAuthentication().getName();
 		int usrid= usr.findByUserName(user).orElseThrow().getId();
 		

@@ -27,4 +27,6 @@ public interface QuizRepo extends JpaRepository<Quiz,Integer>
 	
 	@Query("SELECT MAX(u.sequenceNumber) FROM Quiz u WHERE u.course.id= :id")
 	int findMaxOfSequenceNumber(@Param(value="id") int id);
+
+	Optional<Quiz> findByTitleAndCourse_Id(String quizname,int id);
 }
