@@ -24,4 +24,6 @@ public interface AttemptsRepo extends JpaRepository<attemptsTable,Integer>
 	
 	int countByUserAndStatus(UserRegistration user, String status);
 	
+	boolean existsByUser_IdAndQuiz_IdAndStatus(int usrid, int quizid, String status);
+	
 }

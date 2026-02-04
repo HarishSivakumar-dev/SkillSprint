@@ -8,6 +8,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import com.harish.quizapp.DataRepos.AttemptsRepo;
@@ -85,7 +86,6 @@ public class QuizService
 	{
 		
 		quizrepo.deleteById(quizid);
-		//the logic is still being cooked by the chef harish.
 		return ResponseEntity.status(HttpStatus.OK).body("DELETED");
 	}
 	
@@ -98,25 +98,33 @@ public class QuizService
 		
 	}
 	
+	@Transactional
 	public ResponseEntity<List<QuestionsWrapper>> getQuestionsforQuiz(String quizname)
 	{
 		Quiz ques=quizrepo.findByTitle(quizname).orElseThrow();
-		
-		List<Quiz_Questions> quiz= bridge.findByQuiz_Id(ques.getId());
-		
-		List<Questions> allques=new ArrayList<>();
-		
-		for(Quiz_Questions qz : quiz)
-		{
-			allques.add(qz.getQuestions());
-		}
+		String user= SecurityContextHolder.getContext().getAuthentication().getName();
+		int usrid= usr.findByUserName(user).orElseThrow().getId();
 		
 		List<QuestionsWrapper> qw=new ArrayList<>();
-	
-		for(Questions q : allques)
+		
+		if(ques.getSequenceNumber()!=1)
 		{
-			QuestionsWrapper qz=new QuestionsWrapper(q.getId(),q.getQuestion(),q.getOption1(),q.getOption2(),q.getOption3(),q.getOption4(),q.getOption5());
-			qw.add(qz);
+			int seq= ques.getSequenceNumber()-1;
+			int prvquiz= quizrepo.findBySequenceNumberAndCourse_Id(seq,ques.getCourse().getId()).get().getId();
+			
+			boolean res= attempts.existsByUser_IdAndQuiz_IdAndStatus(usrid,prvquiz,"PASSED");
+			if(res==true)
+			{
+				qw=this.generateQuestionWrapper(ques.getId());
+			}
+			else
+			{
+				return ResponseEntity.status(HttpStatus.LOCKED).body(qw);
+			}
+		}
+		else
+		{
+			qw=this.generateQuestionWrapper(ques.getId());
 		}
 		
 		return ResponseEntity.status(HttpStatus.OK).body(qw);
@@ -289,6 +297,7 @@ public class QuizService
 		return ResponseEntity.status(HttpStatus.OK).body(res);
 				
 	}
+	
 	public ResponseEntity<String> createQuiz(QuizDto dto, int courseid)
 	{
 			List<Questions> qnew=new ArrayList<Questions>();
@@ -401,8 +410,10 @@ public class QuizService
 					}
 			 }			
 			 bridge.saveAll(bridgeval);
+			 
 			return ResponseEntity.status(HttpStatus.CREATED).body("Quiz Added");
 	}
+	
 	public int StreakLogicForUser(UserRegistration user, Quiz quiz)
 	{
 		
@@ -455,4 +466,25 @@ public class QuizService
 		}
 		
 	}
+	
+	public List<QuestionsWrapper> generateQuestionWrapper(int quesid)
+	{
+		List<Quiz_Questions> quiz= bridge.findByQuiz_Id(quesid);
+		List<QuestionsWrapper> qw= new ArrayList<QuestionsWrapper>();
+		List<Questions> allques=new ArrayList<>();
+		
+		for(Quiz_Questions qz : quiz)
+		{
+			allques.add(qz.getQuestions());
+		}
+	
+		for(Questions q : allques)
+		{
+			QuestionsWrapper qz=new QuestionsWrapper(q.getId(),q.getQuestion(),q.getOption1(),q.getOption2(),q.getOption3(),q.getOption4(),q.getOption5());
+			qw.add(qz);
+		}
+		
+		return qw;
+	}
+	
 }
