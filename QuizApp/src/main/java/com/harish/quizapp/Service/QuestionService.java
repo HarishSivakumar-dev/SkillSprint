@@ -51,7 +51,7 @@ public class QuestionService
 	public ResponseEntity<List<Questions>> getQuestionsforInstructor(int instid)
 	{
 		List<Questions> ques=qr.findByInstId(instid);
-		return ResponseEntity.status(HttpStatus.CONTINUE).body(ques);
+		return ResponseEntity.status(HttpStatus.FOUND).body(ques);
 	}
 
 }
