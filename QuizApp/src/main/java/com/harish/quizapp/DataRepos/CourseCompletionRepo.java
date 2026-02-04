@@ -1,5 +1,6 @@
 package com.harish.quizapp.DataRepos;
 
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -16,7 +17,7 @@ public interface CourseCompletionRepo extends JpaRepository<CourseCompletionStat
 	
 	int countDistinctUserByCourse_Instructor_Id(int id);
 	
-	int countByCourse_InstructorAndCourseCompletionStatus(InstructorProfile ip, CompletionStatus col);
+	int countByCourse_InstructorAndCourseCompletionStatusIn(InstructorProfile ip, List<CompletionStatus> col);
 	
 	int countByUser(UserRegistration usr);
 

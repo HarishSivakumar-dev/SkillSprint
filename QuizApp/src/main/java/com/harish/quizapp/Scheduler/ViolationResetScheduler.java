@@ -402,7 +402,7 @@ public class ViolationResetScheduler
 		}
 		else if(sue.equals(StatUpdateEvent.COMPLETION))
 		{
-			int completed= ccr.countByCourse_InstructorAndCourseCompletionStatus(ip, CompletionStatus.CompletedAndCertified);
+			int completed= ccr.countByCourse_InstructorAndCourseCompletionStatusIn(ip, List.of(CompletionStatus.CompletedAndCertified, CompletionStatus.Completed));
 			ip.setCompletionRate(((float)completed/(float)ip.getTotalRegistered()) * 100);
 		}
 		
