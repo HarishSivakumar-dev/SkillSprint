@@ -28,6 +28,7 @@ public class Quiz
 	private InstructorProfile instructor;
 	
 	private Boolean isfinal;
+	private int sequenceNumber;
 	
 	
 	public Boolean getIsFinal() {
@@ -76,6 +77,14 @@ public class Quiz
 
 	public void setInstructor(InstructorProfile instructor) {
 		this.instructor = instructor;
+	}
+
+	public int getSequenceNumber() {
+		return sequenceNumber;
+	}
+
+	public void setSequenceNumber(int sequenceNumber) {
+		this.sequenceNumber = sequenceNumber;
 	}
 	
 }

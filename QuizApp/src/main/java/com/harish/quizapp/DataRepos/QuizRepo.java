@@ -20,4 +20,6 @@ public interface QuizRepo extends JpaRepository<Quiz,Integer>
 	List<Quiz> findByCourseOrderByIdAsc(CourseDetails cd);
 	
 	Boolean existsByCourseAndIsfinalTrue(CourseDetails cd);
+	
+	Optional<Quiz> findBySequenceNumber(int num);
 }
