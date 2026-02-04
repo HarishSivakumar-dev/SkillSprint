@@ -375,19 +375,19 @@ public class QuizService
 					i++;
 				}
 			}  
-			else 
-			{
-				for(ExistingQuestionsDto qu : dto.getQuestionid())
-				{
-					Quiz_Questions qs=new Quiz_Questions();
-					qs.setQuiz(q);
-					qs.setQuestions(qold.get(i));
-					qs.setMarks(qu.getMarks());
-					bridgeval.add(qs);
-					i++;
-				}
-			}
-			bridge.saveAll(bridgeval);
+			 if(!dto.getQuestionid().isEmpty() && dto.getQuestionid()!=null)
+			 {
+				 for(ExistingQuestionsDto qu : dto.getQuestionid())
+					{
+						Quiz_Questions qs=new Quiz_Questions();
+						qs.setQuiz(q);
+						qs.setQuestions(qold.get(i));
+						qs.setMarks(qu.getMarks());
+						bridgeval.add(qs);
+						i++;
+					}
+			 }			
+			 bridge.saveAll(bridgeval);
 			return ResponseEntity.status(HttpStatus.CREATED).body("Quiz Added");
 	}
 	public int StreakLogicForUser(UserRegistration user, Quiz quiz)
