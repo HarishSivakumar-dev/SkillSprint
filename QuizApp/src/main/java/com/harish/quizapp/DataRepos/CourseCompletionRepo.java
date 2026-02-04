@@ -16,7 +16,7 @@ public interface CourseCompletionRepo extends JpaRepository<CourseCompletionStat
 	
 	int countDistinctUserByCourse_Instructor_Id(int id);
 	
-	int countByCourse_Instructor(InstructorProfile ip);
+	int countByCourse_InstructorAndCourseCompletionStatus(InstructorProfile ip, CompletionStatus col);
 	
 	int countByUser(UserRegistration usr);
 
