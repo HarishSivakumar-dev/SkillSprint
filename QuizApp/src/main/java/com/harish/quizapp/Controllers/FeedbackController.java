@@ -8,8 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.harish.quizapp.Model.FeedbackTable;
+import com.harish.quizapp.Dto.FeedbackDto;
 import com.harish.quizapp.Service.FeedbackService;
 
 @RestController
@@ -22,11 +21,9 @@ public class FeedbackController
 	
 	@PostMapping("/user/feedback/{courseid}")
 	@PreAuthorize("hasRole('USER')")
-	public ResponseEntity<String> submitFeedback(@RequestBody FeedbackTable ft, @PathVariable int courseid)
+	public ResponseEntity<String> submitFeedback(@RequestBody FeedbackDto ft, @PathVariable int courseid)
 	{
 		return fs.submitFeedback(ft, courseid);
 	}
-	
-	
 
 }

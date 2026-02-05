@@ -1,7 +1,6 @@
 package com.harish.quizapp.Controllers;
 
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -10,8 +9,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
+import com.harish.quizapp.Dto.ComplaintInstructorDto;
 import com.harish.quizapp.Dto.ComplaintsDto;
+import com.harish.quizapp.Dto.ViolationResultDto;
 import com.harish.quizapp.Model.ComplaintsTable;
 import com.harish.quizapp.Service.ComplaintService;
 
@@ -19,6 +19,7 @@ import com.harish.quizapp.Service.ComplaintService;
 @RequestMapping("/app/complaint")
 public class ComplaintController 
 {
+	
 	@Autowired
 	private ComplaintService cs; 
 	
@@ -35,6 +36,20 @@ public class ComplaintController
 	public ResponseEntity<List<ComplaintsTable>> getAllUserProblem()
 	{
 		return cs.getAllUserSubmitted();
+	}
+	
+	@GetMapping("/get/me")
+	@PreAuthorize("hasRole('INSTRUCTOR')")
+	public ResponseEntity<List<ComplaintInstructorDto>> getComplaintsAgainstMe()
+	{
+		return cs.getComplaintsInstructor();
+	}
+	
+	@GetMapping("/violations")
+	@PreAuthorize("hasRole('INSTRUCTOR')")
+	public ResponseEntity<ViolationResultDto> getMyViolationStatus()
+	{
+		return cs.getViolationOfMe();
 	}
 
 }
