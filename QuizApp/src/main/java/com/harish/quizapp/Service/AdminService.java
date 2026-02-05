@@ -249,14 +249,14 @@ public class AdminService
 			
 			if(vt.isPresent())
 			{
-				if(vt.get().getInitialViolationCount()<3)
+			    if(vt.get().getInitialViolationCount()<3)
 				{
 					vt.get().setInitialViolationCount(vt.get().getInitialViolationCount()+1);
 					vtr.save(vt.get());
 				}
 				else if(vt.get().getFinalViolationCount()<3)
 				{
-					vt.get().setFinalViolationCount(vt.get().getInitialViolationCount()+1);
+					vt.get().setFinalViolationCount(vt.get().getFinalViolationCount()+1);
 					vtr.save(vt.get());
 				}
 				else
