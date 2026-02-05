@@ -14,6 +14,7 @@ import com.harish.quizapp.DataRepos.CoursesRepo;
 import com.harish.quizapp.DataRepos.FeedbackRepo;
 import com.harish.quizapp.DataRepos.InstStatRepo;
 import com.harish.quizapp.DataRepos.UserRepo;
+import com.harish.quizapp.Dto.FeedbackDto;
 import com.harish.quizapp.Model.CourseDetails;
 import com.harish.quizapp.Model.FeedbackTable;
 import com.harish.quizapp.Model.InstructorProfile;
@@ -31,17 +32,22 @@ public class FeedbackService
 	@Autowired
 	private InstStatRepo isr;
 	
-	public ResponseEntity<String> submitFeedback(FeedbackTable ft, int courseid)
+	public ResponseEntity<String> submitFeedback(FeedbackDto ft, int courseid)
 	{
 		String ur= SecurityContextHolder.getContext().getAuthentication().getName();
 		UserRegistration reg= rep.findByUserName(ur).orElseThrow();
 		CourseDetails cd= cr.findById(courseid).orElseThrow();
 		InstructorProfile ins=cd.getInstructor();
 		
-		ft.setCourseId(courseid);
-		ft.setUser(reg);
-		ft.setInstructor(ins);
-		fr.save(ft);
+		FeedbackTable tb= new FeedbackTable();
+		
+		tb.setCourseId(courseid);
+		tb.setUser(reg);
+		tb.setComments(ft.getComments());
+		tb.setRating(ft.getRating());
+		tb.setInstructor(ins);
+		
+		fr.save(tb);
 		
 		InstructorStatUpdate isu= new InstructorStatUpdate();
 		isu.setProceeded(false);
