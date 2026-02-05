@@ -23,6 +23,10 @@ public class ComplaintsTable
 	private InstructorProfile instructor;
 	
 	@ManyToOne
+	@JoinColumn(name="course_handled")
+	private CourseDetails course;
+	
+	@ManyToOne
 	@JoinColumn(name="Reporting_user")
 	private UserRegistration user;
 	
@@ -75,4 +79,12 @@ public class ComplaintsTable
 	public void setCreatedAt(LocalDate createdAt) {
 		this.createdAt = createdAt;
 	}
+	public CourseDetails getCourse() {
+		return course;
+	}
+	public void setCourse(CourseDetails course) {
+		this.course = course;
+	}
+	
+	
 }
