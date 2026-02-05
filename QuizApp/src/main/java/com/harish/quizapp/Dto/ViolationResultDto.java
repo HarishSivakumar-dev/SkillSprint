@@ -1,9 +1,12 @@
 package com.harish.quizapp.Dto;
 
+import java.time.LocalDateTime;
+
 public class ViolationResultDto
 {
 	private int initialViolationCount;
 	private int finalViolationCount;
+	private LocalDateTime dateOfViolation;
 	private Boolean isViolated;
 	
 	
@@ -25,6 +28,13 @@ public class ViolationResultDto
 	public void setIsViolated(Boolean isViolated) {
 		this.isViolated = isViolated;
 	}
+	public LocalDateTime getDateOfViolation() {
+		return dateOfViolation;
+	}
+	public void setDateOfViolation(LocalDateTime dateOfViolation) {
+		this.dateOfViolation = dateOfViolation;
+	}
 	
+
 	
 }

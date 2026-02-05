@@ -455,4 +455,5 @@ public class ViolationResetScheduler
 	{
 		up.setLevel(this.allocateLevel(up.getAvgQuizezCleared(),up.getAvgClearingRate(),up.getAvgCertificationRate()));
 	}
+	
 }
