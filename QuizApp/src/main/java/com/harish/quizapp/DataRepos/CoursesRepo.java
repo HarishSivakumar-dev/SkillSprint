@@ -20,7 +20,7 @@ public interface CoursesRepo extends JpaRepository<CourseDetails,Integer>
 	
 	int countByStatus(CourseStatus st);
 	
-	int countByInstructorAndStatus(InstructorProfile ur, String status);
+	int countByInstructorAndStatus(InstructorProfile ur,CourseStatus status);
 	
 	int countByInstructor(InstructorProfile ur);
 	
