@@ -11,5 +11,5 @@ import com.harish.quizapp.Model.MaterialsDto;
 public interface MaterialsRepo extends JpaRepository<MaterialsDto, Integer>
 {
 
-		List<MaterialsDto> findByContent_Id(int topicid);
+		List<MaterialsDto> findByContent_TopicidAndContent_Course_Id(int topicid, int courseid);
 }
