@@ -4,7 +4,7 @@ public class ApplicationDto
 {
 	private String reasonForApplication;
 	private String documentUrl;
-	private String application;
+	private String achievements;
 	
 	
 	public String getReasonForApplication() {
@@ -19,11 +19,11 @@ public class ApplicationDto
 	public void setDocumentUrl(String documentUrl) {
 		this.documentUrl = documentUrl;
 	}
-	public String getApplication() {
-		return application;
+	public String getAchievements() {
+		return achievements;
 	}
-	public void setApplication(String application) {
-		this.application = application;
+	public void setAchievements(String achievements) {
+		this.achievements = achievements;
 	}
 	
 	

@@ -180,7 +180,7 @@ public class AdminService
 	{
 		UserRegistration adminManager= rep.findByUserName(SecurityContextHolder.getContext().getAuthentication().getName()).orElseThrow();
 		
-		AdminApplication aa= apr.findByUser_Id(pd.getUserid()).orElseThrow();
+		AdminApplication aa= apr.findByInstId_Id(pd.getUserid()).orElseThrow();
 		aa.setReviewedOn(LocalDateTime.now());
 		aa.setAdminManager(adminManager);
 		aa.setRemarks(pd.getRemarks());
@@ -383,7 +383,7 @@ public class AdminService
 		
 		for(AdminApplication app : aa)
 		{
-			InstructorProfile user =app.getUser();
+			InstructorProfile user =app.getInstId();
 			
 			long exp=ChronoUnit.MONTHS.between(app.getReviewedOn(), LocalDate.now());
 			float exp1=exp/12;
