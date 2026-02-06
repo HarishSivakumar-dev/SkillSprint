@@ -214,13 +214,13 @@ public class CourseService
 
 	public ResponseEntity<List<MaterialsDto>> getMaterialsforTopic(int courseid, int topicid)
 	{
-		List<MaterialsDto> materialsDto=mr.findByContent_Id(topicid);
+		List<MaterialsDto> materialsDto=mr.findByContent_TopicidAndContent_Course_Id(topicid,courseid);
 		return ResponseEntity.status(HttpStatus.ACCEPTED).body(materialsDto);
 	}
 	
 	public ResponseEntity<String> addMoreMaterials(int topicid, int courseid, CourseContents cc)
 	{
-		CourseContents contents=ccr.findByCourse_IdAndTopicid(topicid, courseid).orElseThrow();
+		CourseContents contents=ccr.findByCourse_IdAndTopicid(courseid, topicid).orElseThrow();
 		
 		List<MaterialsDto> mt=cc.getMaterialsdto();
 		for(MaterialsDto md : mt)
