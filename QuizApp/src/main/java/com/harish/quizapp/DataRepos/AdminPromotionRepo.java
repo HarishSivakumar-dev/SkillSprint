@@ -15,7 +15,9 @@ public interface AdminPromotionRepo extends JpaRepository<AdminApplication, Inte
 {
 	List<AdminApplication> findByPromotionStatus(PromotionStatus ps);
 	
-	Optional<AdminApplication> findByUser_Id(int id);
+	Optional<AdminApplication> findByInstId_IdAndPromotionStatus(int id, PromotionStatus ps);
+	
+	Optional<AdminApplication> findByInstId_Id(int id);
 	
 	int countByPromotionStatus(PromotionStatus ps);
 	
@@ -24,5 +26,7 @@ public interface AdminPromotionRepo extends JpaRepository<AdminApplication, Inte
 	
 	@Query(value="SELECT COUNT(u) FROM AdminApplication u WHERE u.appliedDate<= :today")
 	int countByOldApplications(@Param(value="today") LocalDateTime today);
+	
+	boolean existsByInstId_IdAndPromotionStatusIn(int id, List<PromotionStatus> ps);
 	
 }

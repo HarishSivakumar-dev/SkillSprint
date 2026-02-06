@@ -11,7 +11,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
 
 @Entity
 public class AdminApplication 
@@ -20,9 +19,9 @@ public class AdminApplication
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private int id;
 	
-	@OneToOne
+	@ManyToOne
 	@JoinColumn(name="Instructor_Id")
-	private InstructorProfile user;
+	private InstructorProfile instId;
 	
 	private String instructorEmail;
 	private LocalDateTime appliedDate;
@@ -59,12 +58,12 @@ public class AdminApplication
 		this.id = id;
 	}
 
-	public InstructorProfile getUser() {
-		return user;
+	public InstructorProfile getInstId() {
+		return instId;
 	}
 
-	public void setUser(InstructorProfile user) {
-		this.user = user;
+	public void setInstId(InstructorProfile instId) {
+		this.instId = instId;
 	}
 
 	public String getInstructorEmail() {
