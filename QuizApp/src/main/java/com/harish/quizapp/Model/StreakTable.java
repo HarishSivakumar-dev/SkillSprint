@@ -1,5 +1,7 @@
 package com.harish.quizapp.Model;
 
+import java.time.LocalDate;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -19,6 +21,8 @@ public class StreakTable
 	private UserRegistration userId;
 	
 	private int streak;
+	
+	private LocalDate lastQuizDate;
 
 	public int getId() {
 		return id;
@@ -43,5 +47,14 @@ public class StreakTable
 	public void setStreak(int streak) {
 		this.streak = streak;
 	}
+
+	public LocalDate getLastQuizDate() {
+		return lastQuizDate;
+	}
+
+	public void setLastQuizDate(LocalDate lastQuizDate) {
+		this.lastQuizDate = lastQuizDate;
+	}
+	
 	
 }

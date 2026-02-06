@@ -20,7 +20,6 @@ import com.harish.quizapp.DataRepos.QuestionRepo;
 import com.harish.quizapp.DataRepos.QuizQuestionsRepo;
 import com.harish.quizapp.DataRepos.QuizRepo;
 import com.harish.quizapp.DataRepos.StreakMainRepo;
-import com.harish.quizapp.DataRepos.StreakRepo;
 import com.harish.quizapp.DataRepos.UserDeltaRepo;
 import com.harish.quizapp.DataRepos.UserRepo;
 import com.harish.quizapp.Dto.ExistingQuestionsDto;
@@ -36,7 +35,6 @@ import com.harish.quizapp.Model.Questions;
 import com.harish.quizapp.Model.QuestionsWrapper;
 import com.harish.quizapp.Model.Quiz;
 import com.harish.quizapp.Model.Quiz_Questions;
-import com.harish.quizapp.Model.StreakLogs;
 import com.harish.quizapp.Model.StreakTable;
 import com.harish.quizapp.Model.UserProfileDelta;
 import com.harish.quizapp.Model.UserRegistration;
@@ -68,8 +66,6 @@ public class QuizService
 	private AttemptsRepo attempts;
 	@Autowired
 	private CourseCompletionRepo completion;
-	@Autowired
-	private StreakRepo str;
 	@Autowired
 	private StreakMainRepo smr;
 	@Autowired
@@ -138,6 +134,8 @@ public class QuizService
 		List<UserProfileDelta> delsave= new ArrayList<>();
 	
 		int streak=this.StreakLogicForUser(user, ques);
+		
+		
 		
 		List<Quiz_Questions> quiz= bridge.findByQuiz_Id(ques.getId());
 		
@@ -429,40 +427,28 @@ public class QuizService
 		
 		StreakTable st = smr.findByUserId(user);
 		
-		LocalDate last = str.findByLastActivityDate(user.getId());
+		LocalDate last = st.getLastQuizDate();
 		
-		if(st.getStreak()==0 && last==null)
+		if(st.getStreak()==0 || last==null)
 		{
 				st.setStreak(1);
 				st.setUserId(user);
+				st.setLastQuizDate(LocalDate.now());
 			
 				StreakTable tab=smr.save(st);
-			
-				StreakLogs sl= new StreakLogs();
-				sl.setDate(LocalDate.now());
-				sl.setQuiz(quiz);
-				sl.setUser(user);
-			
-				this.str.save(sl);
 			
 				return tab.getStreak();
 			
 		}
 		else if(LocalDate.now().equals(last))
 		{
-			return smr.findByUserId(user).getStreak();
+			return st.getStreak();
 		}
 		else if(last.equals(LocalDate.now().minusDays(1)))
 		{
 			st.setStreak(st.getStreak()+1);
+			st.setLastQuizDate(LocalDate.now());
 			StreakTable tab=smr.save(st);
-			
-			StreakLogs sl= new StreakLogs();
-			sl.setDate(LocalDate.now());
-			sl.setQuiz(quiz);
-			sl.setUser(user);
-			
-			this.str.save(sl);
 			
 			return tab.getStreak();
 			
@@ -470,6 +456,7 @@ public class QuizService
 		else
 		{
 			st.setStreak(1);
+			st.setLastQuizDate(LocalDate.now());
 			StreakTable tb=smr.save(st);
 			
 			return tb.getStreak();
