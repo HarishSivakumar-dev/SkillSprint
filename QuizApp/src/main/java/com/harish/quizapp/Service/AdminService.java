@@ -376,24 +376,23 @@ public class AdminService
 	public ResponseEntity<List<AdminManagerDetailsDto>> getAllAdminManagerDetails()
 	{
 		
-		List<AdminApplication> aa= apr.findAll();
-		aa.removeIf(app ->app.getPromotionStatus()!=PromotionStatus.Promoted);
+		List<UserRegistration> aa= rep.getAllUsersByRole("ROLE_ADMIN", List.of("ROLE_ADMIN_MANAGER", "ROLE_SUPER_ADMIN"));
 		
 		List<AdminManagerDetailsDto> amd= new ArrayList<>();
 		
-		for(AdminApplication app : aa)
+		for(UserRegistration app : aa)
 		{
-			InstructorProfile user =app.getInstId();
+			AdminApplication ap= apr.findByInstId_Id(app.getId()).orElseThrow();
 			
-			long exp=ChronoUnit.MONTHS.between(app.getReviewedOn(), LocalDate.now());
+			long exp=ChronoUnit.MONTHS.between(ap.getReviewedOn(), LocalDate.now());
 			float exp1=exp/12;
-			int noofPromotionsHandled=iur.countByAdmin_Id(user.getId());
-			int noofSkillsHandled= sar.countByAdmin_Id(user.getId());
-			int noofViolationsHandled= car.countByAdmin_Id(user.getId());
-			String email=user.getMail();
-			String userName=user.getUserName().getUserName();
-			String name=user.getFullName();
-			int id=user.getId();
+			int noofPromotionsHandled=iur.countByAdmin_Id(app.getId());
+			int noofSkillsHandled= sar.countByAdmin_Id(app.getId());
+			int noofViolationsHandled= car.countByAdmin_Id(app.getId());
+			String email=app.getEmail();
+			String userName=app.getUserName();
+			String name=app.getName();
+			int id=app.getId();
 			
 			AdminManagerDetailsDto dt= new AdminManagerDetailsDto();
 			dt.setEmail(email);
