@@ -2,6 +2,7 @@ package com.harish.quizapp.Scheduler;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,9 +31,11 @@ import com.harish.quizapp.Model.CourseDetails;
 import com.harish.quizapp.Model.FeedbackTable;
 import com.harish.quizapp.Model.InstructorProfile;
 import com.harish.quizapp.Model.InstructorStatUpdate;
+import com.harish.quizapp.Model.StreakTable;
 import com.harish.quizapp.Model.SuperAdminAnalytics;
 import com.harish.quizapp.Model.UserProfile;
 import com.harish.quizapp.Model.UserProfileDelta;
+import com.harish.quizapp.Model.UserRegistration;
 import com.harish.quizapp.Model.ViolationsTable;
 import com.harish.quizapp.enums.CompletionStatus;
 import com.harish.quizapp.enums.CourseStatus;
@@ -111,6 +114,52 @@ public class ViolationResetScheduler
 			System.out.println(e);
 		}
 	}	
+	
+	@Transactional
+	@Scheduled(cron="0 1 0 * * *")
+	public void resetStreak()
+	{
+		List<StreakTable> tb= smr.findAll();
+		
+		LocalDate today= LocalDate.now();
+		List<StreakTable> tb1= new ArrayList<>();
+		List<UserRegistration> ids= new ArrayList<>();
+		
+		for(StreakTable t : tb)
+		{
+			if(t.getStreak()==0)
+			{
+				continue;
+			}
+			else if(t.getLastQuizDate().equals(today) || t.getLastQuizDate().equals(today.minusDays(1)))
+			{
+				continue;
+			}
+			else 
+			{
+				t.setStreak(0);
+				ids.add(t.getUserId());
+				tb1.add(t);
+			}
+		}
+		
+		List<UserProfile> prf= upr.findAllByUserNameIn(ids);
+		Map<Integer, StreakTable> strk= new HashMap<>();
+		
+		for(StreakTable t : tb1)
+		{
+			strk.put(t.getUserId().getId(),t);
+		}
+		
+		for(UserProfile p : prf)
+		{
+			StreakTable da=strk.get(p.getUserName().getId());
+			p.setStreakMaintanance(da.getStreak());
+		}
+		
+		upr.saveAll(prf);
+		smr.saveAll(tb1);
+	}
 	
 	@Transactional
 	@Scheduled(cron="0 10 0 * * * ")
@@ -242,8 +291,8 @@ public class ViolationResetScheduler
 			
 			List<UserDeltaProjection> usr= udr.findAllPendingDeltas();
 			List<UserProfileDelta> dl= udr.findByIsProcessedFalse();
-
 			
+	
 			Map<Integer,List<UserDeltaProjection>> mp= new HashMap<>();
 			
 			if(usr.isEmpty())
