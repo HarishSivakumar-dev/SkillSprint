@@ -162,7 +162,7 @@ public class ViolationResetScheduler
 	}
 	
 	@Transactional
-	@Scheduled(cron="0 10 0 * * * ")
+	@Scheduled(cron="0 0 0 * * * ")
 	public void calibrateRatingForAllCourses()
 	{
 		try
@@ -282,7 +282,7 @@ public class ViolationResetScheduler
 	}
 	
 	@Transactional
-	@Scheduled(cron="0 */5 * * * * ")
+	@Scheduled(cron="0 0 0 * * * ")
 	public void updateUserProfileDetails()
 	{
 		try

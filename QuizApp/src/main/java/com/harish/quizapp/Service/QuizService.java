@@ -167,8 +167,11 @@ public class QuizService
 			throw new IllegalStateException("Already Attempted !");
 		}
 		
-		UserProfileDelta dl= cls.deltaReturn(UserDeltaAction.QuizAttended,+1,user.getId());
-		delsave.add(dl);
+		if(!(at.getAttemptcount()>=1))
+		{
+			UserProfileDelta dl= cls.deltaReturn(UserDeltaAction.QuizAttended,+1,user.getId());
+			delsave.add(dl);
+		}
 		
 		at.setAttemptcount(at.getAttemptcount()+1);
 		CourseDetails det=ques.getCourse();
