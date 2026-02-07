@@ -27,6 +27,7 @@ import com.harish.quizapp.DataRepos.SkillApprovalRepo;
 import com.harish.quizapp.DataRepos.SkillsRepo;
 import com.harish.quizapp.DataRepos.UserRepo;
 import com.harish.quizapp.DataRepos.ViolationTableRepo;
+import com.harish.quizapp.Dto.AdminApplicationDto;
 import com.harish.quizapp.Dto.AdminCompliantsDto;
 import com.harish.quizapp.Dto.AdminManagerDetailsDto;
 import com.harish.quizapp.Dto.AdminPromotionDto;
@@ -171,6 +172,7 @@ public class AdminService
 	
 	public ResponseEntity<List<AdminCompliantsDto>> getAllComplaints()
 	{
+		//TODO : Refractor it later with JOIN FETCH query for optimization
 		List<ComplaintsTable> tb= comp.findByStatus(ComplaintStatus.Pending);
 		
 		List<AdminCompliantsDto> dt= new ArrayList<>();
@@ -194,9 +196,47 @@ public class AdminService
 		
 		return ResponseEntity.status(HttpStatus.OK).body(dt);
 	}
-	public ResponseEntity<List<AdminApplication>> getAllPendingApplications()
+	public ResponseEntity<List<AdminApplicationDto>> getAllPendingApplications()
 	{
-		return ResponseEntity.status(HttpStatus.OK).body(apr.findByPromotionStatus(PromotionStatus.Pending));
+		//TODO : Refractor it later with JOIN FETCH query for optimization
+		List<AdminApplication> aapp= apr.findByPromotionStatus(PromotionStatus.Pending);
+		List<AdminApplicationDto> dto= new ArrayList<>();
+		
+		//TODO : Manual mapping for easier debugging, later can move to projection or SELECT BY queries when dto outgrows
+		for(AdminApplication aa : aapp)
+		{
+			AdminApplicationDto dt = new AdminApplicationDto();
+			dt.setAchievements(aa.getAchievements());
+			dt.setAdminManagerId(
+				    aa.getAdminManager() != null ? aa.getAdminManager().getId() : null
+				);
+			dt.setAdminManagerName(
+				    aa.getAdminManager() != null ? aa.getAdminManager().getUserName() : null
+				);
+			dt.setAppliedDate(aa.getAppliedDate());
+			dt.setAutoEvaluation(aa.getAutoEvaluation());
+			dt.setAvgrating(aa.getAvgrating());
+			dt.setDocumentsUrl(aa.getDocumentsUrl());
+			dt.setExpYears(aa.getExpYears());
+			dt.setFeedbackcount(aa.getFeedbackcount());
+			dt.setInstName(aa.getInstId().getUserName().getUserName());
+			dt.setInstructorEmail(aa.getInstructorEmail());
+			dt.setIntructorId(aa.getInstId().getId());
+			dt.setIsVerified(aa.getIsVerified());
+			dt.setIsViolated(aa.getIsViolated());
+			dt.setPromotionStatus(aa.getPromotionStatus());
+			dt.setReasonForApplication(aa.getReasonForApplication());
+			dt.setRemarks(aa.getRemarks());
+			dt.setReviewedOn(aa.getReviewedOn());
+			dt.setStudTrained(aa.getStudTrained());
+			dt.setTotcourses(aa.getTotcourses());
+			dt.setType(aa.getType());
+
+			dto.add(dt);
+			
+		}
+		
+		return ResponseEntity.status(HttpStatus.OK).body(dto);
 	}
 	public ResponseEntity<String> promoteInsttoAdmin(AdminPromotionDto pd)
 	{
@@ -325,9 +365,27 @@ public class AdminService
 		return ResponseEntity.status(HttpStatus.OK).body("UPDATED");
 	}
 	
-	public ResponseEntity<List<SkillApproval>> getAllSkillApprovalRequests()
+	public ResponseEntity<List<SkillApprovalDto>> getAllSkillApprovalRequests()
 	{
-		return ResponseEntity.status(HttpStatus.ACCEPTED).body(sar.findAll());
+		List<SkillApproval> sa= sar.findAll();
+		List<SkillApprovalDto> sad= new ArrayList<>();
+		
+		for(SkillApproval approv : sa)
+		{
+			SkillApprovalDto dt= new SkillApprovalDto();
+			
+			dt.setComments(approv.getComments());
+			dt.setId(approv.getId());
+			dt.setInstructorId(approv.getInstructor().getId());
+			dt.setInstructorUserName(approv.getInstructor().getUserName());
+			dt.setSkillApplied(approv.getSkillApplied());
+			dt.setStatus(approv.getStatus());
+			
+			sad.add(dt);
+
+		}
+		
+		return ResponseEntity.status(HttpStatus.ACCEPTED).body(sad);
 	}
 	
 	public ResponseEntity<String> setSkillApprovalRequests(List<SkillApprovalDto> dto)
