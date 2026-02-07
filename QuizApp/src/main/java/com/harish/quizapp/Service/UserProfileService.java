@@ -8,6 +8,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import com.harish.quizapp.DataRepos.UserProfileRepo;
 import com.harish.quizapp.Dto.UserPersonalDetailsDto;
+import com.harish.quizapp.Dto.UserProfileDto;
 import com.harish.quizapp.Dto.UserStudyProfileDto;
 import com.harish.quizapp.Model.UserProfile;
 
@@ -19,12 +20,38 @@ public class UserProfileService
 	private UserProfileRepo upr;
 
 	
-	public ResponseEntity<UserProfile> getUserProfileDetails()
+	public ResponseEntity<UserProfileDto> getUserProfileDetails()
 	{
 		String user= SecurityContextHolder.getContext().getAuthentication().getName();
 		UserProfile up=upr.findByUserName_UserName(user).orElseThrow();
 		
-		return ResponseEntity.status(HttpStatus.OK).body(up);
+		UserProfileDto dto= new UserProfileDto();
+		dto.setAvgCourseCertificationRate(up.getAvgCourseCertificationRate());
+		dto.setAvgCourseCompletionRate(up.getAvgCourseCompletionRate());
+		dto.setAvgQuizezCleared(up.getAvgQuizezCleared());
+		dto.setCollegeName(up.getCollegeName());
+		dto.setCoursesCompleted(up.getCoursesCompleted());
+		dto.setDateOfBirth(up.getDateOfBirth());
+		dto.setDepartment(up.getDepartment());
+		dto.setEmail(up.getEmail());
+		dto.setFullName(up.getFullName());
+		dto.setGender(up.getGender());
+		dto.setIsEmailVerified(up.getIsEmailVerified());
+		dto.setJoinedDate(up.getJoinedDate());
+		dto.setLevel(up.getLevel());
+		dto.setNoOfCertificates(up.getNoOfCertificates());
+		dto.setPhoneNumber(up.getPhoneNumber());
+		dto.setPlace(up.getPlace());
+		dto.setQuizzesAttended(up.getQuizzesAttended());
+		dto.setQuizzesCleared(up.getQuizzesCleared());
+		dto.setStreakMaintanance(up.getStreakMaintanance());
+		dto.setTotCoursesEnrolled(up.getTotCoursesEnrolled());
+		dto.setUserBio(up.getUserBio());
+		dto.setYearOfStudy(up.getYearOfStudy());
+		dto.setUserId(up.getUserName().getId());
+		dto.setUserName(up.getUserName().getUserName());
+		
+		return ResponseEntity.status(HttpStatus.OK).body(dto);
 	}
 	
 	public ResponseEntity<String> addUserProfilePersonalDetails(UserPersonalDetailsDto uppd)
