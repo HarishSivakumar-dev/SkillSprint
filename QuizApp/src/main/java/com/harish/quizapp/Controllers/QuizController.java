@@ -12,11 +12,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import com.harish.quizapp.Dto.AllQuizDto;
 import com.harish.quizapp.Dto.QuizDto;
 import com.harish.quizapp.Dto.ResultDto;
 import com.harish.quizapp.Dto.ScoresDto;
+import com.harish.quizapp.Dto.UserQuizDto;
 import com.harish.quizapp.Model.QuestionsWrapper;
-import com.harish.quizapp.Model.Quiz;
 import com.harish.quizapp.Service.QuizService;
 
 @RestController
@@ -49,10 +50,17 @@ public class QuizController
 	}
 	
 	@GetMapping("/courses/get/quizzes/{courseid}")
-	@PreAuthorize("hasAnyRole('INSTRUCTOR','USER','ADMIN')")
-	public ResponseEntity<List<Quiz>> getQuizforCourse(@PathVariable int courseid)
+	@PreAuthorize("hasAnyRole('INSTRUCTOR','ADMIN')")
+	public ResponseEntity<List<AllQuizDto>> getQuizforCourse(@PathVariable int courseid)
 	{
 		return qs.getQuizzesforCourse(courseid);
+	}
+	
+	@GetMapping("/user/courses/quizzes/{courseid}")
+	@PreAuthorize("hasRole('USER')")
+	public ResponseEntity<List<UserQuizDto>> getQuizForCoursesUser(@PathVariable int courseid)
+	{
+		return qs.getUserQuizzesforCourse(courseid);
 	}
 	
 	@PostMapping("{quizname}/course/{courseid}/result")

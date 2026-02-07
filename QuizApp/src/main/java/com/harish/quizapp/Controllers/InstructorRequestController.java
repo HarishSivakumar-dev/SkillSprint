@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.harish.quizapp.Dto.ApplicationDto;
+import com.harish.quizapp.Dto.InstAdminApplicationDto;
 import com.harish.quizapp.Dto.InstructorApplicationDto;
-import com.harish.quizapp.Model.AdminApplication;
 import com.harish.quizapp.Service.ApplicationRequestService;
 import com.harish.quizapp.Service.InstructorService;
 
@@ -46,7 +46,7 @@ public class InstructorRequestController
 	}
 	@GetMapping("/user/role/upgrade/application/status")
 	@PreAuthorize("hasRole('INSTRUCTOR')")
-	public ResponseEntity<AdminApplication> verifyPromotionRequestStatus()
+	public ResponseEntity<InstAdminApplicationDto> verifyPromotionRequestStatus()
 	{
 		return is.checkStatus();
 	}
