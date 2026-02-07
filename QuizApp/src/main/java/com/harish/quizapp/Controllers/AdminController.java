@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import com.harish.quizapp.Dto.AdminApplicationDto;
 import com.harish.quizapp.Dto.AdminCompliantsDto;
 import com.harish.quizapp.Dto.AdminManagerDetailsDto;
 import com.harish.quizapp.Dto.AdminPromotionDto;
@@ -16,8 +17,6 @@ import com.harish.quizapp.Dto.PromotionApplicationUserDto;
 import com.harish.quizapp.Dto.PromotionDto;
 import com.harish.quizapp.Dto.SkillApprovalDto;
 import com.harish.quizapp.Dto.UpdateStatusDto;
-import com.harish.quizapp.Model.AdminApplication;
-import com.harish.quizapp.Model.SkillApproval;
 import com.harish.quizapp.Service.AdminService;
 import jakarta.validation.Valid;
 
@@ -59,7 +58,7 @@ public class AdminController
 	
 	@GetMapping("/get/all/admin/applications")
 	@PreAuthorize("hasAnyRole('SUPER_ADMIN','ADMIN_MANAGER')")
-	public ResponseEntity<List<AdminApplication>> getAllPendingRequestForAdmin()
+	public ResponseEntity<List<AdminApplicationDto>> getAllPendingRequestForAdmin()
 	{
 		return as.getAllPendingApplications();
 	}
@@ -73,7 +72,7 @@ public class AdminController
 	
 	@GetMapping("/admin/get/approval/skills")
 	@PreAuthorize("hasAnyRole('ADMIN')")
-	public ResponseEntity<List<SkillApproval>> getAllSkillApprovalRequests()
+	public ResponseEntity<List<SkillApprovalDto>> getAllSkillApprovalRequests()
 	{
 		return as.getAllSkillApprovalRequests();
 	}
