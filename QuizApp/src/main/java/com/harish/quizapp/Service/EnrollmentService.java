@@ -18,6 +18,7 @@ import com.harish.quizapp.DataRepos.QuizRepo;
 import com.harish.quizapp.DataRepos.UserDeltaRepo;
 import com.harish.quizapp.DataRepos.UserRepo;
 import com.harish.quizapp.Dto.CourseDetailsDto;
+import com.harish.quizapp.Dto.EnrollmentDataDto;
 import com.harish.quizapp.Model.CourseDetails;
 import com.harish.quizapp.Model.EnrollmentData;
 import com.harish.quizapp.Model.InstructorStatUpdate;
@@ -112,12 +113,27 @@ public class EnrollmentService
 		}
 	}
 
-	public ResponseEntity<List<EnrollmentData>> getAllEnrolledCourses(String name)
+	public ResponseEntity<List<EnrollmentDataDto>> getAllEnrolledCourses(String name)
 	{
 		UserRegistration usr= ur.findByUserName(name).orElseThrow(()-> new BadCredentialsException("No User Found"));
 		List<EnrollmentData> ed=er.findByUser(usr);
 		
-		return ResponseEntity.status(HttpStatus.OK).body(ed);
+		List<EnrollmentDataDto> dto= new ArrayList<>();
+		
+		for(EnrollmentData dt : ed)
+		{
+			EnrollmentDataDto edt= new EnrollmentDataDto();
+			edt.setCourseId(dt.getCourse().getId());
+			edt.setCourseName(dt.getCourse().getTitle());
+			edt.setEnrolledAt(dt.getEnrollment_date());
+			edt.setStatus(dt.getStatus());
+			edt.setUserId(dt.getUser().getId());
+			edt.setUserName(dt.getUser().getUserName());
+			
+			dto.add(edt);
+		}
+		
+		return ResponseEntity.status(HttpStatus.OK).body(dto);
 	}
 	public ResponseEntity<String> setStatusCompleted(String name, CourseDetails cs)
 	{
