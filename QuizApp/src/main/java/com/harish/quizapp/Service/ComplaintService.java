@@ -18,6 +18,7 @@ import com.harish.quizapp.DataRepos.UserRepo;
 import com.harish.quizapp.DataRepos.ViolationTableRepo;
 import com.harish.quizapp.Dto.ComplaintInstructorDto;
 import com.harish.quizapp.Dto.ComplaintsDto;
+import com.harish.quizapp.Dto.UserComplaintsDto;
 import com.harish.quizapp.Dto.ViolationResultDto;
 import com.harish.quizapp.Model.ComplaintsTable;
 import com.harish.quizapp.Model.CourseDetails;
@@ -67,12 +68,28 @@ public class ComplaintService
 		return ResponseEntity.status(HttpStatus.OK).body("Submitted");
 	}
 	
-	public ResponseEntity<List<ComplaintsTable>> getAllUserSubmitted()
+	public ResponseEntity<List<UserComplaintsDto>> getAllUserSubmitted()
 	{
 		String name=SecurityContextHolder.getContext().getAuthentication().getName();
 		UserRegistration us= ur.findByUserName(name).orElseThrow();
+		List<ComplaintsTable> ct=comrep.findByUser(us);
 		
-		return ResponseEntity.status(HttpStatus.FOUND).body(comrep.findByUser(us));
+		List<UserComplaintsDto> usr= new ArrayList<>();
+		for(ComplaintsTable tb : ct)
+		{
+			UserComplaintsDto dto= new UserComplaintsDto();
+			dto.setComments(tb.getComments());
+			dto.setComplaintId(tb.getId());
+			dto.setReason(tb.getReason());
+			dto.setReportedIntructor(tb.getInstructor().getUserName().getUserName());
+			dto.setStatus(tb.getStatus());
+			dto.setCreatedDate(tb.getCreatedAt());
+			
+			usr.add(dto);
+		}
+		
+		
+		return ResponseEntity.status(HttpStatus.FOUND).body(usr);
 	}
 	
 	public ResponseEntity<List<ComplaintInstructorDto>> getComplaintsInstructor()

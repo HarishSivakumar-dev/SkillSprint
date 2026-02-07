@@ -13,14 +13,14 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
+import com.harish.quizapp.Dto.CourseContentsDto;
 import com.harish.quizapp.Dto.CourseDetailsDto;
+import com.harish.quizapp.Dto.EnrollmentDataDto;
 import com.harish.quizapp.Dto.StatusUpdateDto;
+import com.harish.quizapp.Dto.StudentsDTO;
+import com.harish.quizapp.Dto.StudyMaterialDto;
 import com.harish.quizapp.Model.CourseContents;
 import com.harish.quizapp.Model.CourseDetails;
-import com.harish.quizapp.Model.EnrollmentData;
-import com.harish.quizapp.Model.MaterialsDto;
-import com.harish.quizapp.Model.StudentsDTO;
 import com.harish.quizapp.Service.CourseService;
 
 @RestController
@@ -71,7 +71,7 @@ public class CourseController
 	
 	@GetMapping("/course/admin/getenrolled/{courseid}")
 	@PreAuthorize("hasRole('ADMIN')")
-	public ResponseEntity<List<EnrollmentData>> getCourseUsers(@PathVariable int courseid)
+	public ResponseEntity<List<EnrollmentDataDto>> getCourseUsers(@PathVariable int courseid)
 	{
 		return cs.getCourseUsers(courseid);
 	}
@@ -92,14 +92,14 @@ public class CourseController
 	
 	@GetMapping("/course/contents/get/{courseid}")
 	@PreAuthorize("hasAnyRole('USER','INSTRUCTOR','ADMIN')")
-	public ResponseEntity<List<CourseContents>> getCourseContents(@PathVariable int courseid)
+	public ResponseEntity<List<CourseContentsDto>> getCourseContents(@PathVariable int courseid)
 	{
 		return cs.getCourseContents(courseid);
 	}
 
 	@GetMapping("/course/content/get/{courseid}/{topicid}")
 	@PreAuthorize("hasAnyRole('USER','INSTRUCTOR','ADMIN')")
-	public ResponseEntity<List<MaterialsDto>> getMaterialsforCourse(@PathVariable int courseid, @PathVariable int topicid)
+	public ResponseEntity<List<StudyMaterialDto>> getMaterialsforCourse(@PathVariable int courseid, @PathVariable int topicid)
 	{
 		return cs.getMaterialsforTopic(courseid,topicid);
 	}
