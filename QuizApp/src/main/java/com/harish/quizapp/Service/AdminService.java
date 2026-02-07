@@ -27,6 +27,7 @@ import com.harish.quizapp.DataRepos.SkillApprovalRepo;
 import com.harish.quizapp.DataRepos.SkillsRepo;
 import com.harish.quizapp.DataRepos.UserRepo;
 import com.harish.quizapp.DataRepos.ViolationTableRepo;
+import com.harish.quizapp.Dto.AdminCompliantsDto;
 import com.harish.quizapp.Dto.AdminManagerDetailsDto;
 import com.harish.quizapp.Dto.AdminPromotionDto;
 import com.harish.quizapp.Dto.PromotionApplicationUserDto;
@@ -168,9 +169,30 @@ public class AdminService
 		return ResponseEntity.status(HttpStatus.OK).body(dto);
 	}
 	
-	public ResponseEntity<List<ComplaintsTable>> getAllComplaints()
+	public ResponseEntity<List<AdminCompliantsDto>> getAllComplaints()
 	{
-		return ResponseEntity.status(HttpStatus.OK).body(comp.findByStatus(ComplaintStatus.Pending));
+		List<ComplaintsTable> tb= comp.findByStatus(ComplaintStatus.Pending);
+		
+		List<AdminCompliantsDto> dt= new ArrayList<>();
+		
+		for(ComplaintsTable sd : tb)
+		{
+			AdminCompliantsDto dto= new AdminCompliantsDto();
+			dto.setComments(sd.getComments());
+			dto.setCreatedAt(sd.getCreatedAt());
+			dto.setReason(sd.getReason());
+			dto.setReportedCourseName(sd.getCourse().getTitle());
+			dto.setReportedCourseId(sd.getCourse().getId());
+			dto.setReportedInstructorId(sd.getInstructor().getId());
+			dto.setReportedInstructorUserName(sd.getInstructor().getUserName().getUserName());
+			dto.setReportingUserId(sd.getUser().getId());
+			dto.setReportingUserName(sd.getUser().getUserName());
+			dto.setStatus(sd.getStatus());
+			
+			dt.add(dto);
+		}
+		
+		return ResponseEntity.status(HttpStatus.OK).body(dt);
 	}
 	public ResponseEntity<List<AdminApplication>> getAllPendingApplications()
 	{
