@@ -3,7 +3,10 @@ package com.harish.quizapp.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,11 +25,13 @@ import com.harish.quizapp.DataRepos.QuizRepo;
 import com.harish.quizapp.DataRepos.StreakMainRepo;
 import com.harish.quizapp.DataRepos.UserDeltaRepo;
 import com.harish.quizapp.DataRepos.UserRepo;
+import com.harish.quizapp.Dto.AllQuizDto;
 import com.harish.quizapp.Dto.ExistingQuestionsDto;
 import com.harish.quizapp.Dto.NewQuestionsDto;
 import com.harish.quizapp.Dto.QuizDto;
 import com.harish.quizapp.Dto.ResultDto;
 import com.harish.quizapp.Dto.ScoresDto;
+import com.harish.quizapp.Dto.UserQuizDto;
 import com.harish.quizapp.Model.CourseCompletionStatus;
 import com.harish.quizapp.Model.CourseDetails;
 import com.harish.quizapp.Model.EnrollmentData;
@@ -85,14 +90,63 @@ public class QuizService
 		return ResponseEntity.status(HttpStatus.OK).body("DELETED");
 	}
 	
-	public ResponseEntity<List<Quiz>> getQuizzesforCourse(int courseid)
+	public ResponseEntity<List<AllQuizDto>> getQuizzesforCourse(int courseid)
 	{
 		CourseDetails cd= courses.findById(courseid).orElseThrow();
 		List<Quiz> quiz= quizrepo.findByCourse(cd);
 		
-		return ResponseEntity.status(HttpStatus.ACCEPTED).body(quiz);
+		List<AllQuizDto> dto= new ArrayList<>();
+		
+		for(Quiz qz : quiz)
+		{
+			AllQuizDto ot= new AllQuizDto();
+			ot.setCourseName(qz.getCourse().getTitle());
+			ot.setIsfinal(qz.getIsFinal());
+			ot.setOrder(qz.getSequenceNumber());
+			ot.setTitle(qz.getTitle());
+			ot.setTopicId(qz.getTopicid());
+			
+			dto.add(ot);
+		}
+		
+		return ResponseEntity.status(HttpStatus.ACCEPTED).body(dto);
 		
 	}
+	
+	public ResponseEntity<List<UserQuizDto>> getUserQuizzesforCourse(int courseid)
+	{
+		CourseDetails cd= courses.findById(courseid).orElseThrow();
+		List<Quiz> quiz= quizrepo.findByCourse(cd);
+		
+		
+		List<UserQuizDto> dto= new ArrayList<>();
+		List<attemptsTable> tb= attempts.findByUser_UserNameAndCourse(SecurityContextHolder.getContext().getAuthentication().getName(), cd);
+		
+		Map<Quiz, attemptsTable> at= new HashMap<>();
+		
+		for(attemptsTable tbl : tb)
+		{
+			at.put(tbl.getQuiz(), tbl);
+		}
+		
+		for(Quiz qz : quiz)
+		{
+			UserQuizDto ot= new UserQuizDto();
+			ot.setCourseName(qz.getCourse().getTitle());
+			ot.setIsfinal(qz.getIsFinal());
+			ot.setOrder(qz.getSequenceNumber());
+			ot.setTitle(qz.getTitle());
+			ot.setTopicId(qz.getTopicid());
+			ot.setUserStatus(at.get(qz).getStatus());
+			
+			dto.add(ot);
+		}
+		
+		return ResponseEntity.status(HttpStatus.ACCEPTED).body(dto);
+		
+	}
+	
+	
 	
 	@Transactional
 	public ResponseEntity<List<QuestionsWrapper>> getQuestionsforQuiz(String quizname,int courseid)
@@ -162,7 +216,7 @@ public class QuizService
 		attemptsTable at= attempts.findByUserAndCourseAndQuiz(user,ques.getCourse(),ques);
 		Optional<CourseCompletionStatus> ccs= completion.findByUserAndCourse(user,ques.getCourse());
 		
-		if((ques.getIsFinal() && at.getAttemptcount()>=1) || !ccs.isEmpty())
+		if((ques.getIsFinal() && at.getAttemptcount()>=1) || !ccs.isEmpty() || at.getStatus().equals("PASSED"))
 		{
 			throw new IllegalStateException("Already Attempted !");
 		}
@@ -181,6 +235,7 @@ public class QuizService
 		UserProfileDelta upd= new UserProfileDelta();
 		UserProfileDelta upd1= new UserProfileDelta();
 		ResultDto res= new ResultDto();
+		EnrollmentData dat=er.findByUserAndCourse(user, det).orElseThrow(()->new NoSuchElementException());
 		
 		if(right>=(totalmarks/2))
 		{
@@ -191,7 +246,8 @@ public class QuizService
 			
 			if(ques.getIsFinal() && at.getAttemptcount()==1)
 			{
-
+				dat.setStatus("Completed");
+				
 				st.setUser(user);
 				st.setCourse(det);
 				st.setCourseCompletionStatus(CompletionStatus.CompletedAndCertified);
@@ -256,6 +312,8 @@ public class QuizService
 			
 			if(ques.getIsFinal())
 			{
+				dat.setStatus("Completed");
+				
 				st.setUser(user);
 				st.setCourse(det);
 				st.setCourseCompletionStatus(CompletionStatus.Completed);
@@ -294,6 +352,7 @@ public class QuizService
 		
 		isr.save(isu);
 		udr.saveAll(delsave);
+		er.save(dat);
 	
 		return ResponseEntity.status(HttpStatus.OK).body(res);
 				

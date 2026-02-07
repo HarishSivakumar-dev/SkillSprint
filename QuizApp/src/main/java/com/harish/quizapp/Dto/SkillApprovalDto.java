@@ -6,6 +6,7 @@ public class SkillApprovalDto
 {
 	private int id;
 	private int instructorId;
+	private String instructorUserName;
 	private String skillApplied;
 	private SkillStatus status;
 	private String comments; 
@@ -40,6 +41,10 @@ public class SkillApprovalDto
 	public void setComments(String comments) {
 		this.comments = comments;
 	}
-	
-	
+	public String getInstructorUserName() {
+		return instructorUserName;
+	}
+	public void setInstructorUserName(String instructorUserName) {
+		this.instructorUserName = instructorUserName;
+	}
 }
