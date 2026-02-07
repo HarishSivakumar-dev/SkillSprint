@@ -44,9 +44,10 @@ public class UserProfile
 	private int noOfCertificates;//
 	private int quizzesAttended;//
 	private int quizzesCleared;//
+	
 	private float avgQuizezCleared;//
-	private float avgClearingRate;//
-	private float avgCertificationRate;
+	private float avgCourseCompletionRate;//
+	private float avgCourseCertificationRate;
 	private int streakMaintanance;
 	
 	@Enumerated(EnumType.STRING)
@@ -77,12 +78,7 @@ public class UserProfile
 	public void setUserName(UserRegistration userName) {
 		this.userName = userName;
 	}
-	public float getAvgClearingRate() {
-		return avgClearingRate;
-	}
-	public void setAvgClearingRate(float avgClearingRate) {
-		this.avgClearingRate = avgClearingRate;
-	}
+	
 	public String getEmail() {
 		return email;
 	}
@@ -197,19 +193,23 @@ public class UserProfile
 	public void setLinkedIn(String linkedIn) {
 		this.linkedIn = linkedIn;
 	}
-	public float getAvgCertificationRate() {
-		return avgCertificationRate;
-	}
-	public void setAvgCertificationRate(float avgCertificationRate) {
-		this.avgCertificationRate = avgCertificationRate;
-	}
 	public int getQuizzesCleared() {
 		return quizzesCleared;
 	}
 	public void setQuizzesCleared(int quizzesCleared) {
 		this.quizzesCleared = quizzesCleared;
 	}
-	
-	
+	public float getAvgCourseCompletionRate() {
+		return avgCourseCompletionRate;
+	}
+	public void setAvgCourseCompletionRate(float avgCourseCompletionRate) {
+		this.avgCourseCompletionRate = avgCourseCompletionRate;
+	}
+	public float getAvgCourseCertificationRate() {
+		return avgCourseCertificationRate;
+	}
+	public void setAvgCourseCertificationRate(float avgCourseCertificationRate) {
+		this.avgCourseCertificationRate = avgCourseCertificationRate;
+	}
 	
 }
