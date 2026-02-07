@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.harish.quizapp.Dto.UserPersonalDetailsDto;
+import com.harish.quizapp.Dto.UserProfileDto;
 import com.harish.quizapp.Dto.UserStudyProfileDto;
-import com.harish.quizapp.Model.UserProfile;
 import com.harish.quizapp.Service.UserProfileService;
 
 @RestController
@@ -37,7 +37,7 @@ public class UserProfileController
 	
 	@GetMapping("/")
 	@PreAuthorize("hasRole('USER')")
-	public ResponseEntity<UserProfile> getUserProfileData()
+	public ResponseEntity<UserProfileDto> getUserProfileData()
 	{
 		return ups.getUserProfileDetails();
 	}
