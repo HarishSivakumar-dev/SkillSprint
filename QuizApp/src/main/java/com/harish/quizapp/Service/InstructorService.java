@@ -22,6 +22,7 @@ import com.harish.quizapp.DataRepos.RoleRepo;
 import com.harish.quizapp.DataRepos.UserRepo;
 import com.harish.quizapp.DataRepos.ViolationTableRepo;
 import com.harish.quizapp.Dto.ApplicationDto;
+import com.harish.quizapp.Dto.InstAdminApplicationDto;
 import com.harish.quizapp.Model.AdminApplication;
 import com.harish.quizapp.Model.FeedbackTable;
 import com.harish.quizapp.Model.InstructorProfile;
@@ -178,10 +179,21 @@ public class InstructorService
 		}
 	}
 	
-	public ResponseEntity<AdminApplication> checkStatus()
+	public ResponseEntity<InstAdminApplicationDto> checkStatus()
 	{
 		UserRegistration regis = ur.findByUserName(SecurityContextHolder.getContext().getAuthentication().getName()).orElseThrow();
 		AdminApplication app=apr.findByInstId_Id(regis.getId()).orElseThrow();
-		return ResponseEntity.status(HttpStatus.ACCEPTED).body(app);
+		
+		InstAdminApplicationDto dto= new InstAdminApplicationDto();
+		dto.setAppliedDate(app.getAppliedDate());
+		dto.setAutoEvaluation(app.getAutoEvaluation());
+		dto.setInstId(app.getInstId().getId());
+		dto.setInstName(app.getInstId().getUserName().getUserName());
+		dto.setInstructorEmail(app.getInstructorEmail());
+		dto.setPromotionStatus(app.getPromotionStatus());
+		dto.setType(app.getType());
+		
+		
+		return ResponseEntity.status(HttpStatus.ACCEPTED).body(dto);
 	}
 }
