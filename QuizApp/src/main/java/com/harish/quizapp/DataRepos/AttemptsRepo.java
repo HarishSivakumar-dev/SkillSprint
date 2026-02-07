@@ -1,11 +1,9 @@
 package com.harish.quizapp.DataRepos;
 
 import java.util.List;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
-
 import com.harish.quizapp.Model.CourseDetails;
 import com.harish.quizapp.Model.Quiz;
 import com.harish.quizapp.Model.UserRegistration;
@@ -25,5 +23,7 @@ public interface AttemptsRepo extends JpaRepository<attemptsTable,Integer>
 	int countByUserAndStatus(UserRegistration user, String status);
 	
 	boolean existsByUser_IdAndQuiz_IdAndStatus(int usrid, int quizid, String status);
+	
+	List<attemptsTable> findByUser_UserNameAndCourse(String username, CourseDetails cd);
 	
 }

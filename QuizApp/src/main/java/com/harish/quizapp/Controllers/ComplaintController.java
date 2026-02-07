@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.harish.quizapp.Dto.ComplaintInstructorDto;
 import com.harish.quizapp.Dto.ComplaintsDto;
+import com.harish.quizapp.Dto.UserComplaintsDto;
 import com.harish.quizapp.Dto.ViolationResultDto;
-import com.harish.quizapp.Model.ComplaintsTable;
 import com.harish.quizapp.Service.ComplaintService;
 
 @RestController 
@@ -33,7 +33,7 @@ public class ComplaintController
 	
 	@GetMapping("/getallcomplaints")
 	@PreAuthorize("hasAnyRole('USER','INSTRUCTOR')")
-	public ResponseEntity<List<ComplaintsTable>> getAllUserProblem()
+	public ResponseEntity<List<UserComplaintsDto>> getAllUserProblem()
 	{
 		return cs.getAllUserSubmitted();
 	}
