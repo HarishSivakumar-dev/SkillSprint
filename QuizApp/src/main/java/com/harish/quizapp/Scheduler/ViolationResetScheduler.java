@@ -494,15 +494,15 @@ public class ViolationResetScheduler
 		int quizcleared= up.getQuizzesCleared();
 		int quizattended=up.getQuizzesAttended();
 		
-		up.setAvgCertificationRate((coursescomplete>0) ? (totcert/ (float)coursescomplete)*100 : 0);
-		up.setAvgClearingRate((enrolled >0) ? (coursescomplete/ (float)enrolled)*100 : 0);
+		up.setAvgCourseCertificationRate((coursescomplete>0) ? (totcert/ (float)coursescomplete)*100 : 0);
+		up.setAvgCourseCompletionRate((enrolled >0) ? (coursescomplete/ (float)enrolled)*100 : 0);
 		up.setAvgQuizezCleared((quizattended >0 ) ? (quizcleared/ (float)quizattended)*100 : 0);
 		
 	}
 	
 	private void allocateLevel(UserProfile up)
 	{
-		up.setLevel(this.allocateLevel(up.getAvgQuizezCleared(),up.getAvgClearingRate(),up.getAvgCertificationRate()));
+		up.setLevel(this.allocateLevel(up.getAvgQuizezCleared(),up.getAvgCourseCompletionRate(),up.getAvgCourseCertificationRate()));
 	}
 	
 }
