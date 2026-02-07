@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.harish.quizapp.Dto.CourseDetailsDto;
+import com.harish.quizapp.Dto.EnrollmentDataDto;
 import com.harish.quizapp.Model.CourseDetails;
-import com.harish.quizapp.Model.EnrollmentData;
 import com.harish.quizapp.Service.EnrollmentService;
 
 
@@ -37,7 +37,7 @@ public class EnrollmentController
 	}
 	@GetMapping("/enrolled/courses")
 	@PreAuthorize("hasAnyRole('ADMIN','INSTRUCTOR','USER')")
-	public ResponseEntity<List<EnrollmentData>> getEnrolledCourses()
+	public ResponseEntity<List<EnrollmentDataDto>> getEnrolledCourses()
 	{
 		String name=SecurityContextHolder.getContext().getAuthentication().getName();
 		

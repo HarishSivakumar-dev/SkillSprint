@@ -7,16 +7,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import com.harish.quizapp.Model.StudentsDTO;
 import com.harish.quizapp.DataRepos.CourseContentsRepo;
 import com.harish.quizapp.DataRepos.CoursesRepo;
 import com.harish.quizapp.DataRepos.EnrollmentRepo;
 import com.harish.quizapp.DataRepos.InstructorRepo;
 import com.harish.quizapp.DataRepos.MaterialsRepo;
 import com.harish.quizapp.DataRepos.UserRepo;
+import com.harish.quizapp.Dto.CourseContentsDto;
 import com.harish.quizapp.Dto.CourseDetailsDto;
+import com.harish.quizapp.Dto.EnrollmentDataDto;
 import com.harish.quizapp.Dto.StatusUpdateDto;
+import com.harish.quizapp.Dto.StudentsDTO;
+import com.harish.quizapp.Dto.StudyMaterialDto;
 import com.harish.quizapp.Model.CourseContents;
 import com.harish.quizapp.Model.CourseDetails;
 import com.harish.quizapp.Model.EnrollmentData;
@@ -24,7 +28,6 @@ import com.harish.quizapp.Model.InstructorProfile;
 import com.harish.quizapp.Model.MaterialsDto;
 import com.harish.quizapp.Model.UserRegistration;
 import com.harish.quizapp.enums.CourseStatus;
-
 import jakarta.transaction.Transactional;
 
 @Service
@@ -99,6 +102,7 @@ public class CourseService
 		return ResponseEntity.status(HttpStatus.OK).body(dto);
 	}
 	
+	@Transactional
 	public ResponseEntity<String> deleteCourses(int id,String name)
 	{
 		UserRegistration inst=ur.findByUserName(name).orElseThrow(()-> new BadCredentialsException("No Instructor Found"));
@@ -160,30 +164,56 @@ public class CourseService
 		return ResponseEntity.status(HttpStatus.ACCEPTED).body("Course Content Added !");
 	}
 
-	public ResponseEntity<List<EnrollmentData>> getCourseUsers(int courseid)
+	public ResponseEntity<List<EnrollmentDataDto>> getCourseUsers(int courseid)
 	{
 		List<EnrollmentData> enroll= er.findByCourse_Id(courseid);
-		return ResponseEntity.status(HttpStatus.ACCEPTED).body(enroll);
+		List<EnrollmentDataDto> dto= new ArrayList<>();
+		
+		for(EnrollmentData dt : enroll)
+		{
+			EnrollmentDataDto otd= new EnrollmentDataDto();
+			otd.setCourseId(dt.getCourse().getId());
+			otd.setCourseName(dt.getCourse().getTitle());
+			otd.setEnrolledAt(dt.getEnrollment_date());
+			otd.setStatus(dt.getStatus());
+			otd.setUserId(dt.getUser().getId());
+			otd.setUserName(dt.getUser().getUserName());
+			
+			dto.add(otd);
+		}
+		
+		return ResponseEntity.status(HttpStatus.ACCEPTED).body(dto);
 	}
 	
 	public ResponseEntity<List<StudentsDTO>> getStudentsforInstructor(int courseid)
 	{
-		List<EnrollmentData> ed=er.findByCourse_Id(courseid);
-		List<StudentsDTO> stu=new ArrayList<StudentsDTO>();
+		CourseDetails cd= cr.findById(courseid).orElseThrow();
 		
-		for(EnrollmentData data : ed)
+		if(cd.getInstructor().getUserName().getUserName().equals(SecurityContextHolder.getContext().getAuthentication().getName()))
 		{
-			StudentsDTO st=new StudentsDTO();
-			st.setCourseid(data.getCourse().getId());
-			st.setName(data.getUser().getName());
-			st.setEmail(data.getUser().getEmail());
+			List<EnrollmentData> ed=er.findByCourse_Id(courseid);
+			List<StudentsDTO> stu=new ArrayList<StudentsDTO>();
 			
-			stu.add(st);
+			for(EnrollmentData data : ed)
+			{
+				StudentsDTO st=new StudentsDTO();
+				st.setCourseid(data.getCourse().getId());
+				st.setUserName(data.getUser().getUserName());
+				st.setEmail(data.getUser().getEmail());
+				st.setUserId(data.getUser().getId());
+				
+				stu.add(st);
+			}
+			return ResponseEntity.status(HttpStatus.ACCEPTED).body(stu);
+		}
+		else
+		{
+			return ResponseEntity.status(HttpStatus.NO_CONTENT).body(List.of(new StudentsDTO()));
 		}
 		
-		return ResponseEntity.status(HttpStatus.ACCEPTED).body(stu);
 	}
 
+	@Transactional
 	public ResponseEntity<String> addCourseContents(CourseContents cc, int courseid)
 	{
 		CourseDetails cd=cr.findById(courseid).orElseThrow();
@@ -206,18 +236,43 @@ public class CourseService
 		return ResponseEntity.status(HttpStatus.ACCEPTED).body("Materials and Topics added !");
 	}
 
-	public ResponseEntity<List<CourseContents>> getCourseContents(int courseid)
+	public ResponseEntity<List<CourseContentsDto>> getCourseContents(int courseid)
 	{
 		List<CourseContents> contents = ccr.findByCourse_Id(courseid);
-		return ResponseEntity.status(HttpStatus.FOUND).body(contents);
+		List<CourseContentsDto> dto= new ArrayList<>();
+		
+		for(CourseContents cc : contents)
+		{
+			CourseContentsDto dt= new CourseContentsDto();
+			dt.setCourseId(cc.getCourseid().getId());
+			dt.setDescription(cc.getDescription());
+			dt.setTopic(cc.getTopic());
+			dt.setTopicId(cc.getTopicid());
+			
+			dto.add(dt);
+		}
+		return ResponseEntity.status(HttpStatus.FOUND).body(dto);
 	}
 
-	public ResponseEntity<List<MaterialsDto>> getMaterialsforTopic(int courseid, int topicid)
+	public ResponseEntity<List<StudyMaterialDto>> getMaterialsforTopic(int courseid, int topicid)
 	{
 		List<MaterialsDto> materialsDto=mr.findByContent_TopicidAndContent_Course_Id(topicid,courseid);
-		return ResponseEntity.status(HttpStatus.ACCEPTED).body(materialsDto);
+		List<StudyMaterialDto> smd= new ArrayList<>();
+		
+		for(MaterialsDto dt : materialsDto)
+		{
+			StudyMaterialDto dto= new StudyMaterialDto();
+			dto.setTopicId(dt.getContent().getTopicid());
+			dto.setTypeOfMaterial(dt.getType());
+			dto.setUrl(dt.getUrl());
+			
+			smd.add(dto);
+		}
+		
+		return ResponseEntity.status(HttpStatus.ACCEPTED).body(smd);
 	}
 	
+	@Transactional
 	public ResponseEntity<String> addMoreMaterials(int topicid, int courseid, CourseContents cc)
 	{
 		CourseContents contents=ccr.findByCourse_IdAndTopicid(courseid, topicid).orElseThrow();
