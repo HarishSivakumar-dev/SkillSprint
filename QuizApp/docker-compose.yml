@@ -1,0 +1,29 @@
+services:
+  db:
+    image: mysql:8
+    networks:
+       skillsprint-network:
+    environment:
+      MYSQL_ROOT_PASSWORD: HarishSathiya@07
+      MYSQL_USER: Harish
+      MYSQL_PASSWORD: HarishSathiya@07
+    ports:
+      - "3307:3306"
+    volumes:
+      - dbvol:/var/lib/mysql
+      - ./skillsprint.sql:/docker-entrypoint-initdb.d/skillsprint.sql
+  app:
+    build: .
+    networks:
+      skillsprint-network:
+    depends_on:
+      - db
+    restart: always
+    ports:
+      - "8080:8080"
+volumes:
+  dbvol:
+
+networks:
+  skillsprint-network:
+    driver: bridge
