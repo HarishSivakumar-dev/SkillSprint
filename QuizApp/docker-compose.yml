@@ -9,7 +9,7 @@ services:
       MYSQL_PASSWORD: HarishSathiya@07
     ports:
       - "3307:3306"
-    volumes:
+    volume:
       - dbvol:/var/lib/mysql
       - ./skillsprint.sql:/docker-entrypoint-initdb.d/skillsprint.sql
   app:
