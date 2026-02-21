@@ -10,7 +10,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import com.harish.quizapp.DataRepos.CourseCompletionRepo;
@@ -74,7 +77,9 @@ public class ViolationResetScheduler
 	private UserRepo ur;
 	@Autowired
 	private StreakMainRepo smr;
- 
+	@Autowired
+	@Qualifier(value="redisTemplate")
+	private RedisTemplate<String, UserProfile> rt;
 	
 	@Transactional
 	@Scheduled(cron="0 0 0 * * * ")
@@ -282,11 +287,12 @@ public class ViolationResetScheduler
 	}
 	
 	@Transactional
-	@Scheduled(cron="0 0 0 * * * ")
+	@Scheduled(cron="0 */10 * * * * ")
 	public void updateUserProfileDetails()
 	{
 		try
 		{
+			
 			System.out.println("Entered user profile scheduler !");
 			
 			List<UserDeltaProjection> usr= udr.findAllPendingDeltas();
@@ -332,6 +338,8 @@ public class ViolationResetScheduler
 				this.allocateLevel(pro);
 				
 				dbsave.add(pro);
+				
+				rt.opsForValue().set(pro.getUserName().getUserName(),pro, 10, TimeUnit.MINUTES);
 				
 			}
 			
