@@ -3,6 +3,7 @@ package com.harish.quizapp.Service;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -33,6 +34,8 @@ public class UserRegistrationService
 	private RoleRepo rr;
 	@Autowired
 	private EmailTokenRepo etr;
+	@Autowired
+	private RedisTemplate<String, UserProfile> rt;
 	
 	BCryptPasswordEncoder enc=new BCryptPasswordEncoder(15);
 
@@ -73,7 +76,9 @@ public class UserRegistrationService
 			pro.setJoinedDate(LocalDateTime.now());
 			pro.setIsEmailVerified(true);
 			
-			upr.save(pro);
+			UserProfile pr=upr.save(pro);
+			rt.opsForValue().set(pr.getUserName().getUserName(), pr);
+			
 			
 			st.setStreak(0);
 			st.setUserId(ur);
