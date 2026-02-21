@@ -1,7 +1,9 @@
 package com.harish.quizapp.Service;
 
-import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -11,6 +13,7 @@ import com.harish.quizapp.Dto.UserPersonalDetailsDto;
 import com.harish.quizapp.Dto.UserProfileDto;
 import com.harish.quizapp.Dto.UserStudyProfileDto;
 import com.harish.quizapp.Model.UserProfile;
+import jakarta.transaction.Transactional;
 
 
 @Service
@@ -18,12 +21,22 @@ public class UserProfileService
 {
 	@Autowired 
 	private UserProfileRepo upr;
+	
+	@Autowired
+	@Qualifier(value="redisTemplate")
+	private RedisTemplate<String, UserProfile> rt;
 
 	
 	public ResponseEntity<UserProfileDto> getUserProfileDetails()
 	{
 		String user= SecurityContextHolder.getContext().getAuthentication().getName();
-		UserProfile up=upr.findByUserName_UserName(user).orElseThrow();
+		UserProfile up=rt.opsForValue().get(user);
+		if(up==null)
+		{
+			up= upr.findByUserName_UserName(user).orElseThrow();
+			System.out.println("entered the db part of the control !");
+			rt.opsForValue().set(user,up, 10, TimeUnit.MINUTES);
+		}
 		
 		UserProfileDto dto= new UserProfileDto();
 		dto.setAvgCourseCertificationRate(up.getAvgCourseCertificationRate());
@@ -54,11 +67,15 @@ public class UserProfileService
 		return ResponseEntity.status(HttpStatus.OK).body(dto);
 	}
 	
+	@Transactional
 	public ResponseEntity<String> addUserProfilePersonalDetails(UserPersonalDetailsDto uppd)
 	{
-		Optional<UserProfile> up=upr.findByUserName_UserName(SecurityContextHolder.getContext().getAuthentication().getName());
-		
-	    UserProfile profile=up.get();
+		    UserProfile profile= rt.opsForValue().get(SecurityContextHolder.getContext().getAuthentication().getName());
+		    
+		    if(profile==null)
+		    {
+		    	profile=upr.findByUserName_UserName(SecurityContextHolder.getContext().getAuthentication().getName()).orElseThrow();
+		    }
 			
 			if(uppd.getDateOfBirth()!=null) profile.setDateOfBirth(uppd.getDateOfBirth());
 			if(uppd.getGender()!=null) profile.setGender(uppd.getGender());
@@ -66,24 +83,32 @@ public class UserProfileService
 			if(uppd.getUserBio()!=null) profile.setUserBio(uppd.getUserBio());
 			if(uppd.getPlace()!=null) profile.setPlace(uppd.getPlace());
 			
-			upr.save(profile);
+			UserProfile usr=upr.save(profile);
+			
+			rt.opsForValue().set(SecurityContextHolder.getContext().getAuthentication().getName(), usr, 10, TimeUnit.MINUTES);
 		
 		return ResponseEntity.status(HttpStatus.OK).body("Updated");
 		
 	}
 	
+	@Transactional
 	public ResponseEntity<String> addUserStudyDetails(UserStudyProfileDto dto)
 	{
-		Optional<UserProfile> up=upr.findByUserName_UserName(SecurityContextHolder.getContext().getAuthentication().getName());
-
-		UserProfile profile=up.get();
+		    UserProfile profile=rt.opsForValue().get(SecurityContextHolder.getContext().getAuthentication().getName());
 			
+		    if(profile==null)
+		    {
+		    	profile=upr.findByUserName_UserName(SecurityContextHolder.getContext().getAuthentication().getName()).orElseThrow();
+		    }
+		    
 			if(dto.getCollegeName()!=null) profile.setCollegeName(dto.getCollegeName());
 			if(dto.getDepartment()!=null) profile.setDepartment(dto.getDepartment());
 			if(dto.getLinkedIn()!=null) profile.setLinkedIn(dto.getLinkedIn());
 			if(dto.getYearOfStudy()!=0) profile.setYearOfStudy(dto.getYearOfStudy());;
 			
-			upr.save(profile);
+			UserProfile pr=upr.save(profile);
+			
+			rt.opsForValue().set(SecurityContextHolder.getContext().getAuthentication().getName(), pr, 10, TimeUnit.MINUTES);
 		
 		return ResponseEntity.status(HttpStatus.OK).body("Updated");
 	}
