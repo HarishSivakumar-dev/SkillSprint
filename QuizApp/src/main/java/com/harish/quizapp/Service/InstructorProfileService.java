@@ -5,16 +5,17 @@ import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import com.harish.quizapp.DataRepos.CoursesRepo;
-import com.harish.quizapp.DataRepos.EnrollmentRepo;
 import com.harish.quizapp.DataRepos.InstructorRepo;
 import com.harish.quizapp.DataRepos.SkillApprovalRepo;
-import com.harish.quizapp.DataRepos.SkillsRepo;
 import com.harish.quizapp.DataRepos.UserRepo;
 import com.harish.quizapp.DataRepos.ViolationTableRepo;
 import com.harish.quizapp.Dto.CourseDetailsDto;
@@ -28,14 +29,13 @@ import com.harish.quizapp.Model.SkillApproval;
 import com.harish.quizapp.Model.Skills;
 import com.harish.quizapp.Model.UserRegistration;
 import com.harish.quizapp.Model.ViolationsTable;
+import com.harish.quizapp.asyncFunctionCalls.InstructorAsyncCalls;
 import com.harish.quizapp.enums.CourseStatus;
 import com.harish.quizapp.enums.SkillStatus;
 
 @Service
 public class InstructorProfileService
 {
-	@Autowired
-	private SkillsRepo skr;
 	@Autowired
 	private InstructorRepo ir;
 	@Autowired
@@ -47,13 +47,24 @@ public class InstructorProfileService
 	@Autowired 
 	private ViolationTableRepo vtr;
 	@Autowired
-	private EnrollmentRepo rp;
+	private InstructorAsyncCalls isc;
+	
+	@Autowired
+	@Qualifier(value="Instructor_Template")
+	private RedisTemplate<String, InstructorProfile> rt;
 	
 	
 	public ResponseEntity<InstructorProfileDto> getInstructorProfile()
 	{
-		InstructorProfile prof= ir.findByUserName_UserName(SecurityContextHolder.getContext().getAuthentication().getName()).orElseThrow();
-		List<CourseDetails> cd =cr.findTop3ByInstructor_IdAndStatusOrderByCreatedAtDesc(prof.getId(), CourseStatus.Active);
+		InstructorProfile ip= rt.opsForValue().get(SecurityContextHolder.getContext().getAuthentication().getName());
+		
+		if(ip==null)
+		{
+			ip= ir.findByUserName_UserName(SecurityContextHolder.getContext().getAuthentication().getName()).orElseThrow();
+			rt.opsForValue().set(ip.getUserName().getUserName(),ip,10, TimeUnit.MINUTES);
+		}
+		
+		List<CourseDetails> cd =cr.findTop3ByInstructor_IdAndStatusOrderByCreatedAtDesc(ip.getId(), CourseStatus.Active);
 		List<CourseDetailsDto> ew= new ArrayList<>();
 		
 		for(CourseDetails det : cd)
@@ -75,23 +86,16 @@ public class InstructorProfileService
 			
 			ew.add(dto);
 		}
-		
-		prof.setCourseDetails(ew);
-		prof.setTrainedStud(rp.countDistinctUserId(prof.getId()));
-		System.out.println(rp.countDistinctUserId(prof.getId()));
-		
-		Period general= Period.between(prof.getJoinedDate(), LocalDate.now());
+				
+		Period general= Period.between(ip.getJoinedDate(), LocalDate.now());
 		int yearOfExp= general.getYears();
 		int monthOfExp= general.getMonths();
 		int days=general.getDays();
 		String totExp= yearOfExp+" "+" Years" +monthOfExp+" "+" Months" +days+" "+" Days";
 		
-		prof.setTotExp(totExp);
+		isc.saveInstructorDetails(ip, totExp);
 		
-		ir.save(prof);
-
-		
-		InstructorProfileDto dt= new InstructorProfileDto(prof.getUserName().getUserName(), prof.getUserName().getName(),prof.getMail(), prof.getJoinedDate(), prof.getHeadLine(), prof.getShortBio(), prof.getAboutSec(), prof.getPhone(), prof.getIsViolated(), prof.getLinkedinUrl(), prof.getGithubUrl(), prof.getWebUrl(), prof.getPortfolioUrl(), prof.getTotCourses(), prof.getTotalRegistered(),prof.getTrainedStud(), prof.getTotReviews(), prof.getAvgRating(), prof.getCompletionRate(), prof.getTotExp(), prof.getSkills(), prof.getCourseDetails());
+		InstructorProfileDto dt= new InstructorProfileDto(ip.getUserName().getUserName(), ip.getUserName().getName(),ip.getMail(), ip.getJoinedDate(), ip.getHeadLine(), ip.getShortBio(), ip.getAboutSec(), ip.getPhone(), ip.getIsViolated(), ip.getLinkedinUrl(), ip.getGithubUrl(), ip.getWebUrl(), ip.getPortfolioUrl(), ip.getTotCourses(), ip.getTotalRegistered(),ip.getTrainedStud(), ip.getTotReviews(), ip.getAvgRating(), ip.getCompletionRate(), ip.getTotExp(), ip.getSkills(),ew);
 		
 		
 		return ResponseEntity.status(HttpStatus.OK).body(dt);
@@ -99,63 +103,32 @@ public class InstructorProfileService
 	
 	public ResponseEntity<String> setInstructorProfile(InstructorDto instdt)
 	{
-		int approvedNo=0;
-		int pendingNo=0;
+		InstructorProfile ip= rt.opsForValue().get(SecurityContextHolder.getContext().getAuthentication().getName());
 		String user= SecurityContextHolder.getContext().getAuthentication().getName();
-		UserRegistration reg= ur.findByUserName(user).orElseThrow();
-		InstructorProfile ip= ir.findByUserName_UserName(user).orElseThrow();
+		
+		if(ip==null)
+		{
+			ip= ir.findByUserName_UserName(user).orElseThrow();
+		}
+		
 		
 		if(instdt.getAboutSec()!=null) ip.setAboutSec(instdt.getAboutSec());
-		if(instdt.getHeadLine()!=null) instdt.setHeadLine(instdt.getHeadLine());
+		if(instdt.getHeadLine()!=null) ip.setHeadLine(instdt.getHeadLine());
 		if(instdt.getPhone()!=null) ip.setPhone(instdt.getPhone());
 		if(instdt.getLinkedinUrl()!=null) ip.setLinkedinUrl(instdt.getLinkedinUrl());
 		if(instdt.getShortBio()!=null) ip.setShortBio(instdt.getShortBio());
 		if(instdt.getWebUrl()!=null) ip.setWebUrl(instdt.getWebUrl());
 		if(instdt.getGithubUrl()!=null) ip.setGithubUrl(instdt.getGithubUrl());
 		if(instdt.getPortfolioUrl()!=null) ip.setPortfolioUrl(instdt.getPortfolioUrl());
-		if(!instdt.getSkills().isEmpty())
+		if(instdt.getSkills()!=null && !instdt.getSkills().isEmpty())
 		{
-			List<String> skills=skr.findAll()
-								   .stream()
-								   .map(r-> r.getSkillName())
-								   .toList();
-			List<String> usrskl= instdt.getSkills();
-			
-			for(String st : usrskl)
-			{
-				int flag=0;
-				for(int i=0; i<skills.size(); i++)
-				{
-					if(st.equals(skills.get(i)))
-					{
-						flag=1;
-						break;
-					}
-				}
-				
-				if(flag==1)
-				{
-					ip.getSkills().add(skr.findBySkillName(st).get());
-					approvedNo++;
-					
-				}
-				else
-				{
-					SkillApproval sa= new SkillApproval();
-					sa.setInstructor(reg);
-					sa.setStatus(SkillStatus.Pending);
-					sa.setSkillApplied(st);
-					
-					rep.save(sa);
-					
-					pendingNo++;
-				}
-			}
+			isc.saveInstructorProfileDetails(instdt, user);
+		}
 		
 		ir.save(ip);
+		rt.delete(user);
 		
-		}
-		return ResponseEntity.status(HttpStatus.ACCEPTED).body(approvedNo + "Updated !!" + pendingNo + "Pending for Admin Verification. Check over the Skills Section for complete Information.");
+		return ResponseEntity.status(HttpStatus.OK).body("UPDATED");
 	}
 	
 	public ResponseEntity<List<SkillResponseDto>> searchInstructorSkills()
