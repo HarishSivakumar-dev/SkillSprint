@@ -162,11 +162,14 @@ public class InstructorProfileService
 			
 			for(SkillApproval approv : app)
 			{
-				SkillResponseDto dto= new SkillResponseDto();
-				dto.setSkillName(approv.getSkillApplied());
-				dto.setStatus(approv.getStatus());
-				
-				response.add(dto);
+				if(!approv.getStatus().equals(SkillStatus.Approved))
+				{
+					SkillResponseDto dto= new SkillResponseDto();
+					dto.setSkillName(approv.getSkillApplied());
+					dto.setStatus(approv.getStatus());
+					
+					response.add(dto);
+				}
 			}
 			
 			response.addAll(response1);
