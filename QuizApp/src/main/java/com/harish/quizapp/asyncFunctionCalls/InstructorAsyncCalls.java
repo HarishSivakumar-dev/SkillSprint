@@ -1,5 +1,6 @@
 package com.harish.quizapp.asyncFunctionCalls;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,7 +8,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
-
 import com.harish.quizapp.DataRepos.InstructorRepo;
 import com.harish.quizapp.DataRepos.SkillApprovalRepo;
 import com.harish.quizapp.DataRepos.SkillsRepo;
@@ -30,6 +30,7 @@ public class InstructorAsyncCalls
 	private UserRepo ur;
 	@Autowired
 	private SkillApprovalRepo rep;
+	
 	@Autowired
 	@Qualifier(value="Instructor_Template")
 	private RedisTemplate<String, InstructorProfile> rt;
@@ -81,6 +82,7 @@ public class InstructorAsyncCalls
 				sa.setInstructor(reg);
 				sa.setStatus(SkillStatus.Pending);
 				sa.setSkillApplied(st);
+				sa.setDate(LocalDate.now());
 	
 				rep.save(sa);
 	
