@@ -33,7 +33,7 @@ public class InstructorProfile
 	private String phone;
 	private Boolean isViolated;
 	
-	@Transient
+	
 	private int trainedStud;
 	
 	@URL

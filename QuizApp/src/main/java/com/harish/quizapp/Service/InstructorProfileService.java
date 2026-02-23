@@ -60,6 +60,7 @@ public class InstructorProfileService
 		
 		if(ip==null)
 		{
+			System.out.println("entered cache part !");
 			ip= ir.findByUserName_UserName(SecurityContextHolder.getContext().getAuthentication().getName()).orElseThrow();
 			rt.opsForValue().set(ip.getUserName().getUserName(),ip,10, TimeUnit.MINUTES);
 		}
@@ -86,7 +87,7 @@ public class InstructorProfileService
 			
 			ew.add(dto);
 		}
-				
+		
 		Period general= Period.between(ip.getJoinedDate(), LocalDate.now());
 		int yearOfExp= general.getYears();
 		int monthOfExp= general.getMonths();
