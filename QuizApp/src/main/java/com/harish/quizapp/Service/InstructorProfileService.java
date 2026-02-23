@@ -103,8 +103,8 @@ public class InstructorProfileService
 	
 	public ResponseEntity<String> setInstructorProfile(InstructorDto instdt)
 	{
-		InstructorProfile ip= rt.opsForValue().get(SecurityContextHolder.getContext().getAuthentication().getName());
 		String user= SecurityContextHolder.getContext().getAuthentication().getName();
+		InstructorProfile ip= rt.opsForValue().get(user);
 		
 		if(ip==null)
 		{
@@ -125,8 +125,9 @@ public class InstructorProfileService
 			isc.saveInstructorProfileDetails(instdt, user);
 		}
 		
-		ir.save(ip);
-		rt.delete(user);
+		InstructorProfile pr=ir.save(ip);
+		
+		rt.opsForValue().set(user,pr,10, TimeUnit.MINUTES);	
 		
 		return ResponseEntity.status(HttpStatus.OK).body("UPDATED");
 	}
@@ -184,7 +185,7 @@ public class InstructorProfileService
 			vrd.setFinalViolationCount(0);
 			vrd.setInitialViolationCount(0);
 			vrd.setIsViolated(false);
-		}
+		}  
 		else
 		{
 			vrd.setFinalViolationCount(vt.get().getFinalViolationCount());
