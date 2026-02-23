@@ -5,10 +5,15 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -80,6 +85,9 @@ public class AdminService
 	private SkillsRepo sklrep;
 	@Autowired
 	private AdminLogsRepo alr;
+	@Autowired
+	@Qualifier(value="Instructor_Template")
+	private RedisTemplate<String, InstructorProfile> rt;
 	
 	public ResponseEntity<String> updateUserRoles(PromotionDto dto)
 	{
@@ -367,7 +375,7 @@ public class AdminService
 	
 	public ResponseEntity<List<SkillApprovalDto>> getAllSkillApprovalRequests()
 	{
-		List<SkillApproval> sa= sar.findAll();
+		List<SkillApproval> sa= sar.findByStatus(SkillStatus.Pending);
 		List<SkillApprovalDto> sad= new ArrayList<>();
 		
 		for(SkillApproval approv : sa)
@@ -385,9 +393,10 @@ public class AdminService
 
 		}
 		
-		return ResponseEntity.status(HttpStatus.ACCEPTED).body(sad);
+		return ResponseEntity.status(HttpStatus.OK).body(sad);
 	}
 	
+	@Transactional
 	public ResponseEntity<String> setSkillApprovalRequests(List<SkillApprovalDto> dto)
 	{
 		UserRegistration user= rep.findByUserName(SecurityContextHolder.getContext().getAuthentication().getName()).orElseThrow();
@@ -414,6 +423,8 @@ public class AdminService
 			map1.put(ip.getUserName().getId(), ip);
 		}
 		
+		Set<String> inspr= new HashSet<>();
+		
 		for(SkillApproval sv : sk)
 		{
 			if(map.get(sv.getId()).getStatus()==SkillStatus.Approved)
@@ -433,7 +444,8 @@ public class AdminService
 					ip.getSkills().add(opt.get());
 				}
 				
-				intrep.save(ip);
+				inspr.add(ip.getUserName().getUserName());
+				
 				
 				sv.setStatus(SkillStatus.Approved);
 				sv.setAdmin(user);
@@ -444,7 +456,16 @@ public class AdminService
 				sv.setAdmin(user);
 			}
 		}
+		
+		List<InstructorProfile> sva= new ArrayList<InstructorProfile>();
+		map1.keySet().stream()
+				     .forEach(r->{
+								  sva.add(map1.get(r));
+										  
+								});
+		intrep.saveAll(sva);
 		sar.saveAll(sk);
+		rt.delete(inspr);
 		
 		AdminLogs al= alr.findByAdminId(user.getId()).orElseThrow();
 		al.setLastActive(LocalDate.now());
