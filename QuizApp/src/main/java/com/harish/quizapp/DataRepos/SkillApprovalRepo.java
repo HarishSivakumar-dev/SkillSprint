@@ -18,6 +18,8 @@ public interface SkillApprovalRepo extends JpaRepository<SkillApproval, Integer>
 	
 	int countByAdmin_Id(int id);
 	
+	List<SkillApproval> findByStatus(SkillStatus ss);
+	
 	int countByStatusAndDate(SkillStatus ss, LocalDate date );
 	
 	@Query("SELECT COUNT(u) FROM SkillApproval u WHERE date< :date")
