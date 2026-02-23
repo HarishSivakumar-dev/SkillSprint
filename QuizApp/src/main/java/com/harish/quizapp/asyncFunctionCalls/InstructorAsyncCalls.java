@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Component;
+
 import com.harish.quizapp.DataRepos.InstructorRepo;
 import com.harish.quizapp.DataRepos.SkillApprovalRepo;
 import com.harish.quizapp.DataRepos.SkillsRepo;
@@ -15,9 +17,9 @@ import com.harish.quizapp.Model.InstructorProfile;
 import com.harish.quizapp.Model.SkillApproval;
 import com.harish.quizapp.Model.UserRegistration;
 import com.harish.quizapp.enums.SkillStatus;
-
 import jakarta.transaction.Transactional;
 
+@Component 
 public class InstructorAsyncCalls
 {
 	@Autowired
