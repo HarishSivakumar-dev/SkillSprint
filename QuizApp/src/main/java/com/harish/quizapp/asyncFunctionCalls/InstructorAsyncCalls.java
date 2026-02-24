@@ -11,11 +11,9 @@ import org.springframework.stereotype.Component;
 import com.harish.quizapp.DataRepos.InstructorRepo;
 import com.harish.quizapp.DataRepos.SkillApprovalRepo;
 import com.harish.quizapp.DataRepos.SkillsRepo;
-import com.harish.quizapp.DataRepos.UserRepo;
 import com.harish.quizapp.Dto.InstructorDto;
 import com.harish.quizapp.Model.InstructorProfile;
 import com.harish.quizapp.Model.SkillApproval;
-import com.harish.quizapp.Model.UserRegistration;
 import com.harish.quizapp.enums.SkillStatus;
 import jakarta.transaction.Transactional;
 
@@ -26,8 +24,6 @@ public class InstructorAsyncCalls
 	private InstructorRepo ir;
 	@Autowired
 	private SkillsRepo skr;
-	@Autowired
-	private UserRepo ur;
 	@Autowired
 	private SkillApprovalRepo rep;
 	
@@ -46,7 +42,6 @@ public class InstructorAsyncCalls
 	@Transactional
 	public void saveInstructorProfileDetails(InstructorDto instdt, String name)
 	{
-		UserRegistration reg= ur.findByUserName(name).orElseThrow();
 		InstructorProfile ip= ir.findByUserName_UserName(name).orElseThrow();
 		
 		List<String> skills=skr.findAll()
@@ -79,7 +74,7 @@ public class InstructorAsyncCalls
 			else
 			{
 				SkillApproval sa= new SkillApproval();
-				sa.setInstructor(reg);
+				sa.setInstructor(ip);
 				sa.setStatus(SkillStatus.Pending);
 				sa.setSkillApplied(st);
 				sa.setDate(LocalDate.now());
