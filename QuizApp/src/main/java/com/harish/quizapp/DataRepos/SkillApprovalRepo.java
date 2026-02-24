@@ -7,14 +7,14 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import com.harish.quizapp.Model.InstructorProfile;
 import com.harish.quizapp.Model.SkillApproval;
-import com.harish.quizapp.Model.UserRegistration;
 import com.harish.quizapp.enums.SkillStatus;
 
 @Repository
 public interface SkillApprovalRepo extends JpaRepository<SkillApproval, Integer>
 {
-	Optional<List<SkillApproval>> findByInstructor(UserRegistration user);
+	Optional<List<SkillApproval>> findByInstructor(InstructorProfile inst);
 	
 	int countByAdmin_Id(int id);
 	
