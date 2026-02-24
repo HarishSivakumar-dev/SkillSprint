@@ -27,7 +27,6 @@ import com.harish.quizapp.Model.CourseDetails;
 import com.harish.quizapp.Model.InstructorProfile;
 import com.harish.quizapp.Model.SkillApproval;
 import com.harish.quizapp.Model.Skills;
-import com.harish.quizapp.Model.UserRegistration;
 import com.harish.quizapp.Model.ViolationsTable;
 import com.harish.quizapp.asyncFunctionCalls.InstructorAsyncCalls;
 import com.harish.quizapp.enums.CourseStatus;
@@ -135,10 +134,10 @@ public class InstructorProfileService
 	
 	public ResponseEntity<List<SkillResponseDto>> searchInstructorSkills()
 	{
-		UserRegistration user= ur.findByUserName(SecurityContextHolder.getContext().getAuthentication().getName()).orElseThrow();
+		InstructorProfile iprf= ir.findByUserName_UserName(SecurityContextHolder.getContext().getAuthentication().getName()).orElseThrow();
 		
-		List<Skills> sk= ir.findByUserName_UserName(user.getUserName()).get().getSkills();
-		Optional<List<SkillApproval>>sa= rep.findByInstructor(user);
+		List<Skills> sk= iprf.getSkills();
+		Optional<List<SkillApproval>>sa= rep.findByInstructor(iprf);
 		
 		List<SkillResponseDto> response1= new ArrayList<SkillResponseDto>();
 		for(Skills k : sk )
