@@ -20,7 +20,7 @@ public class SkillApproval
 	
 	@ManyToOne
 	@JoinColumn(name= "instrutor_id")
-	private UserRegistration instructor;
+	private InstructorProfile instructor;
 	
 	@ManyToOne
 	@JoinColumn(name= "Handled_admin_id")
@@ -75,11 +75,11 @@ public class SkillApproval
 		this.comments = comments;
 	}
 
-	public UserRegistration getInstructor() {
+	public InstructorProfile getInstructor() {
 		return instructor;
 	}
 
-	public void setInstructor(UserRegistration instructor) {
+	public void setInstructor(InstructorProfile instructor) {
 		this.instructor = instructor;
 	}
 
