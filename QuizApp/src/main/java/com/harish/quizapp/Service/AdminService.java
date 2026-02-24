@@ -385,7 +385,7 @@ public class AdminService
 			dt.setComments(approv.getComments());
 			dt.setId(approv.getId());
 			dt.setInstructorId(approv.getInstructor().getId());
-			dt.setInstructorUserName(approv.getInstructor().getUserName());
+			dt.setInstructorUserName(approv.getInstructor().getUserName().getUserName());
 			dt.setSkillApplied(approv.getSkillApplied());
 			dt.setStatus(approv.getStatus());
 			
@@ -404,11 +404,15 @@ public class AdminService
 		List<Integer> sl= dto.stream()
 							 .map(r-> r.getId())
 							 .toList();
+		
 		List<SkillApproval> sk= sar.findAllById(sl);
 		
 		List<Integer> inst= dto.stream()
 							   .map(r->r.getInstructorId())
 							   .toList();
+		
+		System.out.println(inst);
+		
 		List<InstructorProfile> dbinst= intrep.findAllById(inst);
 		
 		Map<Integer, SkillApprovalDto> map= new HashMap<>();
@@ -420,13 +424,16 @@ public class AdminService
 		}
 		for(InstructorProfile ip : dbinst)
 		{
-			map1.put(ip.getUserName().getId(), ip);
+			map1.put(ip.getId(), ip);
 		}
 		
 		Set<String> inspr= new HashSet<>();
 		
 		for(SkillApproval sv : sk)
 		{
+			sv.setComments(map.get(sv.getId()).getComments());
+			sv.setAdmin(user);
+			
 			if(map.get(sv.getId()).getStatus()==SkillStatus.Approved)
 			{
 				Optional<Skills> opt=sklrep.findBySkillName(sv.getSkillApplied());
@@ -446,14 +453,12 @@ public class AdminService
 				
 				inspr.add(ip.getUserName().getUserName());
 				
-				
 				sv.setStatus(SkillStatus.Approved);
-				sv.setAdmin(user);
+				
 			}
 			else
 			{
 				sv.setStatus(map.get(sv.getId()).getStatus());
-				sv.setAdmin(user);
 			}
 		}
 		
