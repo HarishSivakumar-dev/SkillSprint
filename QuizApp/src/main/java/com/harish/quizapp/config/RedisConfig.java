@@ -52,15 +52,15 @@ public class RedisConfig
 		return rt;
 	}
 	
-	@Bean(value="QuizResult_Template")
-	RedisTemplate<String, Object> redisTemplateForQuizResult(RedisConnectionFactory rcf)
+	@Bean(value="Dashboard_Template")
+	RedisTemplate<String, String> redisTemplateForQuizResult(RedisConnectionFactory rcf)
 	{
 		ObjectMapper om= new ObjectMapper();
 		om.registerModule(new JavaTimeModule());
 		
 		GenericJackson2JsonRedisSerializer jj= new GenericJackson2JsonRedisSerializer(om);
 		
-		RedisTemplate<String, Object> rt= new RedisTemplate<String, Object>();
+		RedisTemplate<String, String> rt= new RedisTemplate<String, String>();
 		rt.setConnectionFactory(rcf);
 		rt.setKeySerializer(RedisSerializer.string());
 		rt.setValueSerializer(jj);
