@@ -1,17 +1,25 @@
 package com.harish.quizapp.Controllers;
 
+import java.util.Map;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import com.harish.quizapp.Service.DashBoardService;
 
 @RestController
 @RequestMapping("/app")
 public class DashBoardController
 {
+	@Autowired
+	private DashBoardService dbs;
+	
 	@GetMapping("/dashboard")
-	public String dashboardController()
+	@PreAuthorize("hasAnyRole('USER','INSTRUCTOR','ADMIN', 'ADMIN_MANAGER', 'SUPER_ADMIN')")	
+	public Map<String, Double> dashboardController()
 	{
-		return "Welcome to the Dashboard";
+		return dbs.getall();
 	}
 
 }
