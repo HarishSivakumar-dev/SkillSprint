@@ -16,9 +16,9 @@ public class AsyncConfig
 	{
 		ThreadPoolTaskExecutor ex= new ThreadPoolTaskExecutor();
 		
-		ex.setCorePoolSize(20);
+		ex.setCorePoolSize(30);
 		ex.setBeanName("async-executor");
-		ex.setMaxPoolSize(30);
+		ex.setMaxPoolSize(40);
 		ex.setQueueCapacity(150);
 		ex.setThreadNamePrefix("async-");
 		ex.initialize();
