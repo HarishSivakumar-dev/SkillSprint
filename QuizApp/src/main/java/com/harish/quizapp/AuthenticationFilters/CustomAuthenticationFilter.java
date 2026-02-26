@@ -19,7 +19,7 @@ public class CustomAuthenticationFilter implements AuthenticationProvider
 	@Autowired
 	private UserRepo ur;
 	
-	BCryptPasswordEncoder enc=new BCryptPasswordEncoder(15);
+	BCryptPasswordEncoder enc=new BCryptPasswordEncoder(10);
 
 
 	@Override
@@ -27,7 +27,6 @@ public class CustomAuthenticationFilter implements AuthenticationProvider
 	{
 		String name=authentication.getName();
 		String pass=authentication.getCredentials().toString();
-		
 		
 		UserRegistration encode=ur.findByUserName(name).orElseThrow(()-> new BadCredentialsException("NO USERS FOUND"));
 		String encoded=encode.getPassword();
