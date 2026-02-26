@@ -185,11 +185,10 @@ public class QuizService
 	{
 		UserRegistration user = usr.findByUserName(name).orElseThrow();
 		Quiz ques=quizrepo.findByTitleAndCourse_Id(quizname,courseid).get();
+		
 		List<UserProfileDelta> delsave= new ArrayList<>();
 	
 		int streak=this.StreakLogicForUser(user, ques);
-		
-		
 		
 		List<Quiz_Questions> quiz= bridge.findByQuiz_Id(ques.getId());
 		
