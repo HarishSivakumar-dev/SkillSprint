@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import com.harish.quizapp.Dto.ForgotPasswordDto;
 import com.harish.quizapp.Model.UserRegistration;
 import com.harish.quizapp.Service.UserLoginService;
 
@@ -21,6 +22,12 @@ public class UserLoginController
 	public ResponseEntity<String> loginController(@RequestBody UserRegistration rd)
 	{
 		return uls.loginAuthenticationService(rd);
+	}
+	
+	@PostMapping("/forgotpassword")
+	public ResponseEntity<String> forgotPasswordController(@RequestBody ForgotPasswordDto rd)
+	{
+		return uls.forgotPassword(rd);
 	}
 
 }
