@@ -29,7 +29,7 @@ public class JwtFilter extends OncePerRequestFilter
 			throws ServletException, IOException
 	{
 		String url=request.getRequestURI();
-		if(url.equals("/app/login") || url.equals("/app/register") || url.equals("/app/refresh") || url.equals("/app/otp/registration/send" ) || url.equals("/app/otp/registration/verify"))
+		if(url.equals("/app/login") || url.equals("/app/register") || url.equals("/app/refresh") || url.equals("/app/otp/registration/send" ) || url.equals("/app/otp/registration/verify") || url.equals("/app/forgotpassword"))
 		{
 			System.out.println(url);
 			filterChain.doFilter(request, response);
