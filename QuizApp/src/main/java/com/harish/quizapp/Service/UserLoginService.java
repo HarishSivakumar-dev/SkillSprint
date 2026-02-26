@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +31,7 @@ public class UserLoginService
 	@Autowired
 	private UserRepo ur;
 	@Autowired
+	@Qualifier("Dashboard_Template")
 	private RedisTemplate<String, String> redisTemp;
 
 	public ResponseEntity<String> loginAuthenticationService(UserRegistration rd)
