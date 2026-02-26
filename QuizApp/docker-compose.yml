@@ -17,7 +17,7 @@ services:
     build:
       context: .
     deploy:
-      replicas: 2
+      replicas: 3
     image: skillsprint:v1
     networks:
       - skillsprint-network
@@ -25,8 +25,8 @@ services:
       - db
       - redis
     restart: always
-    ports:
-      - "8080-8081:8080"
+    expose:
+      - "8080"
   redis:
     image: redis:8
     container_name: skillsprint-redis-1
