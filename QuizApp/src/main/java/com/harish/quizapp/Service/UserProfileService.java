@@ -34,7 +34,6 @@ public class UserProfileService
 		if(up==null)
 		{
 			up= upr.findByUserName_UserName(user).orElseThrow();
-			System.out.println("entered the db part of the control !");
 			rt.opsForValue().set(user,up, 10, TimeUnit.MINUTES);
 		}
 		
