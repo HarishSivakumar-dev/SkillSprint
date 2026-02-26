@@ -37,7 +37,7 @@ public class UserRegistrationService
 	@Autowired
 	private RedisTemplate<String, UserProfile> rt;
 	
-	BCryptPasswordEncoder enc=new BCryptPasswordEncoder(15);
+	BCryptPasswordEncoder enc=new BCryptPasswordEncoder(10);
 
 
 
