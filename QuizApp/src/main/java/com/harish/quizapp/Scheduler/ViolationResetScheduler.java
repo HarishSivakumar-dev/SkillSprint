@@ -80,6 +80,9 @@ public class ViolationResetScheduler
 	@Autowired
 	@Qualifier(value="redisTemplate")
 	private RedisTemplate<String, UserProfile> rt;
+	@Autowired
+	@Qualifier(value="Dashboard_Template")
+	private RedisTemplate<String, String> dashrt;
 	
 	@Transactional
 	@Scheduled(cron="0 0 0 * * * ")
@@ -397,13 +400,15 @@ public class ViolationResetScheduler
 		
 	}
 	
-	private SkillLevelEnum allocateLevel(float clearingrate, float completionrate, float certrate)
+	private SkillLevelEnum allocateLevel(float clearingrate, float completionrate, float certrate, String username)
 	{
 		float course=(float) 0.30;
 		float certi=(float) 0.45;
 		float quiz=(float) 0.25;
 		
 		float score= (quiz*clearingrate) + (course*completionrate) + (certi * certrate);
+		
+		dashrt.opsForZSet().add("LeaderBoard:overall",username, score);
 		
 		if(score<=40.00)
 		{
@@ -510,7 +515,7 @@ public class ViolationResetScheduler
 	
 	private void allocateLevel(UserProfile up)
 	{
-		up.setLevel(this.allocateLevel(up.getAvgQuizezCleared(),up.getAvgCourseCompletionRate(),up.getAvgCourseCertificationRate()));
+		up.setLevel(this.allocateLevel(up.getAvgQuizezCleared(),up.getAvgCourseCompletionRate(),up.getAvgCourseCertificationRate(), up.getUserName().getUserName()));
 	}
 	
 }
