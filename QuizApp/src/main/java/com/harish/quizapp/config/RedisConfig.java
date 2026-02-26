@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -47,6 +48,24 @@ public class RedisConfig
 		rt.setHashKeySerializer(RedisSerializer.string());
 		rt.setHashValueSerializer(jj);
 		rt.setConnectionFactory(rcf);
+		
+		return rt;
+	}
+	
+	@Bean(value="QuizResult_Template")
+	RedisTemplate<String, Object> redisTemplateForQuizResult(RedisConnectionFactory rcf)
+	{
+		ObjectMapper om= new ObjectMapper();
+		om.registerModule(new JavaTimeModule());
+		
+		GenericJackson2JsonRedisSerializer jj= new GenericJackson2JsonRedisSerializer(om);
+		
+		RedisTemplate<String, Object> rt= new RedisTemplate<String, Object>();
+		rt.setConnectionFactory(rcf);
+		rt.setKeySerializer(RedisSerializer.string());
+		rt.setValueSerializer(jj);
+		rt.setHashKeySerializer(RedisSerializer.string());
+		rt.setHashValueSerializer(jj);
 		
 		return rt;
 	}
