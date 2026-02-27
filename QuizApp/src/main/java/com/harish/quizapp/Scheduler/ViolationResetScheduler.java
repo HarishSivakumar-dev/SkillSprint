@@ -2,6 +2,7 @@ package com.harish.quizapp.Scheduler;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -409,6 +410,14 @@ public class ViolationResetScheduler
 		float score= (quiz*clearingrate) + (course*completionrate) + (certi * certrate);
 		
 		dashrt.opsForZSet().add("LeaderBoard:overall",username, score);
+		
+		LocalDateTime end= LocalDateTime.now().withHour(23).withMinute(59).withSecond(59);
+		LocalDateTime now= LocalDateTime.now();
+		
+		Long ttl= Duration.between(now, end).getSeconds();
+		
+		dashrt.opsForZSet().add("LeaderBoard:daily", username, score);
+		dashrt.expire("LeaderBoard:daily",ttl, TimeUnit.SECONDS);
 		
 		if(score<=40.00)
 		{
