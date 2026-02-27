@@ -29,4 +29,17 @@ public class DashBoardService
 		return map;
 		
 	}
+
+	public Map<String, Double> getDaily()
+	{
+		Set<TypedTuple<String>> dash= rt.opsForZSet().reverseRangeWithScores("LeaderBoard:daily", 0, -1);
+		Map<String, Double> map=new HashMap<>();
+		
+		for(TypedTuple<String> t:dash)
+		{
+			map.put(t.getValue(), t.getScore());
+		}
+		
+		return map;
+	}
 }
