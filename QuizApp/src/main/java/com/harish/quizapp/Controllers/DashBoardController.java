@@ -22,7 +22,7 @@ public class DashBoardController
 		return dbs.getall();
 	}
 	
-	@GetMapping("/dshboard/daily")
+	@GetMapping("/dashboard/daily")
 	@PreAuthorize("hasAnyRole('USER','INSTRUCTOR','ADMIN', 'ADMIN_MANAGER', 'SUPER_ADMIN')")	
 	public Map<String, Double> dashboardDailyController()
 	{
