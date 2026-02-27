@@ -460,15 +460,15 @@ public class QuizService
 				}  
 				 if(dto.getQuestionid()!=null && !dto.getQuestionid().isEmpty())
 				 {
-					 i=0;
+					 int j=0;
 					 for(ExistingQuestionsDto qu : dto.getQuestionid())
 						{
 							Quiz_Questions qs=new Quiz_Questions();
 							qs.setQuiz(q);
-							qs.setQuestions(qold.get(i));
+							qs.setQuestions(qold.get(j));
 							qs.setMarks(qu.getMarks());
 							bridgeval.add(qs);
-							i++;
+							j++;
 						}
 				 }			
 				 bridge.saveAll(bridgeval);
