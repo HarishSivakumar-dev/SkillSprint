@@ -71,6 +71,7 @@ public class LoginRateLimitingFilter extends OncePerRequestFilter
 				}
 				else 
 				{
+					rt.expire("client:"+ureg.getId()+":"+ip, 10, TimeUnit.MINUTES);
 					filterChain.doFilter(request, response);
 					return;
 				}
