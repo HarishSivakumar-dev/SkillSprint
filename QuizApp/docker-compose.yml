@@ -13,6 +13,7 @@ services:
       - "3307:3306"
     volumes:
       - dbvol:/var/lib/mysql 
+      - ./dbinit.sql:/docker-entrypoint-initdb.d/dbinit.sql
   app:
     build:
       context: .
@@ -23,8 +24,8 @@ services:
       - db
       - redis
     restart: always
-    expose:
-      - "8080"
+    ports:
+      - "8080:8080"
   redis:
     image: redis:8
     container_name: skillsprint-redis-1
