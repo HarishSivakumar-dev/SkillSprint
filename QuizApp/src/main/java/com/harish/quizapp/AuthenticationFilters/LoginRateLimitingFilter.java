@@ -32,13 +32,18 @@ public class LoginRateLimitingFilter extends OncePerRequestFilter
 	{
 		String req= request.getRequestURI();
 		String name= request.getHeader("X-Username");
+		String ip=request.getHeader("X-Forwarded-For");
 		
-		System.out.println("came to rl filter" + name);
-
+		
+		if(ip==null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip))
+		{
+			ip=request.getRemoteAddr();
+		}
+		
 		if(req.equals("/app/login"))
 		{
 			UserRegistration ureg= ur.findByUserName(name).orElseThrow();
-			Object us=rt.opsForHash().get("client"+ureg.getId(), "login_count");
+			Object us=rt.opsForHash().get("client:"+ureg.getId()+":"+ip, "login_count");
 			if(us==null)
 			{
 				Map<String, Object> mp= new HashMap<String, Object>();
@@ -46,8 +51,8 @@ public class LoginRateLimitingFilter extends OncePerRequestFilter
 				mp.put("login_count", 1);
 				mp.put("user_id", ureg.getId());
 
-				rt.opsForHash().putAll("client"+ureg.getId(), mp);
-				rt.expire("client"+ureg.getId(), 10, TimeUnit.MINUTES);
+				rt.opsForHash().putAll("client:"+ureg.getId()+":"+ip, mp);
+				rt.expire("client:"+ureg.getId()+":"+ip, 10, TimeUnit.MINUTES);
 				
 				filterChain.doFilter(request, response);
 				return;
@@ -55,7 +60,8 @@ public class LoginRateLimitingFilter extends OncePerRequestFilter
 			}
 			else
 			{
-				long count=rt.opsForHash().increment("client"+ureg.getId(),"login_count", 1 );
+				
+				long count=rt.opsForHash().increment("client:"+ureg.getId()+":"+ip,"login_count", 1 );
 				
 				if((count>5))
 				{
