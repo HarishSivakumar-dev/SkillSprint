@@ -13,6 +13,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import com.harish.quizapp.AuthenticationFilters.CustomAuthenticationFilter;
 import com.harish.quizapp.AuthenticationFilters.JwtFilter;
+import com.harish.quizapp.AuthenticationFilters.LoginRateLimitingFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -24,6 +25,8 @@ public class SecurityConfig
 	private CustomAuthenticationFilter caf;
 	@Autowired
 	private JwtFilter jwt;
+	@Autowired
+	private LoginRateLimitingFilter loginRateLimitingFilter;
 	
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity sec) throws Exception
@@ -33,7 +36,8 @@ public class SecurityConfig
 				  .authenticationProvider(caf)
 				  .sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				  .formLogin(login->login.disable())
-				  .addFilterBefore(jwt,UsernamePasswordAuthenticationFilter.class)
+				  .addFilterBefore(loginRateLimitingFilter,UsernamePasswordAuthenticationFilter.class)
+				  .addFilterAfter(jwt, loginRateLimitingFilter.getClass())
 				  .build();
 		
 	}
