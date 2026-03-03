@@ -70,4 +70,24 @@ public class RedisConfig
 		return rt;
 	}
 
+	@Bean(value="loginFilter")
+	RedisTemplate<String, Object> redisTemplateForFilter(RedisConnectionFactory rcf)
+	{
+		ObjectMapper om= new ObjectMapper();
+		om.registerModule(new JavaTimeModule());
+
+		GenericJackson2JsonRedisSerializer ss= new GenericJackson2JsonRedisSerializer(om);
+		RedisTemplate<String, Object> rt= new RedisTemplate<String, Object>();
+
+		rt.setConnectionFactory(rcf);
+		rt.setKeySerializer(RedisSerializer.string());
+		rt.setValueSerializer(ss);
+		rt.setHashKeySerializer(RedisSerializer.string());
+		rt.setHashValueSerializer(ss);
+
+		return rt;
+
+	}
+
+
 }
