@@ -12,8 +12,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.concurrent.TimeUnit;
 
 @Component
@@ -43,15 +43,19 @@ public class LoginRateLimitingFilter extends OncePerRequestFilter
 		if(req.equals("/app/login"))
 		{
 			UserRegistration ureg= ur.findByUserName(name).orElseThrow();
-			Object us=rt.opsForHash().get("client:"+ureg.getId()+":"+ip, "login_count");
+			Object us=rt.opsForZSet().size("client:"+ureg.getId()+":"+ip);
 			if(us==null)
 			{
-				Map<String, Object> mp= new HashMap<String, Object>();
+				/* Map<String, Object> mp= new HashMap<String, Object>();
 				mp.put("username", name);
 				mp.put("login_count", 1);
 				mp.put("user_id", ureg.getId());
 
-				rt.opsForHash().putAll("client:"+ureg.getId()+":"+ip, mp);
+				rt.opsForHash().putAll("client:"+ureg.getId()+":"+ip, mp);*/
+
+				long sec= LocalDateTime.now().atZone(ZoneId.systemDefault()).toEpochSecond();
+				long time=System.currentTimeMillis();
+				rt.opsForZSet().add("client:"+ureg.getId()+":"+ip,"Req-UUID:"+time, sec);
 				rt.expire("client:"+ureg.getId()+":"+ip, 10, TimeUnit.MINUTES);
 				
 				filterChain.doFilter(request, response);
@@ -60,17 +64,25 @@ public class LoginRateLimitingFilter extends OncePerRequestFilter
 			}
 			else
 			{
+				long sec= LocalDateTime.now().atZone(ZoneId.systemDefault()).toEpochSecond();
+				long time=System.currentTimeMillis();
+				rt.opsForZSet().add("client:"+ureg.getId()+":"+ip,"Req-UUID:"+time, sec);
+
+				long oldsec= sec-600;
+				rt.opsForZSet().removeRangeByScore("client:"+ureg.getId()+":"+ip, 0, oldsec);
+				long ct=rt.opsForZSet().zCard("client:"+ureg.getId()+":"+ip);
+				//long count=rt.opsForHash().increment("client:"+ureg.getId()+":"+ip,"login_count", 1 );
 				
-				long count=rt.opsForHash().increment("client:"+ureg.getId()+":"+ip,"login_count", 1 );
-				
-				if((count>5))
+				if((ct>10))
 				{
 					response.setStatus(429);
 					response.getWriter().write("Too many login attempts. Please try again later.");
 					return;
 				}
-				else 
+				else
 				{
+					rt.opsForZSet().add("client:"+ureg.getId()+":"+ip,"Req-UUID:"+time, sec);
+
 					rt.expire("client:"+ureg.getId()+":"+ip, 10, TimeUnit.MINUTES);
 					filterChain.doFilter(request, response);
 					return;
