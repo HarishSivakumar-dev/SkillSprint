@@ -33,10 +33,10 @@ public class LoginRateLimitingFilter extends OncePerRequestFilter
 		String req= request.getRequestURI();
 		String name= request.getHeader("X-Username");
 		String ip=request.getHeader("X-Forwarded-For");
-		
-		
+
 		if(ip==null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip))
 		{
+			System.out.println("no XFF Header ! ");
 			ip=request.getRemoteAddr();
 		}
 		
