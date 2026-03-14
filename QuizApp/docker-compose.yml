@@ -1,6 +1,6 @@
 services:
   db:
-    image: mysql:8.0
+    image: mysql:9
     environment:
       MYSQL_ROOT_PASSWORD: HarishSathiya@07
       MYSQL_USER: Harish
@@ -15,7 +15,7 @@ services:
       - dbvol:/var/lib/mysql 
       - ./dbinit.sql:/docker-entrypoint-initdb.d/dbinit.sql
   app1:
-    image: harishss07/skillsprint:v2
+    image: harishss07/skillsprint:v3
     networks:
       - skillsprint-network
     container_name: app1

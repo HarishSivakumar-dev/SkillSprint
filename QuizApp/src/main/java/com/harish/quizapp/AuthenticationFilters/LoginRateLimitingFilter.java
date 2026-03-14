@@ -42,8 +42,8 @@ public class LoginRateLimitingFilter extends OncePerRequestFilter
 		
 		if(req.equals("/app/login"))
 		{
+			System.out.println(name);
 			UserRegistration ureg= ur.findByUserName(name).orElseThrow();
-			System.out.println(ureg);
 			Object us=rt.opsForZSet().size("client:"+ureg.getId()+":"+ip);
 			if(us==null)
 			{
