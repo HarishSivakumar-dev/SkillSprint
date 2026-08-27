@@ -15,7 +15,7 @@ services:
       - dbvol:/var/lib/mysql 
       - ./dbinit.sql:/docker-entrypoint-initdb.d/dbinit.sql
   app1:
-    image: harishss07/skillsprint:v3
+    image: harishss07/skillsprint:v4
     networks:
       - skillsprint-network
     container_name: app1
